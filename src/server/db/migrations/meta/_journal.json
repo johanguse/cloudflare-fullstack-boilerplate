@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1778363634718,
+      "tag": "0000_familiar_maria_hill",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1778365742651,
+      "tag": "0001_overconfident_robbie_robertson",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1778369042843,
+      "tag": "0002_normal_black_widow",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1778379181934,
+      "tag": "0003_smiling_kylun",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1778383263335,
+      "tag": "0004_awesome_gamora",
+      "breakpoints": true
+    }
+  ]
+}

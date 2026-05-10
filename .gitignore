@@ -1,0 +1,28 @@
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+.env
+*.local
+
+# Drizzle
+.drizzle/
+
+# TypeScript
+node_modules/.tmp/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build artifacts
+*.map

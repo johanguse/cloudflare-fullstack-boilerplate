@@ -1,0 +1,17 @@
+{
+	"files": [],
+	"references": [
+		{ "path": "./tsconfig.app.json" },
+		{ "path": "./tsconfig.node.json" },
+		{ "path": "./tsconfig.worker.json" }
+	],
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@client/*": ["./src/client/*"],
+			"@server/*": ["./src/server/*"],
+			"@shared/*": ["./src/shared/*"]
+		},
+		"types": ["node"]
+	}
+}

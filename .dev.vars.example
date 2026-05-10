@@ -1,0 +1,38 @@
+# .dev.vars.example — Copy to .dev.vars (gitignored) for local development
+# All secrets for local Wrangler dev. Never commit .dev.vars.
+#
+# For production/staging, use: wrangler secret put NAME
+# For bulk upload: bash scripts/upload-secrets.sh staging
+
+# Better Auth
+BETTER_AUTH_SECRET=your-random-32-char-secret-here
+BETTER_AUTH_GOOGLE_CLIENT_ID=
+BETTER_AUTH_GOOGLE_CLIENT_SECRET=
+BETTER_AUTH_GITHUB_CLIENT_ID=
+BETTER_AUTH_GITHUB_CLIENT_SECRET=
+
+# Stripe (use test mode keys for local dev)
+STRIPE_API_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# NFSe (Fiscal Nacional — use staging env)
+FISCAL_NACIONAL_API_KEY=
+
+# Trigger.dev
+TRIGGER_API_KEY=tr_dev_...
+INTERNAL_API_KEY=random-secret-for-trigger-callbacks
+
+# Observability (optional for local Worker)
+SENTRY_DSN=
+
+# Client-only (Vite): put in .env for `bun dev` / CI build — not read by Wrangler
+# VITE_SENTRY_DSN=
+# VITE_POSTHOG_KEY=
+# VITE_POSTHOG_HOST=https://us.i.posthog.com
+
+# Cloudflare (needed for Drizzle Studio on remote DB)
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_API_TOKEN=
+CLOUDFLARE_DATABASE_ID_LOCAL=
+CLOUDFLARE_DATABASE_ID_STAGING=
+CLOUDFLARE_DATABASE_ID_PRODUCTION=

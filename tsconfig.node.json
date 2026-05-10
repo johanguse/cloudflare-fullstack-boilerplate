@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2023"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {
+			"@client/*": ["./src/client/*"],
+			"@server/*": ["./src/server/*"],
+			"@shared/*": ["./src/shared/*"]
+		},
+		"types": ["node"]
+	},
+	"include": ["vite.config.ts", "drizzle.config.ts", "trigger.config.ts", "scripts/**/*.ts"]
+}

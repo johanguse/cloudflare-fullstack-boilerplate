@@ -1,0 +1,244 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cf-boilerplate",
+	"main": "./src/server/index.ts",
+	"compatibility_date": "2026-05-09",
+	"compatibility_flags": ["nodejs_compat"],
+	"upload_source_maps": true,
+	"placement": {
+		"mode": "smart"
+	},
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1
+	},
+	// Cron Triggers
+	"triggers": {
+		// Daily at 6 AM UTC — cleanup expired sessions, stale records
+		"crons": ["0 6 * * *"]
+	},
+	// Serve React SPA from Workers Assets
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "./dist/client",
+		// Worker handles API routes first, falls back to SPA
+		"run_worker_first": true,
+		"not_found_handling": "single-page-application"
+	},
+	"routes": [
+		{
+			"pattern": "app.yourdomain.com",
+			"custom_domain": true
+		},
+		{
+			"pattern": "api.yourdomain.com",
+			"custom_domain": true
+		}
+	],
+	// Non-sensitive environment variables (safe to commit)
+	"vars": {
+		"ENVIRONMENT": "production",
+		"APP_NAME": "My SaaS",
+		"APP_URL": "https://app.yourdomain.com",
+		"BETTER_AUTH_URL": "https://app.yourdomain.com",
+		"TRUSTED_ORIGINS": "https://app.yourdomain.com,https://api.yourdomain.com",
+		"FROM_EMAIL": "no-reply@yourdomain.com",
+		"STRIPE_API_VERSION": "2025-12-15.clover",
+		"FISCAL_NACIONAL_ENVIRONMENT": "production",
+		// Stripe Product/Price IDs (non-sensitive, safe in config)
+		// Fill in after creating products in Stripe Dashboard
+		"STRIPE_PRODUCT_STARTER": "",
+		"STRIPE_PRODUCT_PROFESSIONAL": "",
+		"STRIPE_PRODUCT_BUSINESS": "",
+		"STRIPE_PRODUCT_AGENCY": "",
+		"STRIPE_PRICE_STARTER": "",
+		"STRIPE_PRICE_PROFESSIONAL": "",
+		"STRIPE_PRICE_BUSINESS": "",
+		"STRIPE_PRICE_AGENCY": "",
+		"STRIPE_PRICE_STARTER_ANNUAL": "",
+		"STRIPE_PRICE_PROFESSIONAL_ANNUAL": "",
+		"STRIPE_PRICE_BUSINESS_ANNUAL": "",
+		"STRIPE_PRICE_AGENCY_ANNUAL": ""
+	},
+	// Database (D1)
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "cf-boilerplate-db",
+			// Run: wrangler d1 create cf-boilerplate-db
+			// Then paste the database_id here
+			"database_id": "<TO_BE_PROVISIONED>",
+			"migrations_dir": "src/server/db/migrations"
+		}
+	],
+	// KV Namespaces
+	"kv_namespaces": [
+		{
+			"binding": "SESSION_KV",
+			// Run: wrangler kv namespace create SESSION_KV
+			"id": "<TO_BE_PROVISIONED>"
+		},
+		{
+			"binding": "CACHE_KV",
+			// Run: wrangler kv namespace create CACHE_KV
+			"id": "<TO_BE_PROVISIONED>"
+		}
+	],
+	// R2 Object Storage (invoices, PDFs, NFSe XML)
+	"r2_buckets": [
+		{
+			"binding": "STORAGE",
+			// Run: wrangler r2 bucket create cf-boilerplate-storage
+			"bucket_name": "cf-boilerplate-storage"
+		}
+	],
+	// Cloudflare Email Service (Workers binding — no API key needed)
+	"send_email": [
+		{
+			"name": "EMAIL"
+			// Run: wrangler email sending enable yourdomain.com
+		}
+	],
+	// Secrets are managed via `wrangler secret put NAME`
+	// NEVER hardcode secrets here. See .dev.vars.example for the full list.
+	// Required production secrets:
+	//   BETTER_AUTH_SECRET
+	//   BETTER_AUTH_GOOGLE_CLIENT_ID
+	//   BETTER_AUTH_GOOGLE_CLIENT_SECRET
+	//   BETTER_AUTH_GITHUB_CLIENT_ID
+	//   BETTER_AUTH_GITHUB_CLIENT_SECRET
+	//   STRIPE_API_KEY
+	//   STRIPE_WEBHOOK_SECRET
+	//   FISCAL_NACIONAL_API_KEY
+	//   TRIGGER_API_KEY
+	//   INTERNAL_API_KEY
+	//   SENTRY_DSN (optional)
+	"env": {
+		// --------------------------------
+		// Staging environment
+		// --------------------------------
+		"staging": {
+			"name": "cf-boilerplate-staging",
+			"main": "./dist/staging/index.js",
+			"compatibility_flags": ["nodejs_compat"],
+			"minify": true,
+			"assets": {
+				"binding": "ASSETS",
+				"directory": "./dist/staging/client",
+				"run_worker_first": true,
+				"not_found_handling": "single-page-application"
+			},
+			"triggers": {
+				"crons": ["0 6 * * *"]
+			},
+			"routes": [
+				{
+					"pattern": "staging.yourdomain.com",
+					"zone_name": "yourdomain.com",
+					"custom_domain": true
+				},
+				{
+					"pattern": "api-staging.yourdomain.com",
+					"zone_name": "yourdomain.com",
+					"custom_domain": true
+				}
+			],
+			"vars": {
+				"ENVIRONMENT": "staging",
+				"APP_NAME": "My SaaS [Staging]",
+				"APP_URL": "https://staging.yourdomain.com",
+				"BETTER_AUTH_URL": "https://staging.yourdomain.com",
+				"TRUSTED_ORIGINS": "https://staging.yourdomain.com,https://api-staging.yourdomain.com",
+				"FROM_EMAIL": "no-reply@yourdomain.com",
+				"STRIPE_API_VERSION": "2025-12-15.clover",
+				"FISCAL_NACIONAL_ENVIRONMENT": "staging",
+				// Staging Stripe IDs (test mode) — fill after creating in Stripe sandbox
+				"STRIPE_PRODUCT_STARTER": "",
+				"STRIPE_PRODUCT_PROFESSIONAL": "",
+				"STRIPE_PRODUCT_BUSINESS": "",
+				"STRIPE_PRODUCT_AGENCY": "",
+				"STRIPE_PRICE_STARTER": "",
+				"STRIPE_PRICE_PROFESSIONAL": "",
+				"STRIPE_PRICE_BUSINESS": "",
+				"STRIPE_PRICE_AGENCY": "",
+				"STRIPE_PRICE_STARTER_ANNUAL": "",
+				"STRIPE_PRICE_PROFESSIONAL_ANNUAL": "",
+				"STRIPE_PRICE_BUSINESS_ANNUAL": "",
+				"STRIPE_PRICE_AGENCY_ANNUAL": ""
+			},
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "cf-boilerplate-staging",
+					// Run: wrangler d1 create cf-boilerplate-staging
+					"database_id": "<TO_BE_PROVISIONED>",
+					"migrations_dir": "src/server/db/migrations"
+				}
+			],
+			"kv_namespaces": [
+				{
+					"binding": "SESSION_KV",
+					// Run: wrangler kv namespace create SESSION_KV_STAGING
+					"id": "<TO_BE_PROVISIONED>"
+				},
+				{
+					"binding": "CACHE_KV",
+					// Run: wrangler kv namespace create CACHE_KV_STAGING
+					"id": "<TO_BE_PROVISIONED>"
+				}
+			],
+			"r2_buckets": [
+				{
+					"binding": "STORAGE",
+					"bucket_name": "cf-boilerplate-storage-staging"
+				}
+			],
+			"send_email": [
+				{
+					"name": "EMAIL"
+				}
+			]
+			// Staging secrets: `wrangler secret put NAME --env staging`
+		},
+		// --------------------------------
+		// Local development environment
+		// --------------------------------
+		// Plain `wrangler dev` uses top-level config + .dev.vars overrides.
+		"local": {
+			"compatibility_flags": ["nodejs_compat"],
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "cf-boilerplate-local",
+					"migrations_dir": "src/server/db/migrations"
+				}
+			],
+			"kv_namespaces": [
+				{
+					"binding": "SESSION_KV",
+					"id": "<SAME_AS_STAGING_OK_FOR_LOCAL>"
+				},
+				{
+					"binding": "CACHE_KV",
+					"id": "<SAME_AS_STAGING_OK_FOR_LOCAL>"
+				}
+			],
+			"r2_buckets": [
+				{
+					"binding": "STORAGE",
+					"bucket_name": "cf-boilerplate-storage-staging"
+				}
+			],
+			"vars": {
+				"ENVIRONMENT": "development",
+				"APP_NAME": "[Dev] My SaaS",
+				"APP_URL": "http://localhost:5173",
+				"BETTER_AUTH_URL": "http://localhost:8787",
+				"TRUSTED_ORIGINS": "http://localhost:5173,http://localhost:8787",
+				"FROM_EMAIL": "dev@localhost",
+				"FISCAL_NACIONAL_ENVIRONMENT": "staging"
+			}
+			// Local secrets come from .dev.vars (gitignored)
+		}
+	}
+}
