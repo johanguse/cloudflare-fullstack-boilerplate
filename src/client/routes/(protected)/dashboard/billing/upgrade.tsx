@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@client/components/layout/DashboardLayout";
 import { Badge } from "@client/components/ui/badge";
 import { Button } from "@client/components/ui/button";
 import {
@@ -12,6 +11,7 @@ import {
 import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Loader2, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(protected)/dashboard/billing/upgrade")({
@@ -22,7 +22,6 @@ interface Plan {
 	id: string;
 	name: string;
 	price: string;
-	period: string;
 	credits: number;
 	popular?: boolean;
 	features: string[];
@@ -34,60 +33,33 @@ const PLANS: Plan[] = [
 		id: "starter",
 		name: "Starter",
 		price: "$4.99",
-		period: "/month",
 		credits: 200,
-		features: [
-			"200 credits/month",
-			"3 websites",
-			"Weekly auto-updates",
-			"Email support",
-		],
+		features: ["200 credits/month", "3 websites", "Weekly auto-updates", "Email support"],
 		stripePriceId: import.meta.env.VITE_STRIPE_PRICE_STARTER ?? "",
 	},
 	{
 		id: "professional",
 		name: "Professional",
 		price: "$12.99",
-		period: "/month",
 		credits: 600,
 		popular: true,
-		features: [
-			"600 credits/month",
-			"10 websites",
-			"Daily auto-updates",
-			"Priority support",
-			"API access",
-		],
+		features: ["600 credits/month", "10 websites", "Daily auto-updates", "Priority support", "API access"],
 		stripePriceId: import.meta.env.VITE_STRIPE_PRICE_PROFESSIONAL ?? "",
 	},
 	{
 		id: "business",
 		name: "Business",
 		price: "$29.99",
-		period: "/month",
 		credits: 1500,
-		features: [
-			"1,500 credits/month",
-			"25 websites",
-			"Hourly auto-updates",
-			"Dedicated support",
-			"Team management",
-		],
+		features: ["1,500 credits/month", "25 websites", "Hourly auto-updates", "Dedicated support", "Team management"],
 		stripePriceId: import.meta.env.VITE_STRIPE_PRICE_BUSINESS ?? "",
 	},
 	{
 		id: "agency",
 		name: "Agency",
 		price: "$69.99",
-		period: "/month",
 		credits: 4000,
-		features: [
-			"4,000 credits/month",
-			"Unlimited websites",
-			"Real-time updates",
-			"Account manager",
-			"White-label options",
-		],
+		features: ["4,000 credits/month", "Unlimited websites", "Real-time updates", "Account manager", "White-label options"],
 		stripePriceId: import.meta.env.VITE_STRIPE_PRICE_AGENCY ?? "",
 	},
 ];
@@ -95,6 +67,7 @@ const PLANS: Plan[] = [
 const PLAN_ORDER = ["free", "starter", "professional", "business", "agency"];
 
 function UpgradePage() {
+	const { t } = useTranslation();
 	const subQuery = trpc.billing.getSubscription.useQuery();
 	const checkoutMutation = trpc.billing.createCheckoutSession.useMutation({
 		onSuccess: ({ url }) => {
@@ -109,23 +82,20 @@ function UpgradePage() {
 
 	const handleUpgrade = (stripePriceId: string) => {
 		if (!stripePriceId) {
-			toast.error(
-				"Stripe Price ID not configured. Set VITE_STRIPE_PRICE_* in .env.",
-			);
+			toast.error("Stripe Price ID not configured. Set VITE_STRIPE_PRICE_* in .env.");
 			return;
 		}
 		checkoutMutation.mutate({ priceId: stripePriceId });
 	};
 
 	return (
-		<DashboardLayout>
-			<div className="max-w-5xl space-y-6">
+		<div className="space-y-6">
 				<div>
-					<h1 className="font-semibold text-2xl tracking-tight">
-						Upgrade your plan
+					<h1 className="font-bold text-2xl tracking-tight">
+						{t("upgrade.title", "Upgrade your plan")}
 					</h1>
 					<p className="text-muted-foreground text-sm">
-						Choose the plan that fits your needs. Credits never expire.
+						{t("upgrade.subtitle", "Choose the plan that fits your needs. Credits never expire.")}
 					</p>
 				</div>
 
@@ -144,7 +114,7 @@ function UpgradePage() {
 									<div className="-top-3 -translate-x-1/2 absolute left-1/2">
 										<Badge className="gap-1">
 											<Zap className="h-3 w-3" />
-											Most popular
+											{t("upgrade.mostPopular", "Most popular")}
 										</Badge>
 									</div>
 								)}
@@ -155,7 +125,7 @@ function UpgradePage() {
 											{plan.price}
 										</span>
 										<span className="text-muted-foreground text-sm">
-											{plan.period}
+											{t("upgrade.perMonth", "/month")}
 										</span>
 									</CardDescription>
 								</CardHeader>
@@ -170,7 +140,7 @@ function UpgradePage() {
 								<CardFooter>
 									{isCurrent ? (
 										<Button variant="outline" className="w-full" disabled>
-											Current plan
+											{t("upgrade.currentPlan", "Current plan")}
 										</Button>
 									) : (
 										<Button
@@ -182,7 +152,9 @@ function UpgradePage() {
 											{checkoutMutation.isPending && (
 												<Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
 											)}
-											{isDowngrade ? "Downgrade via portal" : "Upgrade"}
+											{isDowngrade
+												? t("upgrade.downgrade", "Downgrade via portal")
+												: t("upgrade.upgrade", "Upgrade")}
 										</Button>
 									)}
 								</CardFooter>
@@ -192,10 +164,8 @@ function UpgradePage() {
 				</div>
 
 				<p className="text-center text-muted-foreground text-xs">
-					All plans include a 14-day free trial. Cancel anytime. No credit card
-					required for Free.
-				</p>
-			</div>
-		</DashboardLayout>
+				{t("upgrade.footer", "All plans include a 14-day free trial. Cancel anytime. No credit card required for Free.")}
+			</p>
+		</div>
 	);
 }

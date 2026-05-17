@@ -1,4 +1,9 @@
 import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@client/components/ui/collapsible";
+import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
@@ -8,12 +13,16 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarSeparator,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
+	SidebarRail,
 } from "@client/components/ui/sidebar";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
 	Bell,
 	Building2,
+	ChevronRight,
 	CreditCard,
 	KeyRound,
 	LayoutDashboard,
@@ -21,96 +30,196 @@ import {
 	Settings,
 	User,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { UserMenu } from "./UserMenu";
 
-const navMain = [
-	{ title: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
-	{ title: "Invoices", to: "/dashboard/invoices", icon: Receipt },
-	{ title: "Billing", to: "/dashboard/billing", icon: CreditCard },
-];
-
-const navSettings = [
-	{ title: "Profile", to: "/dashboard/profile", icon: User },
-	{ title: "Settings", to: "/dashboard/settings", icon: Settings },
-	{ title: "Company", to: "/dashboard/settings/company", icon: Building2 },
-	{
-		title: "Notifications",
-		to: "/dashboard/settings/notifications",
-		icon: Bell,
-	},
-	{ title: "API Keys", to: "/dashboard/api-keys", icon: KeyRound },
-];
-
 export function AppSidebar() {
+	const { t } = useTranslation();
 	const location = useLocation();
+	const path = location.pathname;
 
-	const isActive = (path: string) =>
-		path === "/dashboard"
-			? location.pathname === "/dashboard"
-			: location.pathname.startsWith(path);
+	const isExact = (to: string) =>
+		path === to || path === `${to}/`;
+
+	const isPrefixed = (to: string) =>
+		path === to || path.startsWith(`${to}/`);
+
+	// Settings sub-pages — any of these makes the parent "active"
+	const settingsSubPaths = [
+		"/dashboard/settings",
+		"/dashboard/settings/company",
+		"/dashboard/settings/notifications",
+	];
+	const isSettingsOpen = settingsSubPaths.some((p) => isPrefixed(p));
 
 	return (
 		<Sidebar collapsible="icon">
+			{/* Brand */}
 			<SidebarHeader>
-				<div className="flex items-center gap-2 px-2 py-1">
-					<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary font-bold text-primary-foreground text-sm">
-						S
-					</div>
-					<span className="font-semibold text-sm group-data-[collapsible=icon]:hidden">
-						My SaaS
-					</span>
-				</div>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							size="lg"
+							asChild
+							tooltip="My SaaS"
+						>
+							<Link to="/dashboard">
+								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground text-sm">
+									S
+								</div>
+								<div className="grid flex-1 text-left text-sm leading-tight">
+									<span className="truncate font-semibold">My SaaS</span>
+									<span className="truncate text-xs text-muted-foreground">Dashboard</span>
+								</div>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
 			</SidebarHeader>
 
 			<SidebarContent>
+				{/* Main navigation */}
 				<SidebarGroup>
-					<SidebarGroupLabel>Main</SidebarGroupLabel>
+					<SidebarGroupLabel>{t("nav.main", "Main")}</SidebarGroupLabel>
 					<SidebarMenu>
-						{navMain.map((item) => (
-							<SidebarMenuItem key={item.to}>
-								<SidebarMenuButton
-									asChild
-									isActive={isActive(item.to)}
-									tooltip={item.title}
-								>
-									<Link to={item.to} className="flex items-center gap-2">
-										<item.icon className="h-4 w-4" />
-										<span>{item.title}</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						))}
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isExact("/dashboard")}
+								tooltip={t("nav.dashboard", "Dashboard")}
+							>
+								<Link to="/dashboard">
+									<LayoutDashboard className="h-4 w-4" />
+									<span>{t("nav.dashboard", "Dashboard")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isPrefixed("/dashboard/invoices")}
+								tooltip={t("nav.invoices", "Invoices")}
+							>
+								<Link to="/dashboard/invoices">
+									<Receipt className="h-4 w-4" />
+									<span>{t("nav.invoices", "Invoices")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isPrefixed("/dashboard/billing")}
+								tooltip={t("nav.billing", "Billing")}
+							>
+								<Link to="/dashboard/billing">
+									<CreditCard className="h-4 w-4" />
+									<span>{t("nav.billing", "Billing")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
 					</SidebarMenu>
 				</SidebarGroup>
 
-				<SidebarSeparator />
-
+				{/* Account */}
 				<SidebarGroup>
-					<SidebarGroupLabel>Account</SidebarGroupLabel>
+					<SidebarGroupLabel>{t("nav.account", "Account")}</SidebarGroupLabel>
 					<SidebarMenu>
-						{navSettings.map((item) => (
-							<SidebarMenuItem key={item.to}>
-								<SidebarMenuButton
-									asChild
-									isActive={isActive(item.to)}
-									tooltip={item.title}
-								>
-									<Link to={item.to} className="flex items-center gap-2">
-										<item.icon className="h-4 w-4" />
-										<span>{item.title}</span>
-									</Link>
-								</SidebarMenuButton>
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isExact("/dashboard/profile")}
+								tooltip={t("nav.profile", "Profile")}
+							>
+								<Link to="/dashboard/profile">
+									<User className="h-4 w-4" />
+									<span>{t("nav.profile", "Profile")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+
+						{/* Settings — collapsible with sub-pages */}
+						<Collapsible
+							asChild
+							defaultOpen={isSettingsOpen}
+							className="group/collapsible"
+						>
+							<SidebarMenuItem>
+								<CollapsibleTrigger asChild>
+									<SidebarMenuButton
+										isActive={isSettingsOpen}
+										tooltip={t("nav.settings", "Settings")}
+									>
+										<Settings className="h-4 w-4" />
+										<span>{t("nav.settings", "Settings")}</span>
+										<ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+									</SidebarMenuButton>
+								</CollapsibleTrigger>
+								<CollapsibleContent>
+									<SidebarMenuSub>
+										<SidebarMenuSubItem>
+											<SidebarMenuSubButton
+												asChild
+												isActive={isExact("/dashboard/settings")}
+											>
+												<Link to="/dashboard/settings">
+													<span>{t("nav.general", "General")}</span>
+												</Link>
+											</SidebarMenuSubButton>
+										</SidebarMenuSubItem>
+										<SidebarMenuSubItem>
+											<SidebarMenuSubButton
+												asChild
+												isActive={isExact("/dashboard/settings/company")}
+											>
+												<Link to="/dashboard/settings/company">
+													<Building2 className="h-3.5 w-3.5" />
+													<span>{t("nav.company", "Company")}</span>
+												</Link>
+											</SidebarMenuSubButton>
+										</SidebarMenuSubItem>
+										<SidebarMenuSubItem>
+											<SidebarMenuSubButton
+												asChild
+												isActive={isExact("/dashboard/settings/notifications")}
+											>
+												<Link to="/dashboard/settings/notifications">
+													<Bell className="h-3.5 w-3.5" />
+													<span>{t("nav.notifications", "Notifications")}</span>
+												</Link>
+											</SidebarMenuSubButton>
+										</SidebarMenuSubItem>
+									</SidebarMenuSub>
+								</CollapsibleContent>
 							</SidebarMenuItem>
-						))}
+						</Collapsible>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isExact("/dashboard/api-keys")}
+								tooltip={t("nav.apiKeys", "API Keys")}
+							>
+								<Link to="/dashboard/api-keys">
+									<KeyRound className="h-4 w-4" />
+									<span>{t("nav.apiKeys", "API Keys")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
 					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
 
 			<SidebarFooter>
-				<div className="flex items-center justify-between px-2 pb-2">
-					<UserMenu />
-				</div>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<UserMenu />
+					</SidebarMenuItem>
+				</SidebarMenu>
 			</SidebarFooter>
+			<SidebarRail />
 		</Sidebar>
 	);
 }

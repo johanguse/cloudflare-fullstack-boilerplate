@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@client/components/layout/DashboardLayout";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -29,6 +28,7 @@ import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { Key, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(protected)/dashboard/api-keys")({
@@ -36,6 +36,7 @@ export const Route = createFileRoute("/(protected)/dashboard/api-keys")({
 });
 
 function ApiKeysPage() {
+	const { t } = useTranslation();
 	const listQuery = trpc.apiKeys.list.useQuery();
 	const createMutation = trpc.apiKeys.create.useMutation({
 		onSuccess: (data) => {
@@ -43,14 +44,14 @@ function ApiKeysPage() {
 			setCreateOpen(false);
 			setKeyName("");
 			listQuery.refetch();
-			toast.success("API key created — copy it now; it won’t be shown again.");
+			toast.success(t("apiKeys.create.success", "API key created"));
 		},
 		onError: (e) => toast.error(e.message),
 	});
 	const revokeMutation = trpc.apiKeys.revoke.useMutation({
 		onSuccess: () => {
 			listQuery.refetch();
-			toast.success("API key revoked");
+			toast.success(t("apiKeys.revoked", "API key revoked"));
 		},
 		onError: (e) => toast.error(e.message),
 	});
@@ -62,44 +63,47 @@ function ApiKeysPage() {
 	const rows = listQuery.data ?? [];
 
 	return (
-		<DashboardLayout>
-			<div className="space-y-6">
+		<>
+		<div className="space-y-6">
 				<div className="flex flex-wrap items-end justify-between gap-4">
 					<div>
-						<h1 className="font-semibold text-2xl tracking-tight">API Keys</h1>
+						<h1 className="font-bold text-2xl tracking-tight">
+							{t("apiKeys.title", "API Keys")}
+						</h1>
 						<p className="text-muted-foreground text-sm">
-							Programmatic access — store keys securely; we only store a hash
+							{t("apiKeys.subtitle", "Manage your API keys for programmatic access")}
 						</p>
 					</div>
 					<Button type="button" onClick={() => setCreateOpen(true)}>
 						<Plus className="mr-1.5 h-4 w-4" />
-						Create key
+						{t("apiKeys.createKey", "Create key")}
 					</Button>
 				</div>
 
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-base">Your keys</CardTitle>
-						<CardDescription>
-							Each key is shown once at creation. Revoke a key if it may be
-							compromised.
-						</CardDescription>
+						<CardTitle className="text-base">{t("apiKeys.cardTitle", "Your API keys")}</CardTitle>
+						<CardDescription>{t("apiKeys.cardDescription", "Keys grant full access to the API — keep them secret")}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{listQuery.isPending ? (
-							<p className="text-muted-foreground text-sm">Loading…</p>
+							<p className="text-muted-foreground text-sm">
+								{t("apiKeys.loading", "Loading…")}
+							</p>
 						) : rows.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-12 text-center">
 								<Key className="mb-3 h-10 w-10 text-muted-foreground/40" />
-								<p className="text-muted-foreground text-sm">No API keys yet</p>
+								<p className="text-muted-foreground text-sm">
+									{t("apiKeys.noKeys", "No API keys yet. Create one to get started.")}
+								</p>
 							</div>
 						) : (
 							<Table>
 								<TableHeader>
 									<TableRow>
-										<TableHead>Name</TableHead>
-										<TableHead>Prefix</TableHead>
-										<TableHead>Created</TableHead>
+										<TableHead>{t("apiKeys.headers.name", "Name")}</TableHead>
+										<TableHead>{t("apiKeys.headers.prefix", "Prefix")}</TableHead>
+										<TableHead>{t("apiKeys.headers.created", "Created")}</TableHead>
 										<TableHead className="w-[100px]" />
 									</TableRow>
 								</TableHeader>
@@ -140,18 +144,16 @@ function ApiKeysPage() {
 			<Dialog open={createOpen} onOpenChange={setCreateOpen}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Create API key</DialogTitle>
-						<DialogDescription>
-							Give it a label you’ll recognize in audit logs.
-						</DialogDescription>
+						<DialogTitle>{t("apiKeys.create.title", "Create API key")}</DialogTitle>
+						<DialogDescription>{t("apiKeys.create.description", "Give your key a memorable name")}</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-2">
-						<Label htmlFor="keyName">Name</Label>
+						<Label htmlFor="keyName">{t("apiKeys.create.nameLabel", "Key name")}</Label>
 						<Input
 							id="keyName"
 							value={keyName}
 							onChange={(e) => setKeyName(e.target.value)}
-							placeholder="CI / production"
+							placeholder={t("apiKeys.create.namePlaceholder", "My app")}
 						/>
 					</div>
 					<DialogFooter>
@@ -160,7 +162,9 @@ function ApiKeysPage() {
 							disabled={!keyName.trim() || createMutation.isPending}
 							onClick={() => createMutation.mutate({ name: keyName.trim() })}
 						>
-							{createMutation.isPending ? "Creating…" : "Create"}
+							{createMutation.isPending
+								? t("apiKeys.create.creating", "Creating…")
+								: t("apiKeys.create.create", "Create")}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
@@ -172,11 +176,8 @@ function ApiKeysPage() {
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Copy your API key</DialogTitle>
-						<DialogDescription>
-							This secret is only shown once. Store it in a password manager or
-							secret store.
-						</DialogDescription>
+						<DialogTitle>{t("apiKeys.copy.title", "Copy your API key")}</DialogTitle>
+						<DialogDescription>{t("apiKeys.copy.description", "This key will only be shown once. Copy it now and store it safely.")}</DialogDescription>
 					</DialogHeader>
 					<pre className="overflow-x-auto break-all rounded-md bg-muted p-3 font-mono text-xs">
 						{createdKey}
@@ -187,15 +188,15 @@ function ApiKeysPage() {
 							onClick={() => {
 								if (createdKey) {
 									void navigator.clipboard.writeText(createdKey);
-									toast.success("Copied");
+									toast.success(t("apiKeys.copy.copied", "Copied to clipboard"));
 								}
 							}}
 						>
-							Copy
+							{t("apiKeys.copy.copy", "Copy key")}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-		</DashboardLayout>
+		</>
 	);
 }

@@ -4,6 +4,7 @@ import posthog from "posthog-js";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
+import "./lib/i18n";
 import "./index.css";
 
 const viteEnv = import.meta.env.VITE_ENVIRONMENT ?? "local";

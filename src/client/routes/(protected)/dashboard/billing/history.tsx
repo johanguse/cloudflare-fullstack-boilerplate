@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@client/components/layout/DashboardLayout";
 import { Badge } from "@client/components/ui/badge";
 import { Button } from "@client/components/ui/button";
 import {
@@ -21,6 +20,7 @@ import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { CreditCard } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(protected)/dashboard/billing/history")({
 	component: BillingHistoryPage,
@@ -39,15 +39,8 @@ const txTypeVariant: Record<
 	adjustment: "secondary",
 };
 
-const txTypeLabel: Record<string, string> = {
-	purchase: "Purchase",
-	subscription_grant: "Plan grant",
-	usage: "Usage",
-	refund: "Refund",
-	adjustment: "Adjustment",
-};
-
 function BillingHistoryPage() {
+	const { t } = useTranslation();
 	const [page, setPage] = useState(0);
 	const historyQuery = trpc.billing.getHistory.useQuery({
 		limit: PAGE_SIZE,
@@ -57,23 +50,20 @@ function BillingHistoryPage() {
 	const rows = historyQuery.data ?? [];
 
 	return (
-		<DashboardLayout>
-			<div className="max-w-3xl space-y-6">
+		<div className="space-y-6">
 				<div>
-					<h1 className="font-semibold text-2xl tracking-tight">
-						Credit history
+					<h1 className="font-bold text-2xl tracking-tight">
+						{t("history.title", "Credit history")}
 					</h1>
 					<p className="text-muted-foreground text-sm">
-						All your credit transactions
+						{t("history.subtitle", "Full log of your credit transactions")}
 					</p>
 				</div>
 
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-base">Transactions</CardTitle>
-						<CardDescription>
-							Credits added and deducted from your account
-						</CardDescription>
+						<CardTitle className="text-base">{t("history.tableTitle", "Transactions")}</CardTitle>
+						<CardDescription>{t("history.tableDesc", "All credit debits and additions")}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{historyQuery.isLoading ? (
@@ -85,20 +75,22 @@ function BillingHistoryPage() {
 						) : rows.length === 0 ? (
 							<div className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
 								<CreditCard className="h-10 w-10 opacity-30" />
-								<p className="text-sm">No transactions yet</p>
-								<p className="text-xs">
-									Credits will appear here after purchases or usage
-								</p>
+								<p className="text-sm">{t("history.noTransactions", "No transactions yet")}</p>
+								<p className="text-xs">{t("history.noTransactionsDesc", "Your credit history will appear here")}</p>
 							</div>
 						) : (
 							<Table>
 								<TableHeader>
 									<TableRow>
-										<TableHead>Description</TableHead>
-										<TableHead>Type</TableHead>
-										<TableHead>Date</TableHead>
-										<TableHead className="text-right">Credits</TableHead>
-										<TableHead className="text-right">Balance after</TableHead>
+										<TableHead>{t("history.headers.description", "Description")}</TableHead>
+										<TableHead>{t("history.headers.type", "Type")}</TableHead>
+										<TableHead>{t("history.headers.date", "Date")}</TableHead>
+										<TableHead className="text-right">
+											{t("history.headers.credits", "Credits")}
+										</TableHead>
+										<TableHead className="text-right">
+											{t("history.headers.balanceAfter", "Balance after")}
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
@@ -112,7 +104,7 @@ function BillingHistoryPage() {
 													variant={txTypeVariant[tx.type] ?? "outline"}
 													className="text-xs"
 												>
-													{txTypeLabel[tx.type] ?? tx.type}
+													{t(`history.types.${tx.type}`, tx.type)}
 												</Badge>
 											</TableCell>
 											<TableCell className="text-muted-foreground text-xs">
@@ -145,7 +137,7 @@ function BillingHistoryPage() {
 								disabled={page === 0}
 								onClick={() => setPage((p) => p - 1)}
 							>
-								Previous
+								{t("history.previous", "Previous")}
 							</Button>
 							<Button
 								variant="outline"
@@ -153,12 +145,11 @@ function BillingHistoryPage() {
 								disabled={rows.length < PAGE_SIZE}
 								onClick={() => setPage((p) => p + 1)}
 							>
-								Next
+								{t("history.next", "Next")}
 							</Button>
 						</div>
 					)}
 				</Card>
-			</div>
-		</DashboardLayout>
+		</div>
 	);
 }

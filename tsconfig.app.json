@@ -24,5 +24,6 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src/client", "src/server", "src/shared"]
+	"include": ["src/client", "src/server", "src/shared"],
+	"exclude": ["src/server/db/seeds"]
 }

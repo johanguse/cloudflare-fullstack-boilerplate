@@ -10,10 +10,15 @@ import {
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
 import { Separator } from "@client/components/ui/separator";
+import {
+	type TurnstileRef,
+	TurnstileWidget,
+} from "@client/components/ui/turnstile";
 import { authClient } from "@client/lib/auth-client";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Github, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(auth)/register")({
@@ -44,19 +49,27 @@ function getPasswordStrength(pw: string): {
 	return { level, score };
 }
 
-const strengthMeta: Record<PasswordStrength, { label: string; color: string }> =
-	{
-		weak: { label: "Weak", color: "bg-destructive" },
-		fair: { label: "Fair", color: "bg-orange-400" },
-		strong: { label: "Strong", color: "bg-yellow-400" },
-		"very-strong": { label: "Very strong", color: "bg-green-500" },
-	};
+const strengthColor: Record<PasswordStrength, string> = {
+	weak: "bg-destructive",
+	fair: "bg-orange-400",
+	strong: "bg-yellow-400",
+	"very-strong": "bg-green-500",
+};
+
+const strengthFallback: Record<string, string> = {
+	weak: "Weak",
+	fair: "Fair",
+	strong: "Strong",
+	veryStrong: "Very strong",
+};
 
 function PasswordStrengthBar({ password }: { password: string }) {
+	const { t } = useTranslation();
 	if (!password) return null;
 	const { level, score } = getPasswordStrength(password);
-	const meta = strengthMeta[level];
+	const color = strengthColor[level];
 	const filled = Math.min(score, 4);
+	const labelKey = level === "very-strong" ? "veryStrong" : level;
 
 	return (
 		<div className="space-y-1">
@@ -64,30 +77,37 @@ function PasswordStrengthBar({ password }: { password: string }) {
 				{[1, 2, 3, 4].map((i) => (
 					<div
 						key={i}
-						className={`h-1 flex-1 rounded-full transition-all ${i <= filled ? meta.color : "bg-muted"}`}
+						className={`h-1 flex-1 rounded-full transition-all ${i <= filled ? color : "bg-muted"}`}
 					/>
 				))}
 			</div>
 			<p
 				className={`font-medium text-xs ${filled <= 1 ? "text-destructive" : filled <= 2 ? "text-orange-500" : "text-green-600"}`}
 			>
-				{meta.label}
+				{t(`auth.register.strength.${labelKey}`, strengthFallback[labelKey] ?? labelKey)}
 			</p>
 		</div>
 	);
 }
 
 function RegisterPage() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileRef>(null);
 
 	const handleRegister = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (password.length < 8) {
-			toast.error("Password must be at least 8 characters");
+			toast.error(t("auth.register.passwordTooShort", "Password must be at least 8 characters"));
+			return;
+		}
+		if (!turnstileToken) {
+			toast.error(t("auth.register.completeVerification", "Please complete the verification"));
 			return;
 		}
 		setIsLoading(true);
@@ -99,10 +119,12 @@ function RegisterPage() {
 		});
 		setIsLoading(false);
 		if (error) {
-			toast.error(error.message ?? "Registration failed");
+			toast.error(error.message ?? t("auth.register.passwordTooShort", "Password must be at least 8 characters"));
+			turnstileRef.current?.reset();
+			setTurnstileToken(null);
 			return;
 		}
-		toast.success("Account created! Check your email to verify.");
+		toast.success(t("auth.register.accountCreated", "Account created! Check your email to verify."));
 		navigate({ to: "/verify-email" });
 	};
 
@@ -125,18 +147,20 @@ function RegisterPage() {
 			<div className="w-full max-w-sm">
 				<div className="mb-8 text-center">
 					<h1 className="font-bold text-2xl text-foreground tracking-tight">
-						Create account
+						{t("auth.register.title", "Create account")}
 					</h1>
 					<p className="mt-1 text-muted-foreground text-sm">
-						Start your free trial today
+						{t("auth.register.subtitle", "Start your free trial today")}
 					</p>
 				</div>
 
 				<Card>
 					<CardHeader className="pb-4">
-						<CardTitle className="text-base">Sign up</CardTitle>
+						<CardTitle className="text-base">
+							{t("auth.register.cardTitle", "Sign up")}
+						</CardTitle>
 						<CardDescription>
-							Create your account to get started
+							{t("auth.register.cardDescription", "Create your account to get started")}
 						</CardDescription>
 					</CardHeader>
 
@@ -182,16 +206,18 @@ function RegisterPage() {
 								<Separator />
 							</div>
 							<div className="relative flex justify-center text-xs uppercase">
-								<span className="bg-card px-2 text-muted-foreground">or</span>
+								<span className="bg-card px-2 text-muted-foreground">
+									{t("common.or", "or")}
+								</span>
 							</div>
 						</div>
 
 						<form onSubmit={handleRegister} className="space-y-3">
 							<div className="space-y-1.5">
-								<Label htmlFor="name">Name</Label>
+								<Label htmlFor="name">{t("common.name", "Name")}</Label>
 								<Input
 									id="name"
-									placeholder="Your name"
+									placeholder={t("auth.register.namePlaceholder", "Your name")}
 									value={name}
 									onChange={(e) => setName(e.target.value)}
 									required
@@ -199,11 +225,11 @@ function RegisterPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="email">Email</Label>
+								<Label htmlFor="email">{t("common.email", "Email")}</Label>
 								<Input
 									id="email"
 									type="email"
-									placeholder="you@example.com"
+									placeholder={t("common.emailPlaceholder", "you@example.com")}
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 									required
@@ -211,11 +237,11 @@ function RegisterPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="password">Password</Label>
+								<Label htmlFor="password">{t("common.password", "Password")}</Label>
 								<Input
 									id="password"
 									type="password"
-									placeholder="Min. 8 characters"
+									placeholder={t("auth.register.passwordPlaceholder", "Min. 8 characters")}
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 									required
@@ -224,21 +250,30 @@ function RegisterPage() {
 								/>
 								<PasswordStrengthBar password={password} />
 							</div>
-							<Button type="submit" className="w-full" disabled={isLoading}>
+							<TurnstileWidget
+								ref={turnstileRef}
+								onVerify={setTurnstileToken}
+								onExpire={() => setTurnstileToken(null)}
+							/>
+							<Button
+								type="submit"
+								className="w-full"
+								disabled={isLoading || !turnstileToken}
+							>
 								{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-								Create account
+								{t("auth.register.createAccount", "Create account")}
 							</Button>
 						</form>
 					</CardContent>
 
 					<CardFooter className="justify-center pt-0">
 						<p className="text-muted-foreground text-sm">
-							Already have an account?{" "}
+							{t("auth.register.alreadyHaveAccount", "Already have an account?")}{" "}
 							<Link
 								to="/login"
 								className="font-medium text-foreground hover:underline"
 							>
-								Sign in
+								{t("auth.register.signIn", "Sign in")}
 							</Link>
 						</p>
 					</CardFooter>

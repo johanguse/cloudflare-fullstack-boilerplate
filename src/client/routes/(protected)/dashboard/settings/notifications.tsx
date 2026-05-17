@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@client/components/layout/DashboardLayout";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -7,13 +6,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
+import { ContentSection } from "@client/components/ui/content-section";
 import { Label } from "@client/components/ui/label";
 import { Skeleton } from "@client/components/ui/skeleton";
 import { Switch } from "@client/components/ui/switch";
 import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute(
@@ -23,10 +23,11 @@ export const Route = createFileRoute(
 });
 
 function NotificationsSettingsPage() {
+	const { t } = useTranslation();
 	const query = trpc.settings.getNotifications.useQuery();
 	const mutation = trpc.settings.updateNotifications.useMutation({
 		onSuccess: () => {
-			toast.success("Notification preferences saved");
+			toast.success(t("notifications.saved", "Notification preferences saved"));
 			query.refetch();
 		},
 		onError: (e) => toast.error(e.message),
@@ -46,12 +47,15 @@ function NotificationsSettingsPage() {
 
 	if (query.isPending) {
 		return (
-			<DashboardLayout>
-				<div className="max-w-lg space-y-4">
+			<ContentSection
+				title={t("notifications.title", "Notifications")}
+				desc={t("notifications.subtitle", "Choose which emails you receive")}
+			>
+				<div className="space-y-4">
 					<Skeleton className="h-8 w-56" />
 					<Skeleton className="h-48 w-full" />
 				</div>
-			</DashboardLayout>
+			</ContentSection>
 		);
 	}
 
@@ -60,35 +64,23 @@ function NotificationsSettingsPage() {
 	}
 
 	return (
-		<DashboardLayout>
-			<div className="max-w-lg space-y-6">
-				<div className="flex items-center gap-3">
-					<Bell className="h-6 w-6 text-muted-foreground" />
-					<div>
-						<h1 className="font-semibold text-2xl tracking-tight">
-							Notifications
-						</h1>
-						<p className="text-muted-foreground text-sm">
-							Choose which product emails we send (excluding security emails
-							like password reset)
-						</p>
-					</div>
-				</div>
-
-				<Card>
+		<ContentSection
+			title={t("notifications.title", "Notifications")}
+			desc={t("notifications.subtitle", "Choose which emails you receive")}
+		>
+			<Card>
 					<CardHeader>
-						<CardTitle className="text-base">Email</CardTitle>
-						<CardDescription>
-							Auth-related messages (verification, OTP, password reset) are
-							always sent when enabled in production.
-						</CardDescription>
+						<CardTitle className="text-base">{t("notifications.email", "Email notifications")}</CardTitle>
+						<CardDescription>{t("notifications.emailDesc", "Sent to your account email address")}</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<div className="flex items-center justify-between gap-4">
 							<Label htmlFor="pay" className="flex flex-col gap-0.5">
-								<span className="font-medium">Payment receipts</span>
+								<span className="font-medium">
+									{t("notifications.paymentReceipts", "Payment receipts")}
+								</span>
 								<span className="font-normal text-muted-foreground text-xs">
-									When a charge succeeds
+									{t("notifications.paymentReceiptsDesc", "Receive a confirmation after each payment")}
 								</span>
 							</Label>
 							<Switch
@@ -99,9 +91,11 @@ function NotificationsSettingsPage() {
 						</div>
 						<div className="flex items-center justify-between gap-4">
 							<Label htmlFor="inv" className="flex flex-col gap-0.5">
-								<span className="font-medium">Invoice copy</span>
+								<span className="font-medium">
+									{t("notifications.invoiceCopy", "Invoice copies")}
+								</span>
 								<span className="font-normal text-muted-foreground text-xs">
-									Sent to the billing contact on the invoice
+									{t("notifications.invoiceCopyDesc", "Get a copy of every invoice sent to customers")}
 								</span>
 							</Label>
 							<Switch
@@ -112,9 +106,11 @@ function NotificationsSettingsPage() {
 						</div>
 						<div className="flex items-center justify-between gap-4">
 							<Label htmlFor="nfse" className="flex flex-col gap-0.5">
-								<span className="font-medium">NFSe issued</span>
+								<span className="font-medium">
+									{t("notifications.nfseIssued", "NFSe issued")}
+								</span>
 								<span className="font-normal text-muted-foreground text-xs">
-									Brazilian service invoice (NFS-e) ready
+									{t("notifications.nfseIssuedDesc", "Notify when a service invoice is successfully issued")}
 								</span>
 							</Label>
 							<Switch
@@ -125,9 +121,11 @@ function NotificationsSettingsPage() {
 						</div>
 						<div className="flex items-center justify-between gap-4">
 							<Label htmlFor="low" className="flex flex-col gap-0.5">
-								<span className="font-medium">Low credit balance</span>
+								<span className="font-medium">
+									{t("notifications.lowBalance", "Low credit balance")}
+								</span>
 								<span className="font-normal text-muted-foreground text-xs">
-									When credits drop below the alert threshold
+									{t("notifications.lowBalanceDesc", "Alert when your credit balance falls below the threshold")}
 								</span>
 							</Label>
 							<Switch
@@ -138,9 +136,11 @@ function NotificationsSettingsPage() {
 						</div>
 						<div className="flex items-center justify-between gap-4">
 							<Label htmlFor="sub" className="flex flex-col gap-0.5">
-								<span className="font-medium">Subscription changes</span>
+								<span className="font-medium">
+									{t("notifications.subscriptionChanges", "Subscription changes")}
+								</span>
 								<span className="font-normal text-muted-foreground text-xs">
-									Plan updates, cancellation notices
+									{t("notifications.subscriptionChangesDesc", "Notify on plan upgrades, downgrades, or cancellations")}
 								</span>
 							</Label>
 							<Switch
@@ -155,11 +155,12 @@ function NotificationsSettingsPage() {
 							disabled={mutation.isPending}
 							onClick={() => mutation.mutate(prefs)}
 						>
-							{mutation.isPending ? "Saving…" : "Save preferences"}
+							{mutation.isPending
+								? t("notifications.saving", "Saving…")
+								: t("notifications.save", "Save preferences")}
 						</Button>
 					</CardContent>
-				</Card>
-			</div>
-		</DashboardLayout>
+			</Card>
+		</ContentSection>
 	);
 }

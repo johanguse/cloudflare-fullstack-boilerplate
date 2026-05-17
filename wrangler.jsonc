@@ -3,7 +3,9 @@
 	"name": "cf-boilerplate",
 	"main": "./src/server/index.ts",
 	"compatibility_date": "2026-05-09",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"upload_source_maps": true,
 	"placement": {
 		"mode": "smart"
@@ -15,7 +17,9 @@
 	// Cron Triggers
 	"triggers": {
 		// Daily at 6 AM UTC — cleanup expired sessions, stale records
-		"crons": ["0 6 * * *"]
+		"crons": [
+			"0 6 * * *"
+		]
 	},
 	// Serve React SPA from Workers Assets
 	"assets": {
@@ -69,6 +73,16 @@
 			// Then paste the database_id here
 			"database_id": "<TO_BE_PROVISIONED>",
 			"migrations_dir": "src/server/db/migrations"
+		},
+		{
+			"binding": "cf_boilerplate_db",
+			"database_name": "cf-boilerplate-db",
+			"database_id": "fff1ac2c-98f0-49e1-aada-829c3109900b"
+		},
+		{
+			"binding": "cf_boilerplate_staging",
+			"database_name": "cf-boilerplate-staging",
+			"database_id": "17d886d1-fb7d-49fa-8103-054d9c946625"
 		}
 	],
 	// KV Namespaces
@@ -90,6 +104,14 @@
 			"binding": "STORAGE",
 			// Run: wrangler r2 bucket create cf-boilerplate-storage
 			"bucket_name": "cf-boilerplate-storage"
+		},
+		{
+			"bucket_name": "cf-boilerplate-storage",
+			"binding": "cf_boilerplate_storage"
+		},
+		{
+			"bucket_name": "cf-boilerplate-storage-staging",
+			"binding": "cf_boilerplate_storage_staging"
 		}
 	],
 	// Cloudflare Email Service (Workers binding — no API key needed)
@@ -120,7 +142,9 @@
 		"staging": {
 			"name": "cf-boilerplate-staging",
 			"main": "./dist/staging/index.js",
-			"compatibility_flags": ["nodejs_compat"],
+			"compatibility_flags": [
+				"nodejs_compat"
+			],
 			"minify": true,
 			"assets": {
 				"binding": "ASSETS",
@@ -129,7 +153,9 @@
 				"not_found_handling": "single-page-application"
 			},
 			"triggers": {
-				"crons": ["0 6 * * *"]
+				"crons": [
+					"0 6 * * *"
+				]
 			},
 			"routes": [
 				{
@@ -205,7 +231,9 @@
 		// --------------------------------
 		// Plain `wrangler dev` uses top-level config + .dev.vars overrides.
 		"local": {
-			"compatibility_flags": ["nodejs_compat"],
+			"compatibility_flags": [
+				"nodejs_compat"
+			],
 			"d1_databases": [
 				{
 					"binding": "DB",

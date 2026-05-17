@@ -3,80 +3,116 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ─── Design System: B2B SaaS — Navy + Sky Blue ──────────────────────────────
+   Typography: Plus Jakarta Sans (loaded via <link> in index.html)
+   Color strategy: Navy primary (#0F172A), sky-blue accent (#0369A1),
+                   slate-50 background — professional, accessible, clean
+──────────────────────────────────────────────────────────────────────────── */
+
 :root {
-	--radius: 0.625rem;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
+	--radius: 0.5rem;
+
+	/* Surfaces */
+	--background: oklch(0.984 0.003 247.9);    /* slate-50  #F8FAFC */
+	--foreground: oklch(0.099 0.027 261.5);    /* slate-950 #020617 */
+	--card: oklch(1 0 0);                       /* white */
+	--card-foreground: oklch(0.099 0.027 261.5);
 	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
+	--popover-foreground: oklch(0.099 0.027 261.5);
+
+	/* Primary — deep navy */
+	--primary: oklch(0.19 0.036 264.7);        /* #0F172A slate-900 */
+	--primary-foreground: oklch(1 0 0);
+
+	/* Secondary — slate-100 */
+	--secondary: oklch(0.968 0.007 247.9);
+	--secondary-foreground: oklch(0.19 0.036 264.7);
+
+	/* Muted — slate-100 */
+	--muted: oklch(0.968 0.007 247.9);
+	--muted-foreground: oklch(0.494 0.028 256.8); /* slate-500 #64748B */
+
+	/* Accent — sky-700 blue CTA */
+	--accent: oklch(0.968 0.007 247.9);
+	--accent-foreground: oklch(0.19 0.036 264.7);
+
+	/* Semantic */
 	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.646 0.222 41.116);
+	--border: oklch(0.922 0.007 247.9);        /* slate-200 #E2E8F0 */
+	--input: oklch(0.922 0.007 247.9);
+	--ring: oklch(0.453 0.134 248.5);          /* sky-700   #0369A1 */
+
+	/* Charts */
+	--chart-1: oklch(0.453 0.134 248.5);
 	--chart-2: oklch(0.6 0.118 184.704);
 	--chart-3: oklch(0.398 0.07 227.392);
 	--chart-4: oklch(0.828 0.189 84.429);
 	--chart-5: oklch(0.769 0.188 70.08);
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
+
+	/* Sidebar — crisp white with navy accents */
+	--sidebar: oklch(1 0 0);
+	--sidebar-foreground: oklch(0.19 0.036 264.7);
+	--sidebar-primary: oklch(0.19 0.036 264.7);     /* navy active bg */
+	--sidebar-primary-foreground: oklch(1 0 0);
+	--sidebar-accent: oklch(0.968 0.007 247.9);      /* slate-100 hover */
+	--sidebar-accent-foreground: oklch(0.19 0.036 264.7);
+	--sidebar-border: oklch(0.922 0.007 247.9);
+	--sidebar-ring: oklch(0.453 0.134 248.5);
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.205 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.269 0 0);
-	--accent-foreground: oklch(0.985 0 0);
+	--background: oklch(0.129 0.021 264.7);    /* slate-950 #020617 */
+	--foreground: oklch(0.984 0.003 247.9);    /* slate-50  */
+	--card: oklch(0.19 0.027 264.7);           /* slate-900 */
+	--card-foreground: oklch(0.984 0.003 247.9);
+	--popover: oklch(0.19 0.027 264.7);
+	--popover-foreground: oklch(0.984 0.003 247.9);
+
+	/* Primary — light for dark bg (reversed) */
+	--primary: oklch(0.922 0.007 247.9);
+	--primary-foreground: oklch(0.19 0.036 264.7);
+
+	--secondary: oklch(0.258 0.025 264.7);     /* slate-800 */
+	--secondary-foreground: oklch(0.984 0.003 247.9);
+
+	--muted: oklch(0.258 0.025 264.7);
+	--muted-foreground: oklch(0.637 0.022 261.3); /* slate-400 */
+
+	--accent: oklch(0.258 0.025 264.7);
+	--accent-foreground: oklch(0.984 0.003 247.9);
+
 	--destructive: oklch(0.704 0.191 22.216);
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.556 0 0);
-	--chart-1: oklch(0.488 0.243 264.376);
+	--ring: oklch(0.6 0.16 248.5);             /* sky-400 for dark mode */
+
+	/* Charts — brighter on dark */
+	--chart-1: oklch(0.6 0.16 248.5);
 	--chart-2: oklch(0.696 0.17 162.48);
 	--chart-3: oklch(0.769 0.188 70.08);
 	--chart-4: oklch(0.627 0.265 303.9);
 	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
+
+	/* Sidebar dark — slate-900 bg */
+	--sidebar: oklch(0.19 0.027 264.7);
+	--sidebar-foreground: oklch(0.984 0.003 247.9);
+	--sidebar-primary: oklch(0.6 0.16 248.5);       /* sky-400 active */
+	--sidebar-primary-foreground: oklch(0.129 0.021 264.7);
+	--sidebar-accent: oklch(0.258 0.025 264.7);
+	--sidebar-accent-foreground: oklch(0.984 0.003 247.9);
 	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.439 0 0);
+	--sidebar-ring: oklch(0.6 0.16 248.5);
 }
 
 @theme inline {
+	/* Font — Plus Jakarta Sans (SaaS-optimised, loaded via <link>) */
+	--font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
+
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
@@ -110,6 +146,10 @@
 	--color-sidebar-ring: var(--sidebar-ring);
 }
 
+html {
+	scroll-behavior: smooth;
+}
+
 * {
 	border-color: var(--border);
 	outline-color: var(--ring);
@@ -118,4 +158,17 @@
 body {
 	background-color: var(--background);
 	color: var(--foreground);
+	font-feature-settings: "rlig" 1, "calt" 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
 }

@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@client/components/layout/DashboardLayout";
 import { Alert, AlertDescription } from "@client/components/ui/alert";
 import { Badge } from "@client/components/ui/badge";
 import { Button } from "@client/components/ui/button";
@@ -25,6 +24,7 @@ import {
 	RefreshCw,
 	XCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(protected)/dashboard/invoices/$id")({
@@ -42,14 +42,6 @@ const STATUS_VARIANT: Record<
 	paid: "default",
 	cancelled: "destructive",
 	overdue: "destructive",
-};
-
-const STATUS_LABELS: Record<InvoiceStatus, string> = {
-	draft: "Draft",
-	issued: "Issued",
-	paid: "Paid",
-	cancelled: "Cancelled",
-	overdue: "Overdue",
 };
 
 function fmt(cents: number, currency: string) {
@@ -72,33 +64,33 @@ function fmtDate(d: Date | string | null | undefined) {
 
 type NfseStatus = "pending" | "processing" | "issued" | "error" | "cancelled";
 
-const NFSE_STATUS_CONFIG: Record<
+const NFSE_STATUS_ICONS: Record<
 	NfseStatus,
 	{
-		label: string;
 		variant: "default" | "secondary" | "destructive" | "outline";
 		icon: React.ComponentType<{ className?: string }>;
 	}
 > = {
-	pending: { label: "Pending", variant: "secondary", icon: Clock },
-	processing: { label: "Processing", variant: "outline", icon: Loader2 },
-	issued: { label: "Issued", variant: "default", icon: CheckCircle2 },
-	error: { label: "Error", variant: "destructive", icon: AlertCircle },
-	cancelled: { label: "Cancelled", variant: "destructive", icon: XCircle },
+	pending: { variant: "secondary", icon: Clock },
+	processing: { variant: "outline", icon: Loader2 },
+	issued: { variant: "default", icon: CheckCircle2 },
+	error: { variant: "destructive", icon: AlertCircle },
+	cancelled: { variant: "destructive", icon: XCircle },
 };
 
 function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
+	const { t } = useTranslation();
 	const nfseQuery = trpc.nfse.getStatus.useQuery({ invoiceId });
 	const reEmitMutation = trpc.nfse.reEmit.useMutation({
 		onSuccess: () => {
-			toast.success("NFSe re-emission queued");
+			toast.success(t("invoiceDetail.nfse.reEmitQueued", "Re-emission queued"));
 			nfseQuery.refetch();
 		},
 		onError: (e) => toast.error(e.message),
 	});
 	const cancelMutation = trpc.nfse.cancel.useMutation({
 		onSuccess: () => {
-			toast.success("NFSe cancelled");
+			toast.success(t("invoiceDetail.nfse.cancelled", "NFSe cancelled"));
 			nfseQuery.refetch();
 		},
 		onError: (e) => toast.error(e.message),
@@ -108,7 +100,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-base">NFSe</CardTitle>
+					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<Skeleton className="h-6 w-32" />
@@ -123,11 +115,11 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-base">NFSe</CardTitle>
+					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p className="text-muted-foreground text-sm">
-						No NFSe record found for this invoice.
+						{t("invoiceDetail.nfse.noRecord", "No NFSe record found")}
 					</p>
 					<Button
 						size="sm"
@@ -137,7 +129,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						disabled={reEmitMutation.isPending}
 					>
 						<RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-						Request emission
+						{t("invoiceDetail.nfse.requestEmission", "Request emission")}
 					</Button>
 				</CardContent>
 			</Card>
@@ -145,30 +137,35 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 	}
 
 	const status = record.status as NfseStatus;
-	const cfg = NFSE_STATUS_CONFIG[status];
+	const cfg = NFSE_STATUS_ICONS[status];
 	const Icon = cfg.icon;
+	const statusLabel = t(`invoiceDetail.nfse.status.${status}`, status);
 
 	return (
 		<Card>
 			<CardHeader>
 				<div className="flex items-center justify-between">
-					<CardTitle className="text-base">NFSe</CardTitle>
+					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
 					<Badge variant={cfg.variant} className="gap-1">
 						<Icon className="h-3 w-3" />
-						{cfg.label}
+						{statusLabel}
 					</Badge>
 				</div>
 			</CardHeader>
 			<CardContent className="space-y-3">
 				{record.nfseNumber && (
 					<div className="text-sm">
-						<span className="text-muted-foreground">Number: </span>
+						<span className="text-muted-foreground">
+							{t("invoiceDetail.nfse.number", "NFSe number: ")}
+						</span>
 						<span className="font-medium font-mono">{record.nfseNumber}</span>
 					</div>
 				)}
 				{record.nfseVerificationCode && (
 					<div className="text-sm">
-						<span className="text-muted-foreground">Code: </span>
+						<span className="text-muted-foreground">
+							{t("invoiceDetail.nfse.code", "Verification code: ")}
+						</span>
 						<span className="font-mono text-xs">
 							{record.nfseVerificationCode}
 						</span>
@@ -176,7 +173,9 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 				)}
 				{record.emittedAt && (
 					<div className="text-sm">
-						<span className="text-muted-foreground">Issued: </span>
+						<span className="text-muted-foreground">
+							{t("invoiceDetail.nfse.issuedAt", "Issued at: ")}
+						</span>
 						<span>
 							{new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(
 								new Date(record.emittedAt),
@@ -199,7 +198,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						<Button size="sm" variant="outline" asChild>
 							<a href={record.pdfUrl} target="_blank" rel="noreferrer">
 								<ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-								View PDF
+								{t("invoiceDetail.nfse.viewPdf", "View PDF")}
 							</a>
 						</Button>
 					)}
@@ -207,7 +206,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						<Button size="sm" variant="outline" asChild>
 							<a href={record.xmlUrl} target="_blank" rel="noreferrer">
 								<Download className="mr-1.5 h-3.5 w-3.5" />
-								XML
+								{t("invoiceDetail.nfse.xml", "Download XML")}
 							</a>
 						</Button>
 					)}
@@ -219,7 +218,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 							disabled={reEmitMutation.isPending}
 						>
 							<RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-							Re-emit
+							{t("invoiceDetail.nfse.reEmit", "Re-emit")}
 						</Button>
 					)}
 					{status === "issued" && (
@@ -231,7 +230,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 							disabled={cancelMutation.isPending}
 						>
 							<XCircle className="mr-1.5 h-3.5 w-3.5" />
-							Cancel NFSe
+							{t("invoiceDetail.nfse.cancelNfse", "Cancel NFSe")}
 						</Button>
 					)}
 				</div>
@@ -245,6 +244,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 // ---------------------------------------------------------------------------
 
 function InvoiceDetailPage() {
+	const { t } = useTranslation();
 	const { id } = Route.useParams();
 
 	const invoiceQuery = trpc.invoices.getById.useQuery({ id });
@@ -257,13 +257,13 @@ function InvoiceDetailPage() {
 	});
 
 	const resendMutation = trpc.invoices.resendEmail.useMutation({
-		onSuccess: () => toast.success("Email queued for delivery"),
+		onSuccess: () => toast.success(t("invoiceDetail.emailQueued", "Email queued for delivery")),
 		onError: (e) => toast.error(e.message),
 	});
 
 	const issueMutation = trpc.invoices.issue.useMutation({
 		onSuccess: () => {
-			toast.success("Invoice issued");
+			toast.success(t("invoiceDetail.invoiceIssued", "Invoice issued"));
 			invoiceQuery.refetch();
 		},
 		onError: (e) => toast.error(e.message),
@@ -271,20 +271,26 @@ function InvoiceDetailPage() {
 
 	const cancelMutation = trpc.invoices.cancel.useMutation({
 		onSuccess: () => {
-			toast.success("Invoice cancelled");
+			toast.success(t("invoiceDetail.invoiceCancelled", "Invoice cancelled"));
 			invoiceQuery.refetch();
 		},
 		onError: (e) => toast.error(e.message),
 	});
 
+	const statusLabels: Record<InvoiceStatus, string> = {
+		draft: t("invoiceDetail.status.draft", "Draft"),
+		issued: t("invoiceDetail.status.issued", "Issued"),
+		paid: t("invoiceDetail.status.paid", "Paid"),
+		cancelled: t("invoiceDetail.status.cancelled", "Cancelled"),
+		overdue: t("invoiceDetail.status.overdue", "Overdue"),
+	};
+
 	if (invoiceQuery.isPending) {
 		return (
-			<DashboardLayout>
-				<div className="max-w-2xl space-y-4">
-					<Skeleton className="h-6 w-48" />
-					<Skeleton className="h-64 w-full" />
-				</div>
-			</DashboardLayout>
+			<div className="max-w-2xl space-y-4">
+				<Skeleton className="h-6 w-48" />
+				<Skeleton className="h-64 w-full" />
+			</div>
 		);
 	}
 
@@ -292,15 +298,13 @@ function InvoiceDetailPage() {
 
 	if (!invoice) {
 		return (
-			<DashboardLayout>
-				<div className="flex flex-col items-center justify-center py-24 text-center">
-					<Receipt className="mb-3 h-10 w-10 text-muted-foreground/40" />
-					<p className="font-medium">Invoice not found</p>
-					<Button variant="link" asChild>
-						<Link to="/dashboard/invoices">Back to invoices</Link>
-					</Button>
-				</div>
-			</DashboardLayout>
+			<div className="flex flex-col items-center justify-center py-24 text-center">
+				<Receipt className="mb-3 h-10 w-10 text-muted-foreground/40" />
+				<p className="font-medium">{t("invoiceDetail.notFound", "Invoice not found")}</p>
+				<Button variant="link" asChild>
+					<Link to="/dashboard/invoices">{t("invoiceDetail.back", "Back to invoices")}</Link>
+				</Button>
+			</div>
 		);
 	}
 
@@ -308,8 +312,7 @@ function InvoiceDetailPage() {
 	const currency = invoice.currency ?? "BRL";
 
 	return (
-		<DashboardLayout>
-			<div className="max-w-2xl space-y-6">
+		<div className="max-w-2xl space-y-6">
 				{/* Header */}
 				<div className="flex items-start justify-between">
 					<div className="flex items-center gap-3">
@@ -320,15 +323,15 @@ function InvoiceDetailPage() {
 						</Button>
 						<div>
 							<div className="flex items-center gap-2">
-								<h1 className="font-semibold text-xl tracking-tight">
+								<h1 className="font-bold text-xl tracking-tight">
 									Invoice #{invoice.number}
 								</h1>
 								<Badge variant={STATUS_VARIANT[status]}>
-									{STATUS_LABELS[status]}
+									{statusLabels[status]}
 								</Badge>
 							</div>
 							<p className="text-muted-foreground text-sm">
-								Issued {fmtDate(invoice.issuedAt)}
+								{t("invoiceDetail.issued", { date: fmtDate(invoice.issuedAt), defaultValue: "Issued {{date}}" })}
 							</p>
 						</div>
 					</div>
@@ -340,7 +343,7 @@ function InvoiceDetailPage() {
 								onClick={() => issueMutation.mutate({ id: invoice.id })}
 								disabled={issueMutation.isPending}
 							>
-								Issue invoice
+								{t("invoiceDetail.issueInvoice", "Issue invoice")}
 							</Button>
 						)}
 						{(status === "issued" || status === "paid") &&
@@ -352,7 +355,9 @@ function InvoiceDetailPage() {
 									disabled={resendMutation.isPending}
 								>
 									<Mail className="mr-1.5 h-3.5 w-3.5" />
-									{resendMutation.isPending ? "Sending…" : "Resend"}
+									{resendMutation.isPending
+										? t("invoiceDetail.sending", "Sending…")
+										: t("invoiceDetail.resend", "Resend email")}
 								</Button>
 							)}
 						<Button
@@ -362,7 +367,7 @@ function InvoiceDetailPage() {
 							disabled={downloadMutation.isPending}
 						>
 							<Download className="mr-1.5 h-3.5 w-3.5" />
-							Download
+							{t("invoiceDetail.download", "Download PDF")}
 						</Button>
 						{status !== "cancelled" && status !== "paid" && (
 							<Button
@@ -372,7 +377,7 @@ function InvoiceDetailPage() {
 								disabled={cancelMutation.isPending}
 							>
 								<XCircle className="mr-1.5 h-3.5 w-3.5" />
-								Cancel
+								{t("invoiceDetail.cancel", "Cancel invoice")}
 							</Button>
 						)}
 					</div>
@@ -382,7 +387,7 @@ function InvoiceDetailPage() {
 				<Card>
 					<CardHeader>
 						<CardTitle className="font-medium text-muted-foreground text-sm">
-							Bill to
+							{t("invoiceDetail.billTo", "Bill to")}
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
@@ -404,13 +409,17 @@ function InvoiceDetailPage() {
 				<div className="grid grid-cols-2 gap-4">
 					<Card>
 						<CardContent className="pt-4">
-							<p className="text-muted-foreground text-xs">Issue date</p>
+							<p className="text-muted-foreground text-xs">
+								{t("invoiceDetail.issueDate", "Issue date")}
+							</p>
 							<p className="font-medium text-sm">{fmtDate(invoice.issuedAt)}</p>
 						</CardContent>
 					</Card>
 					<Card>
 						<CardContent className="pt-4">
-							<p className="text-muted-foreground text-xs">Due date</p>
+							<p className="text-muted-foreground text-xs">
+								{t("invoiceDetail.dueDate", "Due date")}
+							</p>
 							<p className="font-medium text-sm">{fmtDate(invoice.dueDate)}</p>
 						</CardContent>
 					</Card>
@@ -418,7 +427,7 @@ function InvoiceDetailPage() {
 						<Card className="col-span-2 border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30">
 							<CardContent className="pt-4">
 								<p className="text-green-700 text-xs dark:text-green-400">
-									Paid on
+									{t("invoiceDetail.paidOn", "Paid on")}
 								</p>
 								<p className="font-medium text-green-800 text-sm dark:text-green-300">
 									{fmtDate(invoice.paidAt)}
@@ -431,21 +440,27 @@ function InvoiceDetailPage() {
 				{/* Line items */}
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-base">Items</CardTitle>
+						<CardTitle className="text-base">{t("invoiceDetail.items", "Line items")}</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-0">
 							{/* Header row */}
 							<div className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 pb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
-								<span>Description</span>
-								<span className="text-center">Qty</span>
-								<span className="text-right">Unit</span>
-								<span className="text-right">Total</span>
+								<span>{t("invoiceDetail.itemsHeader.description", "Description")}</span>
+								<span className="text-center">
+									{t("invoiceDetail.itemsHeader.qty", "Qty")}
+								</span>
+								<span className="text-right">
+									{t("invoiceDetail.itemsHeader.unit", "Unit")}
+								</span>
+								<span className="text-right">
+									{t("invoiceDetail.itemsHeader.total", "Total")}
+								</span>
 							</div>
 							<Separator className="mb-2" />
 							{invoice.items.length === 0 ? (
 								<p className="py-4 text-center text-muted-foreground text-sm">
-									No items
+									{t("invoiceDetail.noItems", "No line items")}
 								</p>
 							) : (
 								invoice.items.map((item) => (
@@ -470,18 +485,22 @@ function InvoiceDetailPage() {
 						<div className="mt-4 space-y-1 text-sm">
 							<Separator />
 							<div className="flex justify-between pt-2">
-								<span className="text-muted-foreground">Subtotal</span>
+								<span className="text-muted-foreground">
+									{t("invoiceDetail.subtotal", "Subtotal")}
+								</span>
 								<span>{fmt(invoice.amountSubtotal, currency)}</span>
 							</div>
 							{invoice.amountTax > 0 && (
 								<div className="flex justify-between">
-									<span className="text-muted-foreground">Tax</span>
+									<span className="text-muted-foreground">
+										{t("invoiceDetail.tax", "Tax")}
+									</span>
 									<span>{fmt(invoice.amountTax, currency)}</span>
 								</div>
 							)}
 							<Separator />
 							<div className="flex justify-between pt-1 font-semibold text-base">
-								<span>Total</span>
+								<span>{t("invoiceDetail.total", "Total")}</span>
 								<span>{fmt(invoice.amountTotal, currency)}</span>
 							</div>
 						</div>
@@ -491,7 +510,7 @@ function InvoiceDetailPage() {
 				{invoice.description && (
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Notes</CardTitle>
+							<CardTitle className="text-base">{t("invoiceDetail.notes", "Notes")}</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground text-sm">
@@ -505,7 +524,6 @@ function InvoiceDetailPage() {
 				{(status === "paid" || status === "issued") && (
 					<NfseStatusWidget invoiceId={invoice.id} />
 				)}
-			</div>
-		</DashboardLayout>
+		</div>
 	);
 }

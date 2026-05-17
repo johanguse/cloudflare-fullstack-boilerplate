@@ -10,9 +10,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 	return (
 		<SidebarProvider>
 			<AppSidebar />
-			<SidebarInset>
+			<SidebarInset className="flex h-svh flex-col overflow-hidden bg-background">
 				<AppHeader />
-				<main className="flex-1 overflow-auto p-6">{children}</main>
+				<main className="flex-1 overflow-y-auto p-6 lg:p-8">{children}</main>
 			</SidebarInset>
 		</SidebarProvider>
 	);

@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@client/components/layout/DashboardLayout";
 import { Alert, AlertDescription } from "@client/components/ui/alert";
 import { Button } from "@client/components/ui/button";
 import {
@@ -8,14 +7,16 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
+import { ContentSection } from "@client/components/ui/content-section";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
 import { Separator } from "@client/components/ui/separator";
 import { Skeleton } from "@client/components/ui/skeleton";
 import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute } from "@tanstack/react-router";
-import { Building2, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(protected)/dashboard/settings/company")(
@@ -25,10 +26,11 @@ export const Route = createFileRoute("/(protected)/dashboard/settings/company")(
 );
 
 function CompanySettingsPage() {
+	const { t } = useTranslation();
 	const settingsQuery = trpc.nfse.getSettings.useQuery();
 	const updateMutation = trpc.nfse.updateSettings.useMutation({
 		onSuccess: () => {
-			toast.success("Company settings saved");
+			toast.success(t("company.saved", "Company settings saved"));
 			settingsQuery.refetch();
 		},
 		onError: (e) => toast.error(e.message),
@@ -113,52 +115,41 @@ function CompanySettingsPage() {
 
 	if (settingsQuery.isPending) {
 		return (
-			<DashboardLayout>
-				<div className="max-w-2xl space-y-4">
+			<ContentSection
+				title={t("company.title", "Company")}
+				desc={t("company.subtitle", "Configure your company details for NFSe issuance")}
+			>
+				<div className="space-y-4">
 					<Skeleton className="h-8 w-48" />
 					<Skeleton className="h-96 w-full" />
 				</div>
-			</DashboardLayout>
+			</ContentSection>
 		);
 	}
 
 	return (
-		<DashboardLayout>
-			<div className="max-w-2xl space-y-6">
-				<div className="flex items-center gap-3">
-					<Building2 className="h-6 w-6 text-muted-foreground" />
-					<div>
-						<h1 className="font-semibold text-2xl tracking-tight">
-							Company Settings
-						</h1>
-						<p className="text-muted-foreground text-sm">
-							Fiscal data required for NFSe (Nota Fiscal de Serviço Eletrônica)
-							emission
-						</p>
-					</div>
-				</div>
-
-				<Alert>
+		<ContentSection
+			title={t("company.title", "Company")}
+			desc={t("company.subtitle", "Configure your company details for NFSe issuance")}
+		>
+			<div className="space-y-6">
+			<Alert>
 					<Info className="h-4 w-4" />
-					<AlertDescription>
-						These settings are used to emit NFSe for every paid invoice. Contact
-						your accountant for the correct CNPJ, Inscrição Municipal, and CNAE
-						code.
-					</AlertDescription>
+					<AlertDescription>{t("company.alert", "These details are used to issue service invoices (NFSe). Ensure they match your tax registration exactly.")}</AlertDescription>
 				</Alert>
 
 				<form onSubmit={handleSubmit} className="space-y-6">
 					{/* Fiscal Identity */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Fiscal Identity</CardTitle>
-							<CardDescription>
-								Legal identification of your company as the service provider
-							</CardDescription>
+							<CardTitle className="text-base">
+								{t("company.fiscalIdentity", "Fiscal identity")}
+							</CardTitle>
+							<CardDescription>{t("company.fiscalIdentityDesc", "CNPJ, municipal registration and legal name")}</CardDescription>
 						</CardHeader>
 						<CardContent className="grid grid-cols-2 gap-4">
 							<div className="space-y-1.5">
-								<Label htmlFor="cnpj">CNPJ *</Label>
+								<Label htmlFor="cnpj">{t("company.fields.cnpj", "CNPJ")}</Label>
 								<Input
 									id="cnpj"
 									value={form.cnpj}
@@ -168,7 +159,7 @@ function CompanySettingsPage() {
 							</div>
 							<div className="space-y-1.5">
 								<Label htmlFor="inscricaoMunicipal">
-									Inscrição Municipal *
+									{t("company.fields.inscricaoMunicipal", "Municipal registration")}
 								</Label>
 								<Input
 									id="inscricaoMunicipal"
@@ -180,7 +171,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="col-span-2 space-y-1.5">
-								<Label htmlFor="razaoSocial">Razão Social *</Label>
+								<Label htmlFor="razaoSocial">
+									{t("company.fields.razaoSocial", "Legal name (Razão Social)")}
+								</Label>
 								<Input
 									id="razaoSocial"
 									value={form.razaoSocial}
@@ -189,7 +182,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="col-span-2 space-y-1.5">
-								<Label htmlFor="nomeFantasia">Nome Fantasia</Label>
+								<Label htmlFor="nomeFantasia">
+									{t("company.fields.nomeFantasia", "Trade name (Nome Fantasia)")}
+								</Label>
 								<Input
 									id="nomeFantasia"
 									value={form.nomeFantasia}
@@ -203,14 +198,12 @@ function CompanySettingsPage() {
 					{/* Address */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Address</CardTitle>
-							<CardDescription>
-								Company address as registered with the tax authority
-							</CardDescription>
+							<CardTitle className="text-base">{t("company.address", "Address")}</CardTitle>
+							<CardDescription>{t("company.addressDesc", "Registered business address")}</CardDescription>
 						</CardHeader>
 						<CardContent className="grid grid-cols-2 gap-4">
 							<div className="col-span-2 space-y-1.5">
-								<Label htmlFor="street">Street</Label>
+								<Label htmlFor="street">{t("company.fields.street", "Street")}</Label>
 								<Input
 									id="street"
 									value={form.street}
@@ -219,7 +212,7 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="number">Number</Label>
+								<Label htmlFor="number">{t("company.fields.number", "Number")}</Label>
 								<Input
 									id="number"
 									value={form.number}
@@ -228,7 +221,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="complement">Complement</Label>
+								<Label htmlFor="complement">
+									{t("company.fields.complement", "Complement")}
+								</Label>
 								<Input
 									id="complement"
 									value={form.complement}
@@ -237,7 +232,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="neighborhood">Neighborhood</Label>
+								<Label htmlFor="neighborhood">
+									{t("company.fields.neighborhood", "Neighborhood")}
+								</Label>
 								<Input
 									id="neighborhood"
 									value={form.neighborhood}
@@ -246,7 +243,7 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="zipCode">CEP</Label>
+								<Label htmlFor="zipCode">{t("company.fields.zipCode", "ZIP code")}</Label>
 								<Input
 									id="zipCode"
 									value={form.zipCode}
@@ -255,7 +252,7 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="city">City</Label>
+								<Label htmlFor="city">{t("company.fields.city", "City")}</Label>
 								<Input
 									id="city"
 									value={form.city}
@@ -264,7 +261,7 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="state">State</Label>
+								<Label htmlFor="state">{t("company.fields.state", "State")}</Label>
 								<Input
 									id="state"
 									value={form.state}
@@ -279,16 +276,15 @@ function CompanySettingsPage() {
 					{/* Service Defaults */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Service Defaults</CardTitle>
-							<CardDescription>
-								Default values used when emitting NFSe — can be overridden per
-								invoice
-							</CardDescription>
+							<CardTitle className="text-base">
+								{t("company.serviceDefaults", "Service defaults")}
+							</CardTitle>
+							<CardDescription>{t("company.serviceDefaultsDesc", "Pre-fill NFSe service fields")}</CardDescription>
 						</CardHeader>
 						<CardContent className="grid grid-cols-2 gap-4">
 							<div className="col-span-2 space-y-1.5">
 								<Label htmlFor="serviceDescription">
-									Service Description *
+									{t("company.fields.serviceDescription", "Service description")}
 								</Label>
 								<Input
 									id="serviceDescription"
@@ -300,7 +296,7 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="cnaeCode">CNAE Code *</Label>
+								<Label htmlFor="cnaeCode">{t("company.fields.cnaeCode", "CNAE code")}</Label>
 								<Input
 									id="cnaeCode"
 									value={form.cnaeCode}
@@ -309,7 +305,7 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="issRate">ISS Rate (%)</Label>
+								<Label htmlFor="issRate">{t("company.fields.issRate", "ISS rate (%)")}</Label>
 								<Input
 									id="issRate"
 									type="number"
@@ -325,7 +321,7 @@ function CompanySettingsPage() {
 							<Separator className="col-span-2" />
 
 							<div className="space-y-1.5">
-								<Label htmlFor="cityCode">City IBGE Code *</Label>
+								<Label htmlFor="cityCode">{t("company.fields.cityCode", "City code (IBGE)")}</Label>
 								<Input
 									id="cityCode"
 									type="number"
@@ -335,7 +331,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="municipalityCode">Municipality Code</Label>
+								<Label htmlFor="municipalityCode">
+									{t("company.fields.municipalityCode", "Municipality code")}
+								</Label>
 								<Input
 									id="municipalityCode"
 									value={form.municipalityCode}
@@ -350,11 +348,13 @@ function CompanySettingsPage() {
 
 					<div className="flex justify-end">
 						<Button type="submit" disabled={updateMutation.isPending}>
-							{updateMutation.isPending ? "Saving…" : "Save settings"}
+							{updateMutation.isPending
+								? t("company.saving", "Saving…")
+								: t("company.save", "Save settings")}
 						</Button>
 					</div>
 				</form>
-			</div>
-		</DashboardLayout>
+		</div>
+		</ContentSection>
 	);
 }

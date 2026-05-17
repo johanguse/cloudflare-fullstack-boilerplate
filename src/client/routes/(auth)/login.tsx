@@ -10,10 +10,15 @@ import {
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
 import { Separator } from "@client/components/ui/separator";
+import {
+	type TurnstileRef,
+	TurnstileWidget,
+} from "@client/components/ui/turnstile";
 import { authClient } from "@client/lib/auth-client";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Github, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(auth)/login")({
@@ -21,13 +26,20 @@ export const Route = createFileRoute("/(auth)/login")({
 });
 
 function LoginPage() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileRef>(null);
 
 	const handleEmailLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!turnstileToken) {
+			toast.error(t("auth.login.completeVerification", "Please complete the verification"));
+			return;
+		}
 		setIsLoading(true);
 		const { error } = await authClient.signIn.email({
 			email,
@@ -36,7 +48,9 @@ function LoginPage() {
 		});
 		setIsLoading(false);
 		if (error) {
-			toast.error(error.message ?? "Sign in failed");
+			toast.error(error.message ?? t("auth.login.signInFailed", "Sign in failed"));
+			turnstileRef.current?.reset();
+			setTurnstileToken(null);
 			return;
 		}
 		navigate({ to: "/dashboard" });
@@ -61,17 +75,21 @@ function LoginPage() {
 			<div className="w-full max-w-sm">
 				<div className="mb-8 text-center">
 					<h1 className="font-bold text-2xl text-foreground tracking-tight">
-						Welcome back
+						{t("auth.login.title", "Welcome back")}
 					</h1>
 					<p className="mt-1 text-muted-foreground text-sm">
-						Sign in to your account
+						{t("auth.login.subtitle", "Sign in to your account")}
 					</p>
 				</div>
 
 				<Card>
 					<CardHeader className="pb-4">
-						<CardTitle className="text-base">Sign in</CardTitle>
-						<CardDescription>Enter your credentials below</CardDescription>
+						<CardTitle className="text-base">
+							{t("auth.login.cardTitle", "Sign in")}
+						</CardTitle>
+						<CardDescription>
+							{t("auth.login.cardDescription", "Enter your credentials below")}
+						</CardDescription>
 					</CardHeader>
 
 					<CardContent className="space-y-4">
@@ -117,18 +135,20 @@ function LoginPage() {
 								<Separator />
 							</div>
 							<div className="relative flex justify-center text-xs uppercase">
-								<span className="bg-card px-2 text-muted-foreground">or</span>
+								<span className="bg-card px-2 text-muted-foreground">
+									{t("common.or", "or")}
+								</span>
 							</div>
 						</div>
 
 						{/* Email/Password Form */}
 						<form onSubmit={handleEmailLogin} className="space-y-3">
 							<div className="space-y-1.5">
-								<Label htmlFor="email">Email</Label>
+								<Label htmlFor="email">{t("common.email", "Email")}</Label>
 								<Input
 									id="email"
 									type="email"
-									placeholder="you@example.com"
+									placeholder={t("common.emailPlaceholder", "you@example.com")}
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 									required
@@ -137,12 +157,12 @@ function LoginPage() {
 							</div>
 							<div className="space-y-1.5">
 								<div className="flex items-center justify-between">
-									<Label htmlFor="password">Password</Label>
+									<Label htmlFor="password">{t("common.password", "Password")}</Label>
 									<Link
 										to="/forgot-password"
 										className="text-muted-foreground text-xs hover:text-foreground"
 									>
-										Forgot password?
+										{t("common.forgotPassword", "Forgot password?")}
 									</Link>
 								</div>
 								<Input
@@ -155,21 +175,30 @@ function LoginPage() {
 									autoComplete="current-password"
 								/>
 							</div>
-							<Button type="submit" className="w-full" disabled={isLoading}>
+							<TurnstileWidget
+								ref={turnstileRef}
+								onVerify={setTurnstileToken}
+								onExpire={() => setTurnstileToken(null)}
+							/>
+							<Button
+								type="submit"
+								className="w-full"
+								disabled={isLoading || !turnstileToken}
+							>
 								{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-								Sign in
+								{t("auth.login.cardTitle", "Sign in")}
 							</Button>
 						</form>
 					</CardContent>
 
 					<CardFooter className="justify-center pt-0">
 						<p className="text-muted-foreground text-sm">
-							Don&apos;t have an account?{" "}
+							{t("auth.login.noAccount", "Don't have an account?")}{" "}
 							<Link
 								to="/register"
 								className="font-medium text-foreground hover:underline"
 							>
-								Sign up
+								{t("auth.login.signUp", "Sign up")}
 							</Link>
 						</p>
 					</CardFooter>

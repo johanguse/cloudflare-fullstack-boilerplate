@@ -8,9 +8,14 @@ import {
 } from "@client/components/ui/card";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
+import {
+	type TurnstileRef,
+	TurnstileWidget,
+} from "@client/components/ui/turnstile";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/(auth)/forgot-password")({
@@ -18,12 +23,19 @@ export const Route = createFileRoute("/(auth)/forgot-password")({
 });
 
 function ForgotPasswordPage() {
+	const { t } = useTranslation();
 	const [email, setEmail] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [sent, setSent] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileRef>(null);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!turnstileToken) {
+			toast.error(t("auth.forgotPassword.completeVerification", "Please complete the verification"));
+			return;
+		}
 		setIsLoading(true);
 		try {
 			const response = await fetch("/api/auth/forget-password", {
@@ -39,12 +51,16 @@ function ForgotPasswordPage() {
 				message?: string;
 			};
 			if (!response.ok || result.error) {
-				toast.error(result.message ?? "Failed to send reset email");
+				toast.error(result.message ?? t("auth.forgotPassword.failedToSend", "Failed to send reset email"));
+				turnstileRef.current?.reset();
+				setTurnstileToken(null);
 			} else {
 				setSent(true);
 			}
 		} catch {
-			toast.error("An unexpected error occurred. Please try again.");
+			toast.error(t("auth.forgotPassword.unexpectedError", "An unexpected error occurred. Please try again."));
+			turnstileRef.current?.reset();
+			setTurnstileToken(null);
 		} finally {
 			setIsLoading(false);
 		}
@@ -55,11 +71,11 @@ function ForgotPasswordPage() {
 			<div className="w-full max-w-sm">
 				<Card>
 					<CardHeader>
-						<CardTitle>Reset password</CardTitle>
+						<CardTitle>{t("auth.forgotPassword.title", "Reset password")}</CardTitle>
 						<CardDescription>
 							{sent
-								? "Check your email for a reset link"
-								: "Enter your email and we'll send you a reset link"}
+								? t("auth.forgotPassword.subtitleSent", "Check your email for a reset link")
+								: t("auth.forgotPassword.subtitleSend", "Enter your email and we'll send you a reset link")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -68,11 +84,11 @@ function ForgotPasswordPage() {
 								<div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-center">
 									<Mail className="h-8 w-8 text-primary" />
 									<p className="text-foreground text-sm">
-										We sent a reset link to <strong>{email}</strong>
+										{t("auth.forgotPassword.sentMessage", "We sent a reset link to")}{" "}
+										<strong>{email}</strong>
 									</p>
 									<p className="text-muted-foreground text-xs">
-										The link expires in 1 hour. Check your spam folder if you
-										don't see it.
+										{t("auth.forgotPassword.expiryNote", "The link expires in 1 hour. Check your spam folder if you don't see it.")}
 									</p>
 								</div>
 								<Button
@@ -83,28 +99,37 @@ function ForgotPasswordPage() {
 										setEmail("");
 									}}
 								>
-									Send another email
+									{t("auth.forgotPassword.sendAnother", "Send another email")}
 								</Button>
 							</div>
 						) : (
 							<form onSubmit={handleSubmit} className="space-y-3">
 								<div className="space-y-1.5">
-									<Label htmlFor="email">Email</Label>
+									<Label htmlFor="email">{t("common.email", "Email")}</Label>
 									<Input
 										id="email"
 										type="email"
-										placeholder="you@example.com"
+										placeholder={t("common.emailPlaceholder", "you@example.com")}
 										value={email}
 										onChange={(e) => setEmail(e.target.value)}
 										required
 										autoComplete="email"
 									/>
 								</div>
-								<Button type="submit" className="w-full" disabled={isLoading}>
+								<TurnstileWidget
+									ref={turnstileRef}
+									onVerify={setTurnstileToken}
+									onExpire={() => setTurnstileToken(null)}
+								/>
+								<Button
+									type="submit"
+									className="w-full"
+									disabled={isLoading || !turnstileToken}
+								>
 									{isLoading && (
 										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 									)}
-									Send reset link
+									{t("auth.forgotPassword.sendLink", "Send reset link")}
 								</Button>
 							</form>
 						)}
@@ -113,7 +138,7 @@ function ForgotPasswordPage() {
 							className="flex items-center justify-center gap-1 text-muted-foreground text-sm hover:text-foreground"
 						>
 							<ArrowLeft className="h-3.5 w-3.5" />
-							Back to sign in
+							{t("auth.forgotPassword.back", "Back to sign in")}
 						</Link>
 					</CardContent>
 				</Card>

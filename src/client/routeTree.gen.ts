@@ -18,11 +18,15 @@ import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-pas
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
 import { Route as protectedDashboardSettingsRouteImport } from './routes/(protected)/dashboard/settings'
 import { Route as protectedDashboardProfileRouteImport } from './routes/(protected)/dashboard/profile'
 import { Route as protectedDashboardInvoicesRouteImport } from './routes/(protected)/dashboard/invoices'
 import { Route as protectedDashboardBillingRouteImport } from './routes/(protected)/dashboard/billing'
 import { Route as protectedDashboardApiKeysRouteImport } from './routes/(protected)/dashboard/api-keys'
+import { Route as protectedDashboardSettingsIndexRouteImport } from './routes/(protected)/dashboard/settings/index'
+import { Route as protectedDashboardInvoicesIndexRouteImport } from './routes/(protected)/dashboard/invoices/index'
+import { Route as protectedDashboardBillingIndexRouteImport } from './routes/(protected)/dashboard/billing/index'
 import { Route as protectedDashboardSettingsNotificationsRouteImport } from './routes/(protected)/dashboard/settings/notifications'
 import { Route as protectedDashboardSettingsCompanyRouteImport } from './routes/(protected)/dashboard/settings/company'
 import { Route as protectedDashboardInvoicesIdRouteImport } from './routes/(protected)/dashboard/invoices/$id'
@@ -72,6 +76,11 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => authRouteRoute,
 } as any)
+const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => protectedDashboardRoute,
+} as any)
 const protectedDashboardSettingsRoute =
   protectedDashboardSettingsRouteImport.update({
     id: '/settings',
@@ -101,6 +110,24 @@ const protectedDashboardApiKeysRoute =
     id: '/api-keys',
     path: '/api-keys',
     getParentRoute: () => protectedDashboardRoute,
+  } as any)
+const protectedDashboardSettingsIndexRoute =
+  protectedDashboardSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => protectedDashboardSettingsRoute,
+  } as any)
+const protectedDashboardInvoicesIndexRoute =
+  protectedDashboardInvoicesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => protectedDashboardInvoicesRoute,
+  } as any)
+const protectedDashboardBillingIndexRoute =
+  protectedDashboardBillingIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => protectedDashboardBillingRoute,
   } as any)
 const protectedDashboardSettingsNotificationsRoute =
   protectedDashboardSettingsNotificationsRouteImport.update({
@@ -146,11 +173,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
   '/dashboard/profile': typeof protectedDashboardProfileRoute
   '/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
+  '/dashboard/': typeof protectedDashboardIndexRoute
   '/dashboard/billing/history': typeof protectedDashboardBillingHistoryRoute
   '/dashboard/billing/upgrade': typeof protectedDashboardBillingUpgradeRoute
   '/dashboard/invoices/$id': typeof protectedDashboardInvoicesIdRoute
   '/dashboard/settings/company': typeof protectedDashboardSettingsCompanyRoute
   '/dashboard/settings/notifications': typeof protectedDashboardSettingsNotificationsRoute
+  '/dashboard/billing/': typeof protectedDashboardBillingIndexRoute
+  '/dashboard/invoices/': typeof protectedDashboardInvoicesIndexRoute
+  '/dashboard/settings/': typeof protectedDashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,17 +190,17 @@ export interface FileRoutesByTo {
   '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/dashboard': typeof protectedDashboardRouteWithChildren
   '/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
-  '/dashboard/billing': typeof protectedDashboardBillingRouteWithChildren
-  '/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
   '/dashboard/profile': typeof protectedDashboardProfileRoute
-  '/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
+  '/dashboard': typeof protectedDashboardIndexRoute
   '/dashboard/billing/history': typeof protectedDashboardBillingHistoryRoute
   '/dashboard/billing/upgrade': typeof protectedDashboardBillingUpgradeRoute
   '/dashboard/invoices/$id': typeof protectedDashboardInvoicesIdRoute
   '/dashboard/settings/company': typeof protectedDashboardSettingsCompanyRoute
   '/dashboard/settings/notifications': typeof protectedDashboardSettingsNotificationsRoute
+  '/dashboard/billing': typeof protectedDashboardBillingIndexRoute
+  '/dashboard/invoices': typeof protectedDashboardInvoicesIndexRoute
+  '/dashboard/settings': typeof protectedDashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -187,11 +218,15 @@ export interface FileRoutesById {
   '/(protected)/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
   '/(protected)/dashboard/profile': typeof protectedDashboardProfileRoute
   '/(protected)/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
+  '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
   '/(protected)/dashboard/billing/history': typeof protectedDashboardBillingHistoryRoute
   '/(protected)/dashboard/billing/upgrade': typeof protectedDashboardBillingUpgradeRoute
   '/(protected)/dashboard/invoices/$id': typeof protectedDashboardInvoicesIdRoute
   '/(protected)/dashboard/settings/company': typeof protectedDashboardSettingsCompanyRoute
   '/(protected)/dashboard/settings/notifications': typeof protectedDashboardSettingsNotificationsRoute
+  '/(protected)/dashboard/billing/': typeof protectedDashboardBillingIndexRoute
+  '/(protected)/dashboard/invoices/': typeof protectedDashboardInvoicesIndexRoute
+  '/(protected)/dashboard/settings/': typeof protectedDashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -208,11 +243,15 @@ export interface FileRouteTypes {
     | '/dashboard/invoices'
     | '/dashboard/profile'
     | '/dashboard/settings'
+    | '/dashboard/'
     | '/dashboard/billing/history'
     | '/dashboard/billing/upgrade'
     | '/dashboard/invoices/$id'
     | '/dashboard/settings/company'
     | '/dashboard/settings/notifications'
+    | '/dashboard/billing/'
+    | '/dashboard/invoices/'
+    | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -221,17 +260,17 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
-    | '/dashboard'
     | '/dashboard/api-keys'
-    | '/dashboard/billing'
-    | '/dashboard/invoices'
     | '/dashboard/profile'
-    | '/dashboard/settings'
+    | '/dashboard'
     | '/dashboard/billing/history'
     | '/dashboard/billing/upgrade'
     | '/dashboard/invoices/$id'
     | '/dashboard/settings/company'
     | '/dashboard/settings/notifications'
+    | '/dashboard/billing'
+    | '/dashboard/invoices'
+    | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
@@ -248,11 +287,15 @@ export interface FileRouteTypes {
     | '/(protected)/dashboard/invoices'
     | '/(protected)/dashboard/profile'
     | '/(protected)/dashboard/settings'
+    | '/(protected)/dashboard/'
     | '/(protected)/dashboard/billing/history'
     | '/(protected)/dashboard/billing/upgrade'
     | '/(protected)/dashboard/invoices/$id'
     | '/(protected)/dashboard/settings/company'
     | '/(protected)/dashboard/settings/notifications'
+    | '/(protected)/dashboard/billing/'
+    | '/(protected)/dashboard/invoices/'
+    | '/(protected)/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -326,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof authRouteRoute
     }
+    '/(protected)/dashboard/': {
+      id: '/(protected)/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof protectedDashboardIndexRouteImport
+      parentRoute: typeof protectedDashboardRoute
+    }
     '/(protected)/dashboard/settings': {
       id: '/(protected)/dashboard/settings'
       path: '/settings'
@@ -360,6 +410,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/api-keys'
       preLoaderRoute: typeof protectedDashboardApiKeysRouteImport
       parentRoute: typeof protectedDashboardRoute
+    }
+    '/(protected)/dashboard/settings/': {
+      id: '/(protected)/dashboard/settings/'
+      path: '/'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof protectedDashboardSettingsIndexRouteImport
+      parentRoute: typeof protectedDashboardSettingsRoute
+    }
+    '/(protected)/dashboard/invoices/': {
+      id: '/(protected)/dashboard/invoices/'
+      path: '/'
+      fullPath: '/dashboard/invoices/'
+      preLoaderRoute: typeof protectedDashboardInvoicesIndexRouteImport
+      parentRoute: typeof protectedDashboardInvoicesRoute
+    }
+    '/(protected)/dashboard/billing/': {
+      id: '/(protected)/dashboard/billing/'
+      path: '/'
+      fullPath: '/dashboard/billing/'
+      preLoaderRoute: typeof protectedDashboardBillingIndexRouteImport
+      parentRoute: typeof protectedDashboardBillingRoute
     }
     '/(protected)/dashboard/settings/notifications': {
       id: '/(protected)/dashboard/settings/notifications'
@@ -422,6 +493,7 @@ const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
 interface protectedDashboardBillingRouteChildren {
   protectedDashboardBillingHistoryRoute: typeof protectedDashboardBillingHistoryRoute
   protectedDashboardBillingUpgradeRoute: typeof protectedDashboardBillingUpgradeRoute
+  protectedDashboardBillingIndexRoute: typeof protectedDashboardBillingIndexRoute
 }
 
 const protectedDashboardBillingRouteChildren: protectedDashboardBillingRouteChildren =
@@ -430,6 +502,7 @@ const protectedDashboardBillingRouteChildren: protectedDashboardBillingRouteChil
       protectedDashboardBillingHistoryRoute,
     protectedDashboardBillingUpgradeRoute:
       protectedDashboardBillingUpgradeRoute,
+    protectedDashboardBillingIndexRoute: protectedDashboardBillingIndexRoute,
   }
 
 const protectedDashboardBillingRouteWithChildren =
@@ -439,11 +512,13 @@ const protectedDashboardBillingRouteWithChildren =
 
 interface protectedDashboardInvoicesRouteChildren {
   protectedDashboardInvoicesIdRoute: typeof protectedDashboardInvoicesIdRoute
+  protectedDashboardInvoicesIndexRoute: typeof protectedDashboardInvoicesIndexRoute
 }
 
 const protectedDashboardInvoicesRouteChildren: protectedDashboardInvoicesRouteChildren =
   {
     protectedDashboardInvoicesIdRoute: protectedDashboardInvoicesIdRoute,
+    protectedDashboardInvoicesIndexRoute: protectedDashboardInvoicesIndexRoute,
   }
 
 const protectedDashboardInvoicesRouteWithChildren =
@@ -454,6 +529,7 @@ const protectedDashboardInvoicesRouteWithChildren =
 interface protectedDashboardSettingsRouteChildren {
   protectedDashboardSettingsCompanyRoute: typeof protectedDashboardSettingsCompanyRoute
   protectedDashboardSettingsNotificationsRoute: typeof protectedDashboardSettingsNotificationsRoute
+  protectedDashboardSettingsIndexRoute: typeof protectedDashboardSettingsIndexRoute
 }
 
 const protectedDashboardSettingsRouteChildren: protectedDashboardSettingsRouteChildren =
@@ -462,6 +538,7 @@ const protectedDashboardSettingsRouteChildren: protectedDashboardSettingsRouteCh
       protectedDashboardSettingsCompanyRoute,
     protectedDashboardSettingsNotificationsRoute:
       protectedDashboardSettingsNotificationsRoute,
+    protectedDashboardSettingsIndexRoute: protectedDashboardSettingsIndexRoute,
   }
 
 const protectedDashboardSettingsRouteWithChildren =
@@ -475,6 +552,7 @@ interface protectedDashboardRouteChildren {
   protectedDashboardInvoicesRoute: typeof protectedDashboardInvoicesRouteWithChildren
   protectedDashboardProfileRoute: typeof protectedDashboardProfileRoute
   protectedDashboardSettingsRoute: typeof protectedDashboardSettingsRouteWithChildren
+  protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
 }
 
 const protectedDashboardRouteChildren: protectedDashboardRouteChildren = {
@@ -483,6 +561,7 @@ const protectedDashboardRouteChildren: protectedDashboardRouteChildren = {
   protectedDashboardInvoicesRoute: protectedDashboardInvoicesRouteWithChildren,
   protectedDashboardProfileRoute: protectedDashboardProfileRoute,
   protectedDashboardSettingsRoute: protectedDashboardSettingsRouteWithChildren,
+  protectedDashboardIndexRoute: protectedDashboardIndexRoute,
 }
 
 const protectedDashboardRouteWithChildren =

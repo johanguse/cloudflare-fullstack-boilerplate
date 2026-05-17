@@ -8,9 +8,14 @@ import {
 } from "@client/components/ui/card";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
+import {
+	type TurnstileRef,
+	TurnstileWidget,
+} from "@client/components/ui/turnstile";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -25,25 +30,32 @@ export const Route = createFileRoute("/(auth)/reset-password")({
 });
 
 function ResetPasswordPage() {
+	const { t } = useTranslation();
 	const { token, error: searchError } = Route.useSearch();
 	const navigate = useNavigate();
 	const [password, setPassword] = useState("");
 	const [confirm, setConfirm] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileRef>(null);
 
 	if (searchError ?? !token) {
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-background px-4">
 				<Card className="w-full max-w-sm">
 					<CardHeader>
-						<CardTitle>Invalid link</CardTitle>
+						<CardTitle>
+							{t("auth.resetPassword.invalidTitle", "Invalid link")}
+						</CardTitle>
 						<CardDescription>
-							This reset link is invalid or has expired.
+							{t("auth.resetPassword.invalidDescription", "This reset link is invalid or has expired.")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Link to="/forgot-password">
-							<Button className="w-full">Request a new link</Button>
+							<Button className="w-full">
+								{t("auth.resetPassword.requestNew", "Request a new link")}
+							</Button>
 						</Link>
 					</CardContent>
 				</Card>
@@ -54,11 +66,15 @@ function ResetPasswordPage() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (password !== confirm) {
-			toast.error("Passwords do not match");
+			toast.error(t("auth.resetPassword.passwordsNoMatch", "Passwords do not match"));
 			return;
 		}
 		if (password.length < 8) {
-			toast.error("Password must be at least 8 characters");
+			toast.error(t("auth.resetPassword.passwordTooShort", "Password must be at least 8 characters"));
+			return;
+		}
+		if (!turnstileToken) {
+			toast.error(t("auth.resetPassword.completeVerification", "Please complete the verification"));
 			return;
 		}
 		setIsLoading(true);
@@ -73,13 +89,17 @@ function ResetPasswordPage() {
 				message?: string;
 			};
 			if (!response.ok || result.error) {
-				toast.error(result.message ?? "Failed to reset password");
+				toast.error(result.message ?? t("auth.resetPassword.failedToReset", "Failed to reset password"));
+				turnstileRef.current?.reset();
+				setTurnstileToken(null);
 			} else {
-				toast.success("Password updated! You can now sign in.");
+				toast.success(t("auth.resetPassword.success", "Password updated! You can now sign in."));
 				navigate({ to: "/login" });
 			}
 		} catch {
-			toast.error("An unexpected error occurred. Please try again.");
+			toast.error(t("auth.resetPassword.unexpectedError", "An unexpected error occurred. Please try again."));
+			turnstileRef.current?.reset();
+			setTurnstileToken(null);
 		} finally {
 			setIsLoading(false);
 		}
@@ -90,19 +110,23 @@ function ResetPasswordPage() {
 			<div className="w-full max-w-sm">
 				<Card>
 					<CardHeader>
-						<CardTitle>Set new password</CardTitle>
+						<CardTitle>
+							{t("auth.resetPassword.title", "Set new password")}
+						</CardTitle>
 						<CardDescription>
-							Choose a strong password for your account
+							{t("auth.resetPassword.description", "Choose a strong password for your account")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<form onSubmit={handleSubmit} className="space-y-3">
 							<div className="space-y-1.5">
-								<Label htmlFor="password">New password</Label>
+								<Label htmlFor="password">
+									{t("auth.resetPassword.newPassword", "New password")}
+								</Label>
 								<Input
 									id="password"
 									type="password"
-									placeholder="Min. 8 characters"
+									placeholder={t("auth.register.passwordPlaceholder", "Min. 8 characters")}
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 									required
@@ -111,11 +135,13 @@ function ResetPasswordPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="confirm">Confirm password</Label>
+								<Label htmlFor="confirm">
+									{t("auth.resetPassword.confirmPassword", "Confirm password")}
+								</Label>
 								<Input
 									id="confirm"
 									type="password"
-									placeholder="Repeat password"
+									placeholder={t("auth.resetPassword.repeatPassword", "Repeat password")}
 									value={confirm}
 									onChange={(e) => setConfirm(e.target.value)}
 									required
@@ -123,19 +149,26 @@ function ResetPasswordPage() {
 								/>
 								{confirm && password !== confirm && (
 									<p className="text-destructive text-xs">
-										Passwords do not match
+										{t("auth.resetPassword.passwordsNoMatch", "Passwords do not match")}
 									</p>
 								)}
 							</div>
+							<TurnstileWidget
+								ref={turnstileRef}
+								onVerify={setTurnstileToken}
+								onExpire={() => setTurnstileToken(null)}
+							/>
 							<Button
 								type="submit"
 								className="w-full"
 								disabled={
-									isLoading || (confirm.length > 0 && password !== confirm)
+									isLoading ||
+									!turnstileToken ||
+									(confirm.length > 0 && password !== confirm)
 								}
 							>
 								{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-								Reset password
+								{t("auth.resetPassword.reset", "Reset password")}
 							</Button>
 						</form>
 					</CardContent>

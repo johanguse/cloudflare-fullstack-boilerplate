@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # dev-all-wsl.sh — Start all dev services concurrently (WSL / Linux)
 # Usage: bun dev:all:wsl
+#
+# `bun dev` (Vite + @cloudflare/vite-plugin) runs both the React client (HMR)
+# and the Cloudflare Worker inline at http://localhost:5173.
+# No separate wrangler process is needed.
 
 set -euo pipefail
 
@@ -29,33 +33,24 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# 1. Wrangler Workers dev server
-echo -e "${BLUE}[1/3]${NC} Starting Wrangler Workers (localhost:8787)..."
-bun cf:dev &
-WRANGLER_PID=$!
-
-# Wait for Wrangler to be ready
-sleep 3
-
-# 2. Vite frontend dev server
-echo -e "${BLUE}[2/3]${NC} Starting Vite frontend (localhost:5173)..."
+# 1. Vite dev server (client HMR + worker via @cloudflare/vite-plugin)
+echo -e "${BLUE}[1/2]${NC} Starting Vite + Worker (localhost:5173)..."
 bun dev &
 VITE_PID=$!
 
-# 3. Trigger.dev dev server (background jobs)
+# 2. Trigger.dev dev server (background jobs)
 if [ -n "${TRIGGER_API_KEY:-}" ]; then
-  echo -e "${BLUE}[3/3]${NC} Starting Trigger.dev dev server..."
+  echo -e "${BLUE}[2/2]${NC} Starting Trigger.dev dev server..."
   bun trigger:dev &
   TRIGGER_PID=$!
 else
-  echo -e "${YELLOW}[3/3]${NC} Skipping Trigger.dev (TRIGGER_API_KEY not set in .dev.vars)"
+  echo -e "${YELLOW}[2/2]${NC} Skipping Trigger.dev (TRIGGER_API_KEY not set in .dev.vars)"
 fi
 
 echo ""
 echo -e "${GREEN}All services started!${NC}"
-echo -e "  ${CYAN}Frontend:${NC}  http://localhost:5173"
-echo -e "  ${CYAN}API:${NC}       http://localhost:8787"
-echo -e "  ${CYAN}Health:${NC}    http://localhost:8787/api/v1/health"
+echo -e "  ${CYAN}App:${NC}       http://localhost:5173"
+echo -e "  ${CYAN}Health:${NC}    http://localhost:5173/api/v1/health"
 echo ""
 echo "Press Ctrl+C to stop all services."
 echo ""
