@@ -14,7 +14,7 @@ import {
 } from "@client/components/ui/turnstile";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -25,45 +25,44 @@ export const Route = createFileRoute("/(auth)/forgot-password")({
 function ForgotPasswordPage() {
 	const { t } = useTranslation();
 	const [email, setEmail] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
 	const [sent, setSent] = useState(false);
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!turnstileToken) {
 			toast.error(t("auth.forgotPassword.completeVerification", "Please complete the verification"));
 			return;
 		}
-		setIsLoading(true);
-		try {
-			const response = await fetch("/api/auth/forget-password", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					email,
-					redirectTo: `${window.location.origin}/reset-password`,
-				}),
-			});
-			const result = (await response.json()) as {
-				error?: boolean;
-				message?: string;
-			};
-			if (!response.ok || result.error) {
-				toast.error(result.message ?? t("auth.forgotPassword.failedToSend", "Failed to send reset email"));
+		startTransition(async () => {
+			try {
+				const response = await fetch("/api/auth/forget-password", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						email,
+						redirectTo: `${window.location.origin}/reset-password`,
+					}),
+				});
+				const result = (await response.json()) as {
+					error?: boolean;
+					message?: string;
+				};
+				if (!response.ok || result.error) {
+					toast.error(result.message ?? t("auth.forgotPassword.failedToSend", "Failed to send reset email"));
+					turnstileRef.current?.reset();
+					setTurnstileToken(null);
+				} else {
+					setSent(true);
+				}
+			} catch {
+				toast.error(t("auth.forgotPassword.unexpectedError", "An unexpected error occurred. Please try again."));
 				turnstileRef.current?.reset();
 				setTurnstileToken(null);
-			} else {
-				setSent(true);
 			}
-		} catch {
-			toast.error(t("auth.forgotPassword.unexpectedError", "An unexpected error occurred. Please try again."));
-			turnstileRef.current?.reset();
-			setTurnstileToken(null);
-		} finally {
-			setIsLoading(false);
-		}
+		});
 	};
 
 	return (
@@ -82,7 +81,7 @@ function ForgotPasswordPage() {
 						{sent ? (
 							<div className="space-y-4">
 								<div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-center">
-									<Mail className="h-8 w-8 text-primary" />
+									<Mail className="size-8 text-primary" />
 									<p className="text-foreground text-sm">
 										{t("auth.forgotPassword.sentMessage", "We sent a reset link to")}{" "}
 										<strong>{email}</strong>
@@ -124,10 +123,10 @@ function ForgotPasswordPage() {
 								<Button
 									type="submit"
 									className="w-full"
-									disabled={isLoading || !turnstileToken}
+									disabled={isPending || !turnstileToken}
 								>
-									{isLoading && (
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									{isPending && (
+										<Loader2 className="mr-2 size-4 animate-spin" />
 									)}
 									{t("auth.forgotPassword.sendLink", "Send reset link")}
 								</Button>
@@ -137,7 +136,7 @@ function ForgotPasswordPage() {
 							to="/login"
 							className="flex items-center justify-center gap-1 text-muted-foreground text-sm hover:text-foreground"
 						>
-							<ArrowLeft className="h-3.5 w-3.5" />
+							<ArrowLeft className="size-3.5" />
 							{t("auth.forgotPassword.back", "Back to sign in")}
 						</Link>
 					</CardContent>

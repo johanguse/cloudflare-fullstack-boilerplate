@@ -58,7 +58,7 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
 
 	return (
 		<div className="space-y-0.5">
-			<h1 className="font-bold text-2xl tracking-tight">
+			<h1 className="font-semibold text-2xl tracking-tight">
 				{t("settings.title", "Settings")}
 			</h1>
 			<p className="text-muted-foreground text-sm">

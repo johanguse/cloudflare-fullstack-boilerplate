@@ -8,13 +8,14 @@ import { getBalance } from "../../services/credits";
 
 export const billingRouter = router({
 	getSubscription: protectedProcedure.query(async ({ ctx }) => {
-		const sub = await ctx.db
-			.select()
-			.from(billingSchema.subscriptions)
-			.where(eq(billingSchema.subscriptions.userId, ctx.session.userId))
-			.get();
-
-		const balance = await getBalance(ctx.db, ctx.session.userId);
+		const [sub, balance] = await Promise.all([
+			ctx.db
+				.select()
+				.from(billingSchema.subscriptions)
+				.where(eq(billingSchema.subscriptions.userId, ctx.session.userId))
+				.get(),
+			getBalance(ctx.db, ctx.session.userId),
+		]);
 
 		return {
 			plan: sub?.plan ?? "free",

@@ -14,7 +14,7 @@ import {
 } from "@client/components/ui/turnstile";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -35,8 +35,8 @@ function ResetPasswordPage() {
 	const navigate = useNavigate();
 	const [password, setPassword] = useState("");
 	const [confirm, setConfirm] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
 
 	if (searchError ?? !token) {
@@ -63,7 +63,7 @@ function ResetPasswordPage() {
 		);
 	}
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (password !== confirm) {
 			toast.error(t("auth.resetPassword.passwordsNoMatch", "Passwords do not match"));
@@ -77,32 +77,31 @@ function ResetPasswordPage() {
 			toast.error(t("auth.resetPassword.completeVerification", "Please complete the verification"));
 			return;
 		}
-		setIsLoading(true);
-		try {
-			const response = await fetch("/api/auth/reset-password", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ newPassword: password, token }),
-			});
-			const result = (await response.json()) as {
-				error?: boolean;
-				message?: string;
-			};
-			if (!response.ok || result.error) {
-				toast.error(result.message ?? t("auth.resetPassword.failedToReset", "Failed to reset password"));
+		startTransition(async () => {
+			try {
+				const response = await fetch("/api/auth/reset-password", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ newPassword: password, token }),
+				});
+				const result = (await response.json()) as {
+					error?: boolean;
+					message?: string;
+				};
+				if (!response.ok || result.error) {
+					toast.error(result.message ?? t("auth.resetPassword.failedToReset", "Failed to reset password"));
+					turnstileRef.current?.reset();
+					setTurnstileToken(null);
+				} else {
+					toast.success(t("auth.resetPassword.success", "Password updated! You can now sign in."));
+					navigate({ to: "/login" });
+				}
+			} catch {
+				toast.error(t("auth.resetPassword.unexpectedError", "An unexpected error occurred. Please try again."));
 				turnstileRef.current?.reset();
 				setTurnstileToken(null);
-			} else {
-				toast.success(t("auth.resetPassword.success", "Password updated! You can now sign in."));
-				navigate({ to: "/login" });
 			}
-		} catch {
-			toast.error(t("auth.resetPassword.unexpectedError", "An unexpected error occurred. Please try again."));
-			turnstileRef.current?.reset();
-			setTurnstileToken(null);
-		} finally {
-			setIsLoading(false);
-		}
+		});
 	};
 
 	return (
@@ -162,12 +161,12 @@ function ResetPasswordPage() {
 								type="submit"
 								className="w-full"
 								disabled={
-									isLoading ||
+									isPending ||
 									!turnstileToken ||
 									(confirm.length > 0 && password !== confirm)
 								}
 							>
-								{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+								{isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
 								{t("auth.resetPassword.reset", "Reset password")}
 							</Button>
 						</form>

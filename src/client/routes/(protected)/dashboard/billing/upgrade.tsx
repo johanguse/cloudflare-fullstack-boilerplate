@@ -91,7 +91,7 @@ function UpgradePage() {
 	return (
 		<div className="space-y-6">
 				<div>
-					<h1 className="font-bold text-2xl tracking-tight">
+					<h1 className="font-semibold text-2xl tracking-tight">
 						{t("upgrade.title", "Upgrade your plan")}
 					</h1>
 					<p className="text-muted-foreground text-sm">
@@ -113,7 +113,7 @@ function UpgradePage() {
 								{plan.popular && (
 									<div className="-top-3 -translate-x-1/2 absolute left-1/2">
 										<Badge className="gap-1">
-											<Zap className="h-3 w-3" />
+											<Zap className="size-3" />
 											{t("upgrade.mostPopular", "Most popular")}
 										</Badge>
 									</div>
@@ -132,7 +132,7 @@ function UpgradePage() {
 								<CardContent className="flex-1 space-y-2 pb-4">
 									{plan.features.map((f) => (
 										<div key={f} className="flex items-center gap-2 text-sm">
-											<Check className="h-3.5 w-3.5 shrink-0 text-green-500" />
+											<Check className="size-3.5 shrink-0 text-green-500" />
 											{f}
 										</div>
 									))}
@@ -150,7 +150,7 @@ function UpgradePage() {
 											onClick={() => handleUpgrade(plan.stripePriceId)}
 										>
 											{checkoutMutation.isPending && (
-												<Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+												<Loader2 className="mr-2 size-3.5 animate-spin" />
 											)}
 											{isDowngrade
 												? t("upgrade.downgrade", "Downgrade via portal")

@@ -59,18 +59,21 @@ const STATUS_VARIANT: Record<
 
 const PAGE_SIZE = 20;
 
+const _numFmtCache = new Map<string, Intl.NumberFormat>();
 function fmt(cents: number, currency: string) {
-	return new Intl.NumberFormat("pt-BR", {
-		style: "currency",
-		currency: currency || "BRL",
-	}).format(cents / 100);
+	const key = currency || "BRL";
+	let f = _numFmtCache.get(key);
+	if (!f) {
+		f = new Intl.NumberFormat("pt-BR", { style: "currency", currency: key });
+		_numFmtCache.set(key, f);
+	}
+	return f.format(cents / 100);
 }
 
+const _mediumDateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
 function fmtDate(d: Date | string | null | undefined) {
 	if (!d) return "—";
-	return new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(
-		new Date(d),
-	);
+	return _mediumDateFmt.format(new Date(d));
 }
 
 // ---------------------------------------------------------------------------
@@ -78,6 +81,7 @@ function fmtDate(d: Date | string | null | undefined) {
 // ---------------------------------------------------------------------------
 
 interface NewItemRow {
+	id: string;
 	description: string;
 	quantity: number;
 	unitAmount: string;
@@ -99,7 +103,7 @@ function CreateInvoiceDialog({
 	const [description, setDescription] = useState("");
 	const [dueDate, setDueDate] = useState("");
 	const [items, setItems] = useState<NewItemRow[]>([
-		{ description: "", quantity: 1, unitAmount: "" },
+		{ id: crypto.randomUUID(), description: "", quantity: 1, unitAmount: "" },
 	]);
 
 	const createMutation = trpc.invoices.create.useMutation({
@@ -137,7 +141,7 @@ function CreateInvoiceDialog({
 	function addItem() {
 		setItems((prev) => [
 			...prev,
-			{ description: "", quantity: 1, unitAmount: "" },
+			{ id: crypto.randomUUID(), description: "", quantity: 1, unitAmount: "" },
 		]);
 	}
 
@@ -219,13 +223,13 @@ function CreateInvoiceDialog({
 						<div className="flex items-center justify-between">
 							<Label>{t("invoices.create.items", "Line items")}</Label>
 							<Button type="button" variant="ghost" size="sm" onClick={addItem}>
-								<Plus className="mr-1 h-3.5 w-3.5" />
+								<Plus className="mr-1 size-3.5" />
 								{t("invoices.create.addItem", "Add item")}
 							</Button>
 						</div>
 						<div className="space-y-2">
 							{items.map((item, idx) => (
-								<div key={idx} className="flex gap-2">
+								<div key={item.id} className="flex gap-2">
 									<Input
 										className="flex-1"
 										placeholder={t("invoices.create.descriptionPlaceholder", "Service description")}
@@ -340,7 +344,7 @@ function InvoicesPage() {
 		<div className="space-y-6">
 			<div className="flex items-start justify-between">
 				<div>
-					<h1 className="font-bold text-2xl tracking-tight">
+					<h1 className="font-semibold text-2xl tracking-tight">
 						{t("invoices.title", "Invoices")}
 					</h1>
 					<p className="text-muted-foreground text-sm">
@@ -349,11 +353,11 @@ function InvoicesPage() {
 				</div>
 				<div className="flex gap-2">
 					<Button variant="outline" size="sm" onClick={handleExportCsv}>
-						<Download className="mr-1.5 h-3.5 w-3.5" />
+						<Download className="mr-1.5 size-3.5" />
 						{t("invoices.exportCsv", "Export CSV")}
 					</Button>
 					<Button size="sm" onClick={() => setShowCreate(true)}>
-						<Plus className="mr-1.5 h-3.5 w-3.5" />
+						<Plus className="mr-1.5 size-3.5" />
 						{t("invoices.newInvoice", "New invoice")}
 					</Button>
 				</div>
@@ -389,7 +393,7 @@ function InvoicesPage() {
 					</CardContent>
 				) : rows.length === 0 ? (
 					<CardContent className="flex flex-col items-center justify-center py-16 text-center">
-						<Receipt className="mb-3 h-10 w-10 text-muted-foreground/40" />
+						<Receipt className="mb-3 size-10 text-muted-foreground/40" />
 						<p className="font-medium text-sm">{t("invoices.noInvoices", "No invoices found")}</p>
 						<p className="text-muted-foreground text-sm">
 							{statusFilter !== "all"
@@ -448,7 +452,7 @@ function InvoicesPage() {
 											<div className="flex justify-end gap-1">
 												<Button variant="ghost" size="icon" asChild>
 													<Link to={`/dashboard/invoices/${inv.id}` as never}>
-														<FileText className="h-4 w-4" />
+														<FileText className="size-4" />
 													</Link>
 												</Button>
 												<Button
@@ -459,7 +463,7 @@ function InvoicesPage() {
 													}
 													disabled={downloadMutation.isPending}
 												>
-													<Download className="h-4 w-4" />
+													<Download className="size-4" />
 												</Button>
 											</div>
 										</TableCell>
@@ -485,7 +489,7 @@ function InvoicesPage() {
 										onClick={() => setPage((p) => p - 1)}
 										disabled={page === 0}
 									>
-										<ChevronLeft className="h-4 w-4" />
+										<ChevronLeft className="size-4" />
 									</Button>
 									<Button
 										variant="outline"
@@ -493,7 +497,7 @@ function InvoicesPage() {
 										onClick={() => setPage((p) => p + 1)}
 										disabled={page >= totalPages - 1}
 									>
-										<ChevronRight className="h-4 w-4" />
+										<ChevronRight className="size-4" />
 									</Button>
 								</div>
 							</div>

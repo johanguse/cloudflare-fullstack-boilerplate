@@ -42,7 +42,7 @@ function DashboardPage() {
 			{/* Page header */}
 			<div className="flex flex-wrap items-end justify-between gap-4">
 				<div>
-					<h1 className="font-bold text-2xl tracking-tight">
+					<h1 className="font-semibold text-2xl tracking-tight">
 						{t("dashboard.greeting", "Hello, {{name}}", { name: userName })} 👋
 					</h1>
 					<p className="mt-1 text-muted-foreground text-sm">
@@ -52,7 +52,7 @@ function DashboardPage() {
 				<Button asChild size="sm">
 					<Link to="/dashboard/invoices">
 						{t("dashboard.createInvoice", "New invoice")}
-						<ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+						<ArrowRight className="ml-1.5 size-3.5" />
 					</Link>
 				</Button>
 			</div>
@@ -96,7 +96,7 @@ function DashboardPage() {
 						<Button variant="ghost" size="sm" asChild className="h-7 text-xs">
 							<Link to="/dashboard/invoices">
 								{t("dashboard.viewAll", "View all")}
-								<ArrowRight className="ml-1 h-3 w-3" />
+								<ArrowRight className="ml-1 size-3" />
 							</Link>
 						</Button>
 					</CardHeader>
@@ -116,7 +116,7 @@ function DashboardPage() {
 							</div>
 						) : recentInvoices.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-8 text-center">
-								<Receipt className="mb-2 h-8 w-8 text-muted-foreground/30" />
+								<Receipt className="mb-2 size-8 text-muted-foreground/30" />
 								<p className="text-muted-foreground text-sm">
 									{t("dashboard.noInvoicesYet", "No invoices yet.")}
 								</p>
@@ -195,7 +195,7 @@ function StatCard({
 					<CardTitle className="font-medium text-muted-foreground text-sm">
 						{title}
 					</CardTitle>
-					<Icon className="h-4 w-4 text-muted-foreground" />
+					<Icon className="size-4 text-muted-foreground" />
 				</CardHeader>
 				<CardContent>
 					{loading ? (
@@ -229,9 +229,9 @@ function QuickAction({
 			to={href}
 			className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-muted"
 		>
-			<Icon className="h-4 w-4 text-muted-foreground" />
+			<Icon className="size-4 text-muted-foreground" />
 			<span>{label}</span>
-			<ArrowRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+			<ArrowRight className="ml-auto size-3.5 text-muted-foreground" />
 		</Link>
 	);
 }

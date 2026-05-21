@@ -52,7 +52,7 @@ function BillingHistoryPage() {
 	return (
 		<div className="space-y-6">
 				<div>
-					<h1 className="font-bold text-2xl tracking-tight">
+					<h1 className="font-semibold text-2xl tracking-tight">
 						{t("history.title", "Credit history")}
 					</h1>
 					<p className="text-muted-foreground text-sm">
@@ -74,7 +74,7 @@ function BillingHistoryPage() {
 							</div>
 						) : rows.length === 0 ? (
 							<div className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
-								<CreditCard className="h-10 w-10 opacity-30" />
+								<CreditCard className="size-10 opacity-30" />
 								<p className="text-sm">{t("history.noTransactions", "No transactions yet")}</p>
 								<p className="text-xs">{t("history.noTransactionsDesc", "Your credit history will appear here")}</p>
 							</div>

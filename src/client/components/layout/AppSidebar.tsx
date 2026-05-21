@@ -1,9 +1,4 @@
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@client/components/ui/collapsible";
-import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
@@ -16,13 +11,11 @@ import {
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
-	SidebarRail,
 } from "@client/components/ui/sidebar";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
 	Bell,
 	Building2,
-	ChevronRight,
 	CreditCard,
 	KeyRound,
 	LayoutDashboard,
@@ -44,16 +37,10 @@ export function AppSidebar() {
 	const isPrefixed = (to: string) =>
 		path === to || path.startsWith(`${to}/`);
 
-	// Settings sub-pages — any of these makes the parent "active"
-	const settingsSubPaths = [
-		"/dashboard/settings",
-		"/dashboard/settings/company",
-		"/dashboard/settings/notifications",
-	];
-	const isSettingsOpen = settingsSubPaths.some((p) => isPrefixed(p));
+	const isSettingsActive = isPrefixed("/dashboard/settings");
 
 	return (
-		<Sidebar collapsible="icon">
+		<Sidebar collapsible="none">
 			{/* Brand */}
 			<SidebarHeader>
 				<SidebarMenu>
@@ -64,7 +51,7 @@ export function AppSidebar() {
 							tooltip="My SaaS"
 						>
 							<Link to="/dashboard">
-								<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground text-sm">
+								<div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground text-sm">
 									S
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
@@ -89,7 +76,7 @@ export function AppSidebar() {
 								tooltip={t("nav.dashboard", "Dashboard")}
 							>
 								<Link to="/dashboard">
-									<LayoutDashboard className="h-4 w-4" />
+									<LayoutDashboard className="size-4" />
 									<span>{t("nav.dashboard", "Dashboard")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -102,7 +89,7 @@ export function AppSidebar() {
 								tooltip={t("nav.invoices", "Invoices")}
 							>
 								<Link to="/dashboard/invoices">
-									<Receipt className="h-4 w-4" />
+									<Receipt className="size-4" />
 									<span>{t("nav.invoices", "Invoices")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -115,7 +102,7 @@ export function AppSidebar() {
 								tooltip={t("nav.billing", "Billing")}
 							>
 								<Link to="/dashboard/billing">
-									<CreditCard className="h-4 w-4" />
+									<CreditCard className="size-4" />
 									<span>{t("nav.billing", "Billing")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -134,67 +121,59 @@ export function AppSidebar() {
 								tooltip={t("nav.profile", "Profile")}
 							>
 								<Link to="/dashboard/profile">
-									<User className="h-4 w-4" />
+									<User className="size-4" />
 									<span>{t("nav.profile", "Profile")}</span>
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
-						{/* Settings — collapsible with sub-pages */}
-						<Collapsible
-							asChild
-							defaultOpen={isSettingsOpen}
-							className="group/collapsible"
-						>
-							<SidebarMenuItem>
-								<CollapsibleTrigger asChild>
-									<SidebarMenuButton
-										isActive={isSettingsOpen}
-										tooltip={t("nav.settings", "Settings")}
+						{/* Settings — always expanded sub-items */}
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isSettingsActive}
+								tooltip={t("nav.settings", "Settings")}
+							>
+								<Link to="/dashboard/settings">
+									<Settings className="size-4" />
+									<span>{t("nav.settings", "Settings")}</span>
+								</Link>
+							</SidebarMenuButton>
+							<SidebarMenuSub>
+								<SidebarMenuSubItem>
+									<SidebarMenuSubButton
+										asChild
+										isActive={isExact("/dashboard/settings")}
 									>
-										<Settings className="h-4 w-4" />
-										<span>{t("nav.settings", "Settings")}</span>
-										<ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-									</SidebarMenuButton>
-								</CollapsibleTrigger>
-								<CollapsibleContent>
-									<SidebarMenuSub>
-										<SidebarMenuSubItem>
-											<SidebarMenuSubButton
-												asChild
-												isActive={isExact("/dashboard/settings")}
-											>
-												<Link to="/dashboard/settings">
-													<span>{t("nav.general", "General")}</span>
-												</Link>
-											</SidebarMenuSubButton>
-										</SidebarMenuSubItem>
-										<SidebarMenuSubItem>
-											<SidebarMenuSubButton
-												asChild
-												isActive={isExact("/dashboard/settings/company")}
-											>
-												<Link to="/dashboard/settings/company">
-													<Building2 className="h-3.5 w-3.5" />
-													<span>{t("nav.company", "Company")}</span>
-												</Link>
-											</SidebarMenuSubButton>
-										</SidebarMenuSubItem>
-										<SidebarMenuSubItem>
-											<SidebarMenuSubButton
-												asChild
-												isActive={isExact("/dashboard/settings/notifications")}
-											>
-												<Link to="/dashboard/settings/notifications">
-													<Bell className="h-3.5 w-3.5" />
-													<span>{t("nav.notifications", "Notifications")}</span>
-												</Link>
-											</SidebarMenuSubButton>
-										</SidebarMenuSubItem>
-									</SidebarMenuSub>
-								</CollapsibleContent>
-							</SidebarMenuItem>
-						</Collapsible>
+										<Link to="/dashboard/settings">
+											<span>{t("nav.general", "General")}</span>
+										</Link>
+									</SidebarMenuSubButton>
+								</SidebarMenuSubItem>
+								<SidebarMenuSubItem>
+									<SidebarMenuSubButton
+										asChild
+										isActive={isExact("/dashboard/settings/company")}
+									>
+										<Link to="/dashboard/settings/company">
+											<Building2 className="size-3.5" />
+											<span>{t("nav.company", "Company")}</span>
+										</Link>
+									</SidebarMenuSubButton>
+								</SidebarMenuSubItem>
+								<SidebarMenuSubItem>
+									<SidebarMenuSubButton
+										asChild
+										isActive={isExact("/dashboard/settings/notifications")}
+									>
+										<Link to="/dashboard/settings/notifications">
+											<Bell className="size-3.5" />
+											<span>{t("nav.notifications", "Notifications")}</span>
+										</Link>
+									</SidebarMenuSubButton>
+								</SidebarMenuSubItem>
+							</SidebarMenuSub>
+						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton
@@ -203,7 +182,7 @@ export function AppSidebar() {
 								tooltip={t("nav.apiKeys", "API Keys")}
 							>
 								<Link to="/dashboard/api-keys">
-									<KeyRound className="h-4 w-4" />
+									<KeyRound className="size-4" />
 									<span>{t("nav.apiKeys", "API Keys")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -219,7 +198,6 @@ export function AppSidebar() {
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarFooter>
-			<SidebarRail />
 		</Sidebar>
 	);
 }

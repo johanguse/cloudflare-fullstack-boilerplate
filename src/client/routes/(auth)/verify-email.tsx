@@ -70,8 +70,8 @@ function VerifyEmailPage() {
 			<div className="w-full max-w-sm">
 				<Card>
 					<CardHeader className="text-center">
-						<div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-							<Mail className="h-6 w-6 text-primary" />
+						<div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary/10">
+							<Mail className="size-6 text-primary" />
 						</div>
 						<CardTitle>Verify your email</CardTitle>
 						<CardDescription>
@@ -99,7 +99,7 @@ function VerifyEmailPage() {
 									disabled={isSending}
 								>
 									{isSending && (
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										<Loader2 className="mr-2 size-4 animate-spin" />
 									)}
 									Send verification code
 								</Button>
@@ -124,7 +124,7 @@ function VerifyEmailPage() {
 									disabled={isVerifying || otp.length < 6}
 								>
 									{isVerifying && (
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										<Loader2 className="mr-2 size-4 animate-spin" />
 									)}
 									Verify email
 								</Button>

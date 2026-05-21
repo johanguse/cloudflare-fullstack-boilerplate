@@ -73,7 +73,7 @@ export function UserMenu() {
 					size="lg"
 					className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 				>
-					<Avatar className="h-8 w-8 shrink-0 rounded-lg">
+					<Avatar className="size-8 shrink-0 rounded-lg">
 						{user.image && (
 							<AvatarImage src={user.image} alt={user.name ?? user.email} />
 						)}
@@ -107,7 +107,7 @@ export function UserMenu() {
 						to="/dashboard/profile"
 						className="flex cursor-pointer items-center"
 					>
-						<User className="mr-2 h-4 w-4" />
+						<User className="mr-2 size-4" />
 						{t("userMenu.profile", "Profile")}
 					</Link>
 				</DropdownMenuItem>
@@ -116,7 +116,7 @@ export function UserMenu() {
 						to="/dashboard/settings"
 						className="flex cursor-pointer items-center"
 					>
-						<Settings className="mr-2 h-4 w-4" />
+						<Settings className="mr-2 size-4" />
 						{t("userMenu.settings", "Settings")}
 					</Link>
 				</DropdownMenuItem>
@@ -125,16 +125,16 @@ export function UserMenu() {
 						to="/dashboard/billing"
 						className="flex cursor-pointer items-center"
 					>
-						<CreditCard className="mr-2 h-4 w-4" />
+						<CreditCard className="mr-2 size-4" />
 						{t("userMenu.billing", "Billing")}
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
 					{theme === "dark" ? (
-						<Sun className="mr-2 h-4 w-4" />
+						<Sun className="mr-2 size-4" />
 					) : (
-						<Moon className="mr-2 h-4 w-4" />
+						<Moon className="mr-2 size-4" />
 					)}
 					{theme === "dark"
 						? t("userMenu.lightMode", "Light mode")
@@ -142,7 +142,7 @@ export function UserMenu() {
 				</DropdownMenuItem>
 				<DropdownMenuSub>
 					<DropdownMenuSubTrigger className="cursor-pointer">
-						<Languages className="mr-2 h-4 w-4" />
+						<Languages className="mr-2 size-4" />
 						{t("userMenu.language", "Language")}
 					</DropdownMenuSubTrigger>
 					<DropdownMenuPortal>
@@ -156,7 +156,7 @@ export function UserMenu() {
 									<span>{lang.flag}</span>
 									<span>{lang.label}</span>
 									{currentLang === lang.code && (
-										<Check className="ml-auto h-3.5 w-3.5" />
+										<Check className="ml-auto size-3.5" />
 									)}
 								</DropdownMenuItem>
 							))}
@@ -168,7 +168,7 @@ export function UserMenu() {
 					onClick={handleSignOut}
 					className="cursor-pointer text-destructive focus:text-destructive"
 				>
-					<LogOut className="mr-2 h-4 w-4" />
+					<LogOut className="mr-2 size-4" />
 					{t("userMenu.signOut", "Sign out")}
 				</DropdownMenuItem>
 			</DropdownMenuContent>

@@ -79,7 +79,7 @@ function BillingPage() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="font-bold text-2xl tracking-tight">
+				<h1 className="font-semibold text-2xl tracking-tight">
 					{t("billing.title", "Billing")}
 				</h1>
 				<p className="text-muted-foreground text-sm">
@@ -124,9 +124,9 @@ function BillingPage() {
 								onClick={() => portalMutation.mutate()}
 							>
 								{portalMutation.isPending ? (
-									<Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+									<Loader2 className="mr-2 size-3.5 animate-spin" />
 								) : (
-									<ExternalLink className="mr-2 h-3.5 w-3.5" />
+									<ExternalLink className="mr-2 size-3.5" />
 								)}
 								{t("billing.manageSubscription", "Manage subscription")}
 							</Button>
@@ -137,7 +137,7 @@ function BillingPage() {
 									window.location.href = "/dashboard/billing/upgrade";
 								}}
 							>
-								<Zap className="mr-2 h-3.5 w-3.5" />
+								<Zap className="mr-2 size-3.5" />
 								{t("billing.upgradePlan", "Upgrade plan")}
 							</Button>
 						)}
@@ -199,7 +199,7 @@ function BillingPage() {
 						</div>
 					) : historyQuery.data?.length === 0 ? (
 						<div className="flex flex-col items-center gap-2 py-8 text-center text-muted-foreground">
-							<CreditCard className="h-8 w-8 opacity-40" />
+							<CreditCard className="size-8 opacity-40" />
 							<p className="text-sm">
 								{t("billing.noTransactions", "No transactions yet")}
 							</p>
@@ -213,7 +213,7 @@ function BillingPage() {
 								>
 									<div>
 										<p className="font-medium text-sm">{tx.description}</p>
-										<p className="text-muted-foreground text-xs">
+										<p className="text-muted-foreground text-xs" suppressHydrationWarning>
 											{tx.createdAt
 												? new Date(tx.createdAt).toLocaleDateString()
 												: "—"}
@@ -227,9 +227,9 @@ function BillingPage() {
 											{tx.amount}
 										</span>
 										{tx.amount > 0 ? (
-											<CheckCircle2 className="h-4 w-4 text-green-500" />
+											<CheckCircle2 className="size-4 text-green-500" />
 										) : (
-											<AlertCircle className="h-4 w-4 text-muted-foreground" />
+											<AlertCircle className="size-4 text-muted-foreground" />
 										)}
 									</div>
 								</div>

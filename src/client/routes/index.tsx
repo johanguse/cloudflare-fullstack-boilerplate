@@ -21,7 +21,7 @@ function HomePage() {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background p-8">
 			<div className="text-center">
-				<h1 className="font-bold text-4xl text-foreground tracking-tight">
+				<h1 className="font-semibold text-4xl text-foreground tracking-tight">
 					{t("home.title", "Cloudflare SaaS Boilerplate")}
 				</h1>
 				<p className="mt-3 text-lg text-muted-foreground">

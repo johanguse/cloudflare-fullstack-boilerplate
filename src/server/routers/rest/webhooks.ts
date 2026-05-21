@@ -290,13 +290,15 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 							(async () => {
 								try {
 									const appCfg = createAppConfig(c.env);
-									const prefs = await getNotificationPrefs(db, sub.userId);
 									const planMeta = plans.find((p) => p.id === sub.plan);
-									const owner = await db
-										.select({ email: authSchema.user.email })
-										.from(authSchema.user)
-										.where(eq(authSchema.user.id, sub.userId))
-										.get();
+									const [prefs, owner] = await Promise.all([
+										getNotificationPrefs(db, sub.userId),
+										db
+											.select({ email: authSchema.user.email })
+											.from(authSchema.user)
+											.where(eq(authSchema.user.id, sub.userId))
+											.get(),
+									]);
 
 									if (owner?.email && prefs.notifyPaymentReceipt) {
 										await sendPaymentReceiptEmail(

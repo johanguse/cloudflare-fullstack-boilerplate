@@ -17,7 +17,7 @@ import {
 import { authClient } from "@client/lib/auth-client";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Github, Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -30,30 +30,30 @@ function LoginPage() {
 	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
 
-	const handleEmailLogin = async (e: React.FormEvent) => {
+	const handleEmailLogin = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!turnstileToken) {
 			toast.error(t("auth.login.completeVerification", "Please complete the verification"));
 			return;
 		}
-		setIsLoading(true);
-		const { error } = await authClient.signIn.email({
-			email,
-			password,
-			callbackURL: "/dashboard",
+		startTransition(async () => {
+			const { error } = await authClient.signIn.email({
+				email,
+				password,
+				callbackURL: "/dashboard",
+			});
+			if (error) {
+				toast.error(error.message ?? t("auth.login.signInFailed", "Sign in failed"));
+				turnstileRef.current?.reset();
+				setTurnstileToken(null);
+				return;
+			}
+			navigate({ to: "/dashboard" });
 		});
-		setIsLoading(false);
-		if (error) {
-			toast.error(error.message ?? t("auth.login.signInFailed", "Sign in failed"));
-			turnstileRef.current?.reset();
-			setTurnstileToken(null);
-			return;
-		}
-		navigate({ to: "/dashboard" });
 	};
 
 	const handleGoogleLogin = async () => {
@@ -74,7 +74,7 @@ function LoginPage() {
 		<div className="flex min-h-screen items-center justify-center bg-background px-4">
 			<div className="w-full max-w-sm">
 				<div className="mb-8 text-center">
-					<h1 className="font-bold text-2xl text-foreground tracking-tight">
+					<h1 className="font-semibold text-2xl text-foreground tracking-tight">
 						{t("auth.login.title", "Welcome back")}
 					</h1>
 					<p className="mt-1 text-muted-foreground text-sm">
@@ -100,7 +100,7 @@ function LoginPage() {
 								onClick={handleGoogleLogin}
 								className="w-full gap-2"
 							>
-								<svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+								<svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
 									<path
 										fill="currentColor"
 										d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -125,7 +125,7 @@ function LoginPage() {
 								onClick={handleGithubLogin}
 								className="w-full gap-2"
 							>
-								<Github className="h-4 w-4" />
+								<Github className="size-4" />
 								GitHub
 							</Button>
 						</div>
@@ -183,9 +183,9 @@ function LoginPage() {
 							<Button
 								type="submit"
 								className="w-full"
-								disabled={isLoading || !turnstileToken}
+								disabled={isPending || !turnstileToken}
 							>
-								{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+								{isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
 								{t("auth.login.cardTitle", "Sign in")}
 							</Button>
 						</form>

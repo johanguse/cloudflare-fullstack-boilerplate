@@ -44,18 +44,23 @@ const STATUS_VARIANT: Record<
 	overdue: "destructive",
 };
 
+const _numFmtCache = new Map<string, Intl.NumberFormat>();
 function fmt(cents: number, currency: string) {
-	return new Intl.NumberFormat("pt-BR", {
-		style: "currency",
-		currency: currency || "BRL",
-	}).format(cents / 100);
+	const key = currency || "BRL";
+	let f = _numFmtCache.get(key);
+	if (!f) {
+		f = new Intl.NumberFormat("pt-BR", { style: "currency", currency: key });
+		_numFmtCache.set(key, f);
+	}
+	return f.format(cents / 100);
 }
+
+const _longDateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
+const _mediumDateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
 
 function fmtDate(d: Date | string | null | undefined) {
 	if (!d) return "—";
-	return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
-		new Date(d),
-	);
+	return _longDateFmt.format(new Date(d));
 }
 
 // ---------------------------------------------------------------------------
@@ -128,7 +133,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						onClick={() => reEmitMutation.mutate({ invoiceId })}
 						disabled={reEmitMutation.isPending}
 					>
-						<RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+						<RefreshCw className="mr-1.5 size-3.5" />
 						{t("invoiceDetail.nfse.requestEmission", "Request emission")}
 					</Button>
 				</CardContent>
@@ -147,7 +152,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
 					<Badge variant={cfg.variant} className="gap-1">
-						<Icon className="h-3 w-3" />
+						<Icon className="size-3" />
 						{statusLabel}
 					</Badge>
 				</div>
@@ -177,16 +182,14 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 							{t("invoiceDetail.nfse.issuedAt", "Issued at: ")}
 						</span>
 						<span>
-							{new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(
-								new Date(record.emittedAt),
-							)}
+							{_mediumDateFmt.format(new Date(record.emittedAt))}
 						</span>
 					</div>
 				)}
 
 				{status === "error" && record.errorMessage && (
 					<Alert variant="destructive" className="py-2">
-						<AlertCircle className="h-4 w-4" />
+						<AlertCircle className="size-4" />
 						<AlertDescription className="text-xs">
 							{record.errorMessage}
 						</AlertDescription>
@@ -197,7 +200,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 					{record.pdfUrl && (
 						<Button size="sm" variant="outline" asChild>
 							<a href={record.pdfUrl} target="_blank" rel="noreferrer">
-								<ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+								<ExternalLink className="mr-1.5 size-3.5" />
 								{t("invoiceDetail.nfse.viewPdf", "View PDF")}
 							</a>
 						</Button>
@@ -205,7 +208,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 					{record.xmlUrl && (
 						<Button size="sm" variant="outline" asChild>
 							<a href={record.xmlUrl} target="_blank" rel="noreferrer">
-								<Download className="mr-1.5 h-3.5 w-3.5" />
+								<Download className="mr-1.5 size-3.5" />
 								{t("invoiceDetail.nfse.xml", "Download XML")}
 							</a>
 						</Button>
@@ -217,7 +220,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 							onClick={() => reEmitMutation.mutate({ invoiceId })}
 							disabled={reEmitMutation.isPending}
 						>
-							<RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+							<RefreshCw className="mr-1.5 size-3.5" />
 							{t("invoiceDetail.nfse.reEmit", "Re-emit")}
 						</Button>
 					)}
@@ -229,7 +232,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 							onClick={() => cancelMutation.mutate({ nfseRecordId: record.id })}
 							disabled={cancelMutation.isPending}
 						>
-							<XCircle className="mr-1.5 h-3.5 w-3.5" />
+							<XCircle className="mr-1.5 size-3.5" />
 							{t("invoiceDetail.nfse.cancelNfse", "Cancel NFSe")}
 						</Button>
 					)}
@@ -299,7 +302,7 @@ function InvoiceDetailPage() {
 	if (!invoice) {
 		return (
 			<div className="flex flex-col items-center justify-center py-24 text-center">
-				<Receipt className="mb-3 h-10 w-10 text-muted-foreground/40" />
+				<Receipt className="mb-3 size-10 text-muted-foreground/40" />
 				<p className="font-medium">{t("invoiceDetail.notFound", "Invoice not found")}</p>
 				<Button variant="link" asChild>
 					<Link to="/dashboard/invoices">{t("invoiceDetail.back", "Back to invoices")}</Link>
@@ -318,12 +321,12 @@ function InvoiceDetailPage() {
 					<div className="flex items-center gap-3">
 						<Button variant="ghost" size="icon" asChild>
 							<Link to="/dashboard/invoices">
-								<ArrowLeft className="h-4 w-4" />
+								<ArrowLeft className="size-4" />
 							</Link>
 						</Button>
 						<div>
 							<div className="flex items-center gap-2">
-								<h1 className="font-bold text-xl tracking-tight">
+								<h1 className="font-semibold text-xl tracking-tight">
 									Invoice #{invoice.number}
 								</h1>
 								<Badge variant={STATUS_VARIANT[status]}>
@@ -354,7 +357,7 @@ function InvoiceDetailPage() {
 									onClick={() => resendMutation.mutate({ id: invoice.id })}
 									disabled={resendMutation.isPending}
 								>
-									<Mail className="mr-1.5 h-3.5 w-3.5" />
+									<Mail className="mr-1.5 size-3.5" />
 									{resendMutation.isPending
 										? t("invoiceDetail.sending", "Sending…")
 										: t("invoiceDetail.resend", "Resend email")}
@@ -366,7 +369,7 @@ function InvoiceDetailPage() {
 							onClick={() => downloadMutation.mutate({ id: invoice.id })}
 							disabled={downloadMutation.isPending}
 						>
-							<Download className="mr-1.5 h-3.5 w-3.5" />
+							<Download className="mr-1.5 size-3.5" />
 							{t("invoiceDetail.download", "Download PDF")}
 						</Button>
 						{status !== "cancelled" && status !== "paid" && (
@@ -376,7 +379,7 @@ function InvoiceDetailPage() {
 								onClick={() => cancelMutation.mutate({ id: invoice.id })}
 								disabled={cancelMutation.isPending}
 							>
-								<XCircle className="mr-1.5 h-3.5 w-3.5" />
+								<XCircle className="mr-1.5 size-3.5" />
 								{t("invoiceDetail.cancel", "Cancel invoice")}
 							</Button>
 						)}

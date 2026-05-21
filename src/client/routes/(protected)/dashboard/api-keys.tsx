@@ -67,7 +67,7 @@ function ApiKeysPage() {
 		<div className="space-y-6">
 				<div className="flex flex-wrap items-end justify-between gap-4">
 					<div>
-						<h1 className="font-bold text-2xl tracking-tight">
+						<h1 className="font-semibold text-2xl tracking-tight">
 							{t("apiKeys.title", "API Keys")}
 						</h1>
 						<p className="text-muted-foreground text-sm">
@@ -75,7 +75,7 @@ function ApiKeysPage() {
 						</p>
 					</div>
 					<Button type="button" onClick={() => setCreateOpen(true)}>
-						<Plus className="mr-1.5 h-4 w-4" />
+						<Plus className="mr-1.5 size-4" />
 						{t("apiKeys.createKey", "Create key")}
 					</Button>
 				</div>
@@ -92,7 +92,7 @@ function ApiKeysPage() {
 							</p>
 						) : rows.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-12 text-center">
-								<Key className="mb-3 h-10 w-10 text-muted-foreground/40" />
+								<Key className="mb-3 size-10 text-muted-foreground/40" />
 								<p className="text-muted-foreground text-sm">
 									{t("apiKeys.noKeys", "No API keys yet. Create one to get started.")}
 								</p>
@@ -129,7 +129,7 @@ function ApiKeysPage() {
 													onClick={() => revokeMutation.mutate({ id: row.id })}
 													disabled={revokeMutation.isPending}
 												>
-													<Trash2 className="h-4 w-4" />
+													<Trash2 className="size-4" />
 												</Button>
 											</TableCell>
 										</TableRow>
