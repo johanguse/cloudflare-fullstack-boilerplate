@@ -8,9 +8,6 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
 } from "@client/components/ui/sidebar";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
@@ -31,13 +28,9 @@ export function AppSidebar() {
 	const location = useLocation();
 	const path = location.pathname;
 
-	const isExact = (to: string) =>
-		path === to || path === `${to}/`;
+	const isExact = (to: string) => path === to || path === `${to}/`;
 
-	const isPrefixed = (to: string) =>
-		path === to || path.startsWith(`${to}/`);
-
-	const isSettingsActive = isPrefixed("/dashboard/settings");
+	const isPrefixed = (to: string) => path === to || path.startsWith(`${to}/`);
 
 	return (
 		<Sidebar collapsible="none">
@@ -45,18 +38,16 @@ export function AppSidebar() {
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<SidebarMenuButton
-							size="lg"
-							asChild
-							tooltip="My SaaS"
-						>
+						<SidebarMenuButton size="lg" asChild tooltip="My SaaS">
 							<Link to="/dashboard">
 								<div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground text-sm">
 									S
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-semibold">My SaaS</span>
-									<span className="truncate text-xs text-muted-foreground">Dashboard</span>
+									<span className="truncate text-muted-foreground text-xs">
+										Dashboard
+									</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
@@ -127,11 +118,10 @@ export function AppSidebar() {
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
-						{/* Settings — always expanded sub-items */}
 						<SidebarMenuItem>
 							<SidebarMenuButton
 								asChild
-								isActive={isSettingsActive}
+								isActive={isExact("/dashboard/settings")}
 								tooltip={t("nav.settings", "Settings")}
 							>
 								<Link to="/dashboard/settings">
@@ -139,40 +129,32 @@ export function AppSidebar() {
 									<span>{t("nav.settings", "Settings")}</span>
 								</Link>
 							</SidebarMenuButton>
-							<SidebarMenuSub>
-								<SidebarMenuSubItem>
-									<SidebarMenuSubButton
-										asChild
-										isActive={isExact("/dashboard/settings")}
-									>
-										<Link to="/dashboard/settings">
-											<span>{t("nav.general", "General")}</span>
-										</Link>
-									</SidebarMenuSubButton>
-								</SidebarMenuSubItem>
-								<SidebarMenuSubItem>
-									<SidebarMenuSubButton
-										asChild
-										isActive={isExact("/dashboard/settings/company")}
-									>
-										<Link to="/dashboard/settings/company">
-											<Building2 className="size-3.5" />
-											<span>{t("nav.company", "Company")}</span>
-										</Link>
-									</SidebarMenuSubButton>
-								</SidebarMenuSubItem>
-								<SidebarMenuSubItem>
-									<SidebarMenuSubButton
-										asChild
-										isActive={isExact("/dashboard/settings/notifications")}
-									>
-										<Link to="/dashboard/settings/notifications">
-											<Bell className="size-3.5" />
-											<span>{t("nav.notifications", "Notifications")}</span>
-										</Link>
-									</SidebarMenuSubButton>
-								</SidebarMenuSubItem>
-							</SidebarMenuSub>
+						</SidebarMenuItem>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isExact("/dashboard/settings/company")}
+								tooltip={t("nav.company", "Company")}
+							>
+								<Link to="/dashboard/settings/company">
+									<Building2 className="size-4" />
+									<span>{t("nav.company", "Company")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isExact("/dashboard/settings/notifications")}
+								tooltip={t("nav.notifications", "Notifications")}
+							>
+								<Link to="/dashboard/settings/notifications">
+									<Bell className="size-4" />
+									<span>{t("nav.notifications", "Notifications")}</span>
+								</Link>
+							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
