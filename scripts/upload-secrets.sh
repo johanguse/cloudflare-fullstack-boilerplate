@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# upload-secrets.sh — Upload secrets from .env to Wrangler
+# upload-secrets.sh — Upload secrets from .env to Wrangler using the bulk secrets API
 # Usage: bash scripts/upload-secrets.sh [staging|production]
 #
-# Reads UPPER_SNAKE_CASE keys from .env and uploads them via `wrangler secret put`.
-# Skips blank values and comment lines.
+# Reads UPPER_SNAKE_CASE keys from .env and uploads them in a single bulk request
+# via `wrangler secret bulk`. Requires jq.
 
 set -euo pipefail
 
@@ -20,15 +20,16 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
+if ! command -v jq &>/dev/null; then
+  echo "Error: jq is required. Install with: brew install jq / apt install jq"
+  exit 1
+fi
+
 WRANGLER_ENV_FLAG=""
 if [ "$ENV" = "staging" ]; then
   WRANGLER_ENV_FLAG="--env staging"
 fi
 
-echo "Uploading secrets to Wrangler [$ENV]..."
-echo ""
-
-# List of secrets to upload (all UPPER_SNAKE_CASE vars from .env)
 SECRETS=(
   BETTER_AUTH_SECRET
   BETTER_AUTH_GOOGLE_CLIENT_ID
@@ -43,6 +44,9 @@ SECRETS=(
   SENTRY_DSN
 )
 
+echo "Building secrets payload for [$ENV]..."
+
+payload="{}"
 uploaded=0
 skipped=0
 
@@ -53,11 +57,21 @@ for secret in "${SECRETS[@]}"; do
     ((skipped++)) || true
     continue
   fi
-  echo "  PUT    $secret"
-  # shellcheck disable=SC2086
-  echo "$value" | wrangler secret put "$secret" $WRANGLER_ENV_FLAG
+  echo "  ADD    $secret"
+  payload=$(jq --arg k "$secret" --arg v "$value" '. + {($k): $v}' <<<"$payload")
   ((uploaded++)) || true
 done
+
+if [ "$uploaded" -eq 0 ]; then
+  echo ""
+  echo "No secrets to upload."
+  exit 0
+fi
+
+echo ""
+echo "Uploading $uploaded secret(s) in a single bulk request to [$ENV]..."
+# shellcheck disable=SC2086
+echo "$payload" | wrangler secret bulk $WRANGLER_ENV_FLAG
 
 echo ""
 echo "Done! Uploaded $uploaded secret(s), skipped $skipped."
