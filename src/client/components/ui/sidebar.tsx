@@ -9,6 +9,7 @@ import {
 	SheetTitle,
 } from "@client/components/ui/sheet";
 import { Skeleton } from "@client/components/ui/skeleton";
+import { Slot } from "@client/components/ui/slot";
 import {
 	Tooltip,
 	TooltipContent,
@@ -17,7 +18,6 @@ import {
 } from "@client/components/ui/tooltip";
 import { useIsMobile } from "@client/hooks/use-mobile";
 import { cn } from "@client/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";

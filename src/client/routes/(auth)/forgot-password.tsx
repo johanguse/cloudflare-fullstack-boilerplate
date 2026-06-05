@@ -33,7 +33,12 @@ function ForgotPasswordPage() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!turnstileToken) {
-			toast.error(t("auth.forgotPassword.completeVerification", "Please complete the verification"));
+			toast.error(
+				t(
+					"auth.forgotPassword.completeVerification",
+					"Please complete the verification",
+				),
+			);
 			return;
 		}
 		startTransition(async () => {
@@ -51,14 +56,25 @@ function ForgotPasswordPage() {
 					message?: string;
 				};
 				if (!response.ok || result.error) {
-					toast.error(result.message ?? t("auth.forgotPassword.failedToSend", "Failed to send reset email"));
+					toast.error(
+						result.message ??
+							t(
+								"auth.forgotPassword.failedToSend",
+								"Failed to send reset email",
+							),
+					);
 					turnstileRef.current?.reset();
 					setTurnstileToken(null);
 				} else {
 					setSent(true);
 				}
 			} catch {
-				toast.error(t("auth.forgotPassword.unexpectedError", "An unexpected error occurred. Please try again."));
+				toast.error(
+					t(
+						"auth.forgotPassword.unexpectedError",
+						"An unexpected error occurred. Please try again.",
+					),
+				);
 				turnstileRef.current?.reset();
 				setTurnstileToken(null);
 			}
@@ -70,11 +86,19 @@ function ForgotPasswordPage() {
 			<div className="w-full max-w-sm">
 				<Card>
 					<CardHeader>
-						<CardTitle>{t("auth.forgotPassword.title", "Reset password")}</CardTitle>
+						<CardTitle>
+							{t("auth.forgotPassword.title", "Reset password")}
+						</CardTitle>
 						<CardDescription>
 							{sent
-								? t("auth.forgotPassword.subtitleSent", "Check your email for a reset link")
-								: t("auth.forgotPassword.subtitleSend", "Enter your email and we'll send you a reset link")}
+								? t(
+										"auth.forgotPassword.subtitleSent",
+										"Check your email for a reset link",
+									)
+								: t(
+										"auth.forgotPassword.subtitleSend",
+										"Enter your email and we'll send you a reset link",
+									)}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -83,11 +107,17 @@ function ForgotPasswordPage() {
 								<div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-center">
 									<Mail className="size-8 text-primary" />
 									<p className="text-foreground text-sm">
-										{t("auth.forgotPassword.sentMessage", "We sent a reset link to")}{" "}
+										{t(
+											"auth.forgotPassword.sentMessage",
+											"We sent a reset link to",
+										)}{" "}
 										<strong>{email}</strong>
 									</p>
 									<p className="text-muted-foreground text-xs">
-										{t("auth.forgotPassword.expiryNote", "The link expires in 1 hour. Check your spam folder if you don't see it.")}
+										{t(
+											"auth.forgotPassword.expiryNote",
+											"The link expires in 1 hour. Check your spam folder if you don't see it.",
+										)}
 									</p>
 								</div>
 								<Button
@@ -108,7 +138,10 @@ function ForgotPasswordPage() {
 									<Input
 										id="email"
 										type="email"
-										placeholder={t("common.emailPlaceholder", "you@example.com")}
+										placeholder={t(
+											"common.emailPlaceholder",
+											"you@example.com",
+										)}
 										value={email}
 										onChange={(e) => setEmail(e.target.value)}
 										required

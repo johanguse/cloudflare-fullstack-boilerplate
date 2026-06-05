@@ -12,7 +12,10 @@ function SettingsPage() {
 	return (
 		<ContentSection
 			title={t("settings.general.title", "General")}
-			desc={t("settings.general.desc", "Manage your account settings and preferences.")}
+			desc={t(
+				"settings.general.desc",
+				"Manage your account settings and preferences.",
+			)}
 		>
 			<span />
 		</ContentSection>

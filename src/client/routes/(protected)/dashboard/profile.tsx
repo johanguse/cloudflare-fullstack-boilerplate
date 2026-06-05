@@ -44,7 +44,9 @@ function ProfilePage() {
 			profileQuery.refetch();
 		},
 		onError: (err) =>
-			toast.error(err.message ?? t("profile.failedToUpdate", "Failed to update profile")),
+			toast.error(
+				err.message ?? t("profile.failedToUpdate", "Failed to update profile"),
+			),
 	});
 
 	const deleteAccountMutation = trpc.user.deleteAccount.useMutation({
@@ -53,7 +55,9 @@ function ProfilePage() {
 			navigate({ to: "/" });
 		},
 		onError: (err) => {
-			toast.error(err.message ?? t("settings.failedToDelete", "Failed to delete account"));
+			toast.error(
+				err.message ?? t("settings.failedToDelete", "Failed to delete account"),
+			);
 		},
 	});
 
@@ -85,7 +89,9 @@ function ProfilePage() {
 			return;
 		}
 		if (newPassword.length < 8) {
-			toast.error(t("profile.passwordTooShort", "Password must be at least 8 characters"));
+			toast.error(
+				t("profile.passwordTooShort", "Password must be at least 8 characters"),
+			);
 			return;
 		}
 		setIsChangingPassword(true);
@@ -96,9 +102,14 @@ function ProfilePage() {
 				revokeOtherSessions: false,
 			});
 			if (error) {
-				toast.error(error.message ?? t("profile.passwordChangeFailed", "Failed to change password"));
+				toast.error(
+					error.message ??
+						t("profile.passwordChangeFailed", "Failed to change password"),
+				);
 			} else {
-				toast.success(t("profile.passwordChanged", "Password changed successfully"));
+				toast.success(
+					t("profile.passwordChanged", "Password changed successfully"),
+				);
 				setCurrentPassword("");
 				setNewPassword("");
 				setConfirmPassword("");
@@ -126,7 +137,10 @@ function ProfilePage() {
 						{t("profile.cardTitle", "Personal information")}
 					</CardTitle>
 					<CardDescription>
-						{t("profile.cardDescription", "Update your name and account details")}
+						{t(
+							"profile.cardDescription",
+							"Update your name and account details",
+						)}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -177,7 +191,10 @@ function ProfilePage() {
 									className="bg-muted"
 								/>
 								<p className="text-muted-foreground text-xs">
-									{t("profile.emailNote", "Email changes require verification. Contact support to update.")}
+									{t(
+										"profile.emailNote",
+										"Email changes require verification. Contact support to update.",
+									)}
 								</p>
 							</div>
 							<Button
@@ -201,7 +218,10 @@ function ProfilePage() {
 						{t("profile.changePassword", "Change password")}
 					</CardTitle>
 					<CardDescription>
-						{t("profile.changePasswordDesc", "Update your password to keep your account secure")}
+						{t(
+							"profile.changePasswordDesc",
+							"Update your password to keep your account secure",
+						)}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -250,7 +270,12 @@ function ProfilePage() {
 						</div>
 						<Button
 							type="submit"
-							disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+							disabled={
+								isChangingPassword ||
+								!currentPassword ||
+								!newPassword ||
+								!confirmPassword
+							}
 						>
 							{isChangingPassword && (
 								<Loader2 className="mr-2 size-4 animate-spin" />
@@ -268,7 +293,10 @@ function ProfilePage() {
 						{t("settings.dangerZone", "Danger zone")}
 					</CardTitle>
 					<CardDescription>
-						{t("settings.dangerZoneDesc", "Irreversible actions — proceed with caution")}
+						{t(
+							"settings.dangerZoneDesc",
+							"Irreversible actions — proceed with caution",
+						)}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -278,7 +306,10 @@ function ProfilePage() {
 								{t("settings.deleteAccount", "Delete account")}
 							</p>
 							<p className="text-muted-foreground text-xs">
-								{t("settings.deleteAccountDesc", "Permanently delete your account and all data")}
+								{t(
+									"settings.deleteAccountDesc",
+									"Permanently delete your account and all data",
+								)}
 							</p>
 						</div>
 						<AlertDialog>
@@ -297,7 +328,10 @@ function ProfilePage() {
 							<AlertDialogContent>
 								<AlertDialogHeader>
 									<AlertDialogTitle>
-										{t("settings.deleteAccountConfirmTitle", "Are you absolutely sure?")}
+										{t(
+											"settings.deleteAccountConfirmTitle",
+											"Are you absolutely sure?",
+										)}
 									</AlertDialogTitle>
 									<AlertDialogDescription>
 										{t(
@@ -307,7 +341,9 @@ function ProfilePage() {
 									</AlertDialogDescription>
 								</AlertDialogHeader>
 								<AlertDialogFooter>
-									<AlertDialogCancel>{t("settings.cancel", "Cancel")}</AlertDialogCancel>
+									<AlertDialogCancel>
+										{t("settings.cancel", "Cancel")}
+									</AlertDialogCancel>
 									<AlertDialogAction
 										onClick={() => deleteAccountMutation.mutate()}
 										className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

@@ -64,14 +64,17 @@ function ApiKeysPage() {
 
 	return (
 		<>
-		<div className="space-y-6">
+			<div className="space-y-6">
 				<div className="flex flex-wrap items-end justify-between gap-4">
 					<div>
 						<h1 className="font-semibold text-2xl tracking-tight">
 							{t("apiKeys.title", "API Keys")}
 						</h1>
 						<p className="text-muted-foreground text-sm">
-							{t("apiKeys.subtitle", "Manage your API keys for programmatic access")}
+							{t(
+								"apiKeys.subtitle",
+								"Manage your API keys for programmatic access",
+							)}
 						</p>
 					</div>
 					<Button type="button" onClick={() => setCreateOpen(true)}>
@@ -82,8 +85,15 @@ function ApiKeysPage() {
 
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-base">{t("apiKeys.cardTitle", "Your API keys")}</CardTitle>
-						<CardDescription>{t("apiKeys.cardDescription", "Keys grant full access to the API — keep them secret")}</CardDescription>
+						<CardTitle className="text-base">
+							{t("apiKeys.cardTitle", "Your API keys")}
+						</CardTitle>
+						<CardDescription>
+							{t(
+								"apiKeys.cardDescription",
+								"Keys grant full access to the API — keep them secret",
+							)}
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{listQuery.isPending ? (
@@ -94,7 +104,10 @@ function ApiKeysPage() {
 							<div className="flex flex-col items-center justify-center py-12 text-center">
 								<Key className="mb-3 size-10 text-muted-foreground/40" />
 								<p className="text-muted-foreground text-sm">
-									{t("apiKeys.noKeys", "No API keys yet. Create one to get started.")}
+									{t(
+										"apiKeys.noKeys",
+										"No API keys yet. Create one to get started.",
+									)}
 								</p>
 							</div>
 						) : (
@@ -102,8 +115,12 @@ function ApiKeysPage() {
 								<TableHeader>
 									<TableRow>
 										<TableHead>{t("apiKeys.headers.name", "Name")}</TableHead>
-										<TableHead>{t("apiKeys.headers.prefix", "Prefix")}</TableHead>
-										<TableHead>{t("apiKeys.headers.created", "Created")}</TableHead>
+										<TableHead>
+											{t("apiKeys.headers.prefix", "Prefix")}
+										</TableHead>
+										<TableHead>
+											{t("apiKeys.headers.created", "Created")}
+										</TableHead>
 										<TableHead className="w-[100px]" />
 									</TableRow>
 								</TableHeader>
@@ -144,11 +161,20 @@ function ApiKeysPage() {
 			<Dialog open={createOpen} onOpenChange={setCreateOpen}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>{t("apiKeys.create.title", "Create API key")}</DialogTitle>
-						<DialogDescription>{t("apiKeys.create.description", "Give your key a memorable name")}</DialogDescription>
+						<DialogTitle>
+							{t("apiKeys.create.title", "Create API key")}
+						</DialogTitle>
+						<DialogDescription>
+							{t(
+								"apiKeys.create.description",
+								"Give your key a memorable name",
+							)}
+						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-2">
-						<Label htmlFor="keyName">{t("apiKeys.create.nameLabel", "Key name")}</Label>
+						<Label htmlFor="keyName">
+							{t("apiKeys.create.nameLabel", "Key name")}
+						</Label>
 						<Input
 							id="keyName"
 							value={keyName}
@@ -176,8 +202,15 @@ function ApiKeysPage() {
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>{t("apiKeys.copy.title", "Copy your API key")}</DialogTitle>
-						<DialogDescription>{t("apiKeys.copy.description", "This key will only be shown once. Copy it now and store it safely.")}</DialogDescription>
+						<DialogTitle>
+							{t("apiKeys.copy.title", "Copy your API key")}
+						</DialogTitle>
+						<DialogDescription>
+							{t(
+								"apiKeys.copy.description",
+								"This key will only be shown once. Copy it now and store it safely.",
+							)}
+						</DialogDescription>
 					</DialogHeader>
 					<pre className="overflow-x-auto break-all rounded-md bg-muted p-3 font-mono text-xs">
 						{createdKey}
@@ -188,7 +221,9 @@ function ApiKeysPage() {
 							onClick={() => {
 								if (createdKey) {
 									void navigator.clipboard.writeText(createdKey);
-									toast.success(t("apiKeys.copy.copied", "Copied to clipboard"));
+									toast.success(
+										t("apiKeys.copy.copied", "Copied to clipboard"),
+									);
 								}
 							}}
 						>

@@ -61,7 +61,9 @@ try {
 	console.log("Staging database seeded successfully.");
 	console.log("");
 	console.log("Seed accounts:");
-	console.log("  admin@example.com  /  Admin1234!  (Professional, 600 credits)");
+	console.log(
+		"  admin@example.com  /  Admin1234!  (Professional, 600 credits)",
+	);
 	console.log("  user@example.com   /  User1234!   (Free, 50 credits)");
 } finally {
 	await $`rm -f ${tmpFile}`;

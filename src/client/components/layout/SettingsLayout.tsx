@@ -62,14 +62,24 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
 				{t("settings.title", "Settings")}
 			</h1>
 			<p className="text-muted-foreground text-sm">
-				{t("settings.subtitle", "Manage your account settings and preferences.")}
+				{t(
+					"settings.subtitle",
+					"Manage your account settings and preferences.",
+				)}
 			</p>
 			<Separator className="my-4 lg:my-6" />
 
 			<div className="flex flex-1 flex-col space-y-2 md:space-y-2 lg:flex-row lg:space-x-12 lg:space-y-0">
 				{/* Mobile: dropdown select */}
 				<div className="p-1 md:hidden">
-					<Select value={selectVal} onValueChange={handleSelect}>
+					<Select
+						value={selectVal}
+						onValueChange={(href) => {
+							if (href) {
+								handleSelect(href);
+							}
+						}}
+					>
 						<SelectTrigger className="h-12">
 							<SelectValue />
 						</SelectTrigger>
@@ -88,10 +98,7 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
 
 				{/* Desktop: sidebar nav */}
 				<aside className="top-0 hidden md:block lg:sticky lg:w-1/5 lg:self-start">
-					<ScrollArea
-						orientation="horizontal"
-						className="w-full min-w-36 bg-background px-1 py-2"
-					>
+					<ScrollArea className="w-full min-w-36 bg-background px-1 py-2">
 						<nav className="flex space-x-2 py-1 lg:flex-col lg:space-x-0 lg:space-y-1">
 							{navItems.map((item) => (
 								<Link

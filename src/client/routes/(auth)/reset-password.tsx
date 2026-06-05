@@ -48,7 +48,10 @@ function ResetPasswordPage() {
 							{t("auth.resetPassword.invalidTitle", "Invalid link")}
 						</CardTitle>
 						<CardDescription>
-							{t("auth.resetPassword.invalidDescription", "This reset link is invalid or has expired.")}
+							{t(
+								"auth.resetPassword.invalidDescription",
+								"This reset link is invalid or has expired.",
+							)}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -66,15 +69,27 @@ function ResetPasswordPage() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (password !== confirm) {
-			toast.error(t("auth.resetPassword.passwordsNoMatch", "Passwords do not match"));
+			toast.error(
+				t("auth.resetPassword.passwordsNoMatch", "Passwords do not match"),
+			);
 			return;
 		}
 		if (password.length < 8) {
-			toast.error(t("auth.resetPassword.passwordTooShort", "Password must be at least 8 characters"));
+			toast.error(
+				t(
+					"auth.resetPassword.passwordTooShort",
+					"Password must be at least 8 characters",
+				),
+			);
 			return;
 		}
 		if (!turnstileToken) {
-			toast.error(t("auth.resetPassword.completeVerification", "Please complete the verification"));
+			toast.error(
+				t(
+					"auth.resetPassword.completeVerification",
+					"Please complete the verification",
+				),
+			);
 			return;
 		}
 		startTransition(async () => {
@@ -89,15 +104,28 @@ function ResetPasswordPage() {
 					message?: string;
 				};
 				if (!response.ok || result.error) {
-					toast.error(result.message ?? t("auth.resetPassword.failedToReset", "Failed to reset password"));
+					toast.error(
+						result.message ??
+							t("auth.resetPassword.failedToReset", "Failed to reset password"),
+					);
 					turnstileRef.current?.reset();
 					setTurnstileToken(null);
 				} else {
-					toast.success(t("auth.resetPassword.success", "Password updated! You can now sign in."));
+					toast.success(
+						t(
+							"auth.resetPassword.success",
+							"Password updated! You can now sign in.",
+						),
+					);
 					navigate({ to: "/login" });
 				}
 			} catch {
-				toast.error(t("auth.resetPassword.unexpectedError", "An unexpected error occurred. Please try again."));
+				toast.error(
+					t(
+						"auth.resetPassword.unexpectedError",
+						"An unexpected error occurred. Please try again.",
+					),
+				);
 				turnstileRef.current?.reset();
 				setTurnstileToken(null);
 			}
@@ -113,7 +141,10 @@ function ResetPasswordPage() {
 							{t("auth.resetPassword.title", "Set new password")}
 						</CardTitle>
 						<CardDescription>
-							{t("auth.resetPassword.description", "Choose a strong password for your account")}
+							{t(
+								"auth.resetPassword.description",
+								"Choose a strong password for your account",
+							)}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -125,7 +156,10 @@ function ResetPasswordPage() {
 								<Input
 									id="password"
 									type="password"
-									placeholder={t("auth.register.passwordPlaceholder", "Min. 8 characters")}
+									placeholder={t(
+										"auth.register.passwordPlaceholder",
+										"Min. 8 characters",
+									)}
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 									required
@@ -140,7 +174,10 @@ function ResetPasswordPage() {
 								<Input
 									id="confirm"
 									type="password"
-									placeholder={t("auth.resetPassword.repeatPassword", "Repeat password")}
+									placeholder={t(
+										"auth.resetPassword.repeatPassword",
+										"Repeat password",
+									)}
 									value={confirm}
 									onChange={(e) => setConfirm(e.target.value)}
 									required
@@ -148,7 +185,10 @@ function ResetPasswordPage() {
 								/>
 								{confirm && password !== confirm && (
 									<p className="text-destructive text-xs">
-										{t("auth.resetPassword.passwordsNoMatch", "Passwords do not match")}
+										{t(
+											"auth.resetPassword.passwordsNoMatch",
+											"Passwords do not match",
+										)}
 									</p>
 								)}
 							</div>

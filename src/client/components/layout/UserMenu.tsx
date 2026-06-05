@@ -77,20 +77,27 @@ export function UserMenu() {
 						{user.image && (
 							<AvatarImage src={user.image} alt={user.name ?? user.email} />
 						)}
-						<AvatarFallback className="rounded-lg text-xs">{initials}</AvatarFallback>
+						<AvatarFallback className="rounded-lg text-xs">
+							{initials}
+						</AvatarFallback>
 					</Avatar>
 					<div className="grid flex-1 text-left text-sm leading-tight">
 						<span className="truncate font-semibold">
 							{user.name ?? "User"}
 						</span>
-						<span className="truncate text-xs text-muted-foreground">
+						<span className="truncate text-muted-foreground text-xs">
 							{user.email}
 						</span>
 					</div>
 					<ChevronsUpDown className="ml-auto size-4 shrink-0" />
 				</SidebarMenuButton>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" side="top" className="w-60 rounded-xl" sideOffset={4}>
+			<DropdownMenuContent
+				align="end"
+				side="top"
+				className="w-60 rounded-xl"
+				sideOffset={4}
+			>
 				<DropdownMenuLabel className="font-normal">
 					<div className="flex flex-col space-y-1">
 						<p className="font-medium text-sm leading-none">

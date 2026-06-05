@@ -59,7 +59,10 @@ function BillingPage() {
 		from: "/(protected)/dashboard/billing/",
 	});
 	const subQuery = trpc.billing.getSubscription.useQuery();
-	const historyQuery = trpc.billing.getHistory.useQuery({ limit: 5, offset: 0 });
+	const historyQuery = trpc.billing.getHistory.useQuery({
+		limit: 5,
+		offset: 0,
+	});
 	const portalMutation = trpc.billing.getPortalUrl.useMutation({
 		onSuccess: ({ url }) => {
 			if (url) window.location.href = url;
@@ -69,7 +72,10 @@ function BillingPage() {
 	});
 
 	useEffect(() => {
-		if (success) toast.success(t("billing.activated", "Subscription activated! Welcome to your plan."));
+		if (success)
+			toast.success(
+				t("billing.activated", "Subscription activated! Welcome to your plan."),
+			);
 		if (canceled) toast.info(t("billing.canceled", "Checkout was canceled."));
 	}, [success, canceled, t]);
 
@@ -103,7 +109,9 @@ function BillingPage() {
 									{sub?.plan ?? "Free"}
 								</span>
 								<Badge
-									variant={statusVariant[sub?.status ?? "inactive"] ?? "outline"}
+									variant={
+										statusVariant[sub?.status ?? "inactive"] ?? "outline"
+									}
 								>
 									{sub?.status ?? "inactive"}
 								</Badge>
@@ -175,7 +183,10 @@ function BillingPage() {
 					</CardContent>
 					<CardFooter className="border-t pt-3">
 						<p className="text-muted-foreground text-xs">
-							{t("billing.creditsNote", "Credits are used for site generations")}
+							{t(
+								"billing.creditsNote",
+								"Credits are used for site generations",
+							)}
 						</p>
 					</CardFooter>
 				</Card>
@@ -187,7 +198,10 @@ function BillingPage() {
 						{t("billing.recentTransactions", "Recent transactions")}
 					</CardTitle>
 					<CardDescription>
-						{t("billing.recentTransactionsDesc", "Your last 5 credit transactions")}
+						{t(
+							"billing.recentTransactionsDesc",
+							"Your last 5 credit transactions",
+						)}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -213,7 +227,10 @@ function BillingPage() {
 								>
 									<div>
 										<p className="font-medium text-sm">{tx.description}</p>
-										<p className="text-muted-foreground text-xs" suppressHydrationWarning>
+										<p
+											className="text-muted-foreground text-xs"
+											suppressHydrationWarning
+										>
 											{tx.createdAt
 												? new Date(tx.createdAt).toLocaleDateString()
 												: "—"}

@@ -56,7 +56,9 @@ function fmt(cents: number, currency: string) {
 }
 
 const _longDateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
-const _mediumDateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
+const _mediumDateFmt = new Intl.DateTimeFormat("pt-BR", {
+	dateStyle: "medium",
+});
 
 function fmtDate(d: Date | string | null | undefined) {
 	if (!d) return "—";
@@ -105,7 +107,9 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
+					<CardTitle className="text-base">
+						{t("invoiceDetail.nfse.title", "NFSe")}
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<Skeleton className="h-6 w-32" />
@@ -120,7 +124,9 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
+					<CardTitle className="text-base">
+						{t("invoiceDetail.nfse.title", "NFSe")}
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p className="text-muted-foreground text-sm">
@@ -150,7 +156,9 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 		<Card>
 			<CardHeader>
 				<div className="flex items-center justify-between">
-					<CardTitle className="text-base">{t("invoiceDetail.nfse.title", "NFSe")}</CardTitle>
+					<CardTitle className="text-base">
+						{t("invoiceDetail.nfse.title", "NFSe")}
+					</CardTitle>
 					<Badge variant={cfg.variant} className="gap-1">
 						<Icon className="size-3" />
 						{statusLabel}
@@ -181,9 +189,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						<span className="text-muted-foreground">
 							{t("invoiceDetail.nfse.issuedAt", "Issued at: ")}
 						</span>
-						<span>
-							{_mediumDateFmt.format(new Date(record.emittedAt))}
-						</span>
+						<span>{_mediumDateFmt.format(new Date(record.emittedAt))}</span>
 					</div>
 				)}
 
@@ -260,7 +266,10 @@ function InvoiceDetailPage() {
 	});
 
 	const resendMutation = trpc.invoices.resendEmail.useMutation({
-		onSuccess: () => toast.success(t("invoiceDetail.emailQueued", "Email queued for delivery")),
+		onSuccess: () =>
+			toast.success(
+				t("invoiceDetail.emailQueued", "Email queued for delivery"),
+			),
 		onError: (e) => toast.error(e.message),
 	});
 
@@ -303,9 +312,13 @@ function InvoiceDetailPage() {
 		return (
 			<div className="flex flex-col items-center justify-center py-24 text-center">
 				<Receipt className="mb-3 size-10 text-muted-foreground/40" />
-				<p className="font-medium">{t("invoiceDetail.notFound", "Invoice not found")}</p>
+				<p className="font-medium">
+					{t("invoiceDetail.notFound", "Invoice not found")}
+				</p>
 				<Button variant="link" asChild>
-					<Link to="/dashboard/invoices">{t("invoiceDetail.back", "Back to invoices")}</Link>
+					<Link to="/dashboard/invoices">
+						{t("invoiceDetail.back", "Back to invoices")}
+					</Link>
 				</Button>
 			</div>
 		);
@@ -316,217 +329,226 @@ function InvoiceDetailPage() {
 
 	return (
 		<div className="max-w-2xl space-y-6">
-				{/* Header */}
-				<div className="flex items-start justify-between">
-					<div className="flex items-center gap-3">
-						<Button variant="ghost" size="icon" asChild>
-							<Link to="/dashboard/invoices">
-								<ArrowLeft className="size-4" />
-							</Link>
-						</Button>
-						<div>
-							<div className="flex items-center gap-2">
-								<h1 className="font-semibold text-xl tracking-tight">
-									Invoice #{invoice.number}
-								</h1>
-								<Badge variant={STATUS_VARIANT[status]}>
-									{statusLabels[status]}
-								</Badge>
-							</div>
-							<p className="text-muted-foreground text-sm">
-								{t("invoiceDetail.issued", { date: fmtDate(invoice.issuedAt), defaultValue: "Issued {{date}}" })}
-							</p>
+			{/* Header */}
+			<div className="flex items-start justify-between">
+				<div className="flex items-center gap-3">
+					<Button variant="ghost" size="icon" asChild>
+						<Link to="/dashboard/invoices">
+							<ArrowLeft className="size-4" />
+						</Link>
+					</Button>
+					<div>
+						<div className="flex items-center gap-2">
+							<h1 className="font-semibold text-xl tracking-tight">
+								Invoice #{invoice.number}
+							</h1>
+							<Badge variant={STATUS_VARIANT[status]}>
+								{statusLabels[status]}
+							</Badge>
 						</div>
-					</div>
-
-					<div className="flex gap-2">
-						{status === "draft" && (
-							<Button
-								size="sm"
-								onClick={() => issueMutation.mutate({ id: invoice.id })}
-								disabled={issueMutation.isPending}
-							>
-								{t("invoiceDetail.issueInvoice", "Issue invoice")}
-							</Button>
-						)}
-						{(status === "issued" || status === "paid") &&
-							invoice.customerEmail && (
-								<Button
-									size="sm"
-									variant="outline"
-									onClick={() => resendMutation.mutate({ id: invoice.id })}
-									disabled={resendMutation.isPending}
-								>
-									<Mail className="mr-1.5 size-3.5" />
-									{resendMutation.isPending
-										? t("invoiceDetail.sending", "Sending…")
-										: t("invoiceDetail.resend", "Resend email")}
-								</Button>
-							)}
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={() => downloadMutation.mutate({ id: invoice.id })}
-							disabled={downloadMutation.isPending}
-						>
-							<Download className="mr-1.5 size-3.5" />
-							{t("invoiceDetail.download", "Download PDF")}
-						</Button>
-						{status !== "cancelled" && status !== "paid" && (
-							<Button
-								size="sm"
-								variant="destructive"
-								onClick={() => cancelMutation.mutate({ id: invoice.id })}
-								disabled={cancelMutation.isPending}
-							>
-								<XCircle className="mr-1.5 size-3.5" />
-								{t("invoiceDetail.cancel", "Cancel invoice")}
-							</Button>
-						)}
+						<p className="text-muted-foreground text-sm">
+							{t("invoiceDetail.issued", {
+								date: fmtDate(invoice.issuedAt),
+								defaultValue: "Issued {{date}}",
+							})}
+						</p>
 					</div>
 				</div>
 
-				{/* Customer */}
+				<div className="flex gap-2">
+					{status === "draft" && (
+						<Button
+							size="sm"
+							onClick={() => issueMutation.mutate({ id: invoice.id })}
+							disabled={issueMutation.isPending}
+						>
+							{t("invoiceDetail.issueInvoice", "Issue invoice")}
+						</Button>
+					)}
+					{(status === "issued" || status === "paid") &&
+						invoice.customerEmail && (
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={() => resendMutation.mutate({ id: invoice.id })}
+								disabled={resendMutation.isPending}
+							>
+								<Mail className="mr-1.5 size-3.5" />
+								{resendMutation.isPending
+									? t("invoiceDetail.sending", "Sending…")
+									: t("invoiceDetail.resend", "Resend email")}
+							</Button>
+						)}
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={() => downloadMutation.mutate({ id: invoice.id })}
+						disabled={downloadMutation.isPending}
+					>
+						<Download className="mr-1.5 size-3.5" />
+						{t("invoiceDetail.download", "Download PDF")}
+					</Button>
+					{status !== "cancelled" && status !== "paid" && (
+						<Button
+							size="sm"
+							variant="destructive"
+							onClick={() => cancelMutation.mutate({ id: invoice.id })}
+							disabled={cancelMutation.isPending}
+						>
+							<XCircle className="mr-1.5 size-3.5" />
+							{t("invoiceDetail.cancel", "Cancel invoice")}
+						</Button>
+					)}
+				</div>
+			</div>
+
+			{/* Customer */}
+			<Card>
+				<CardHeader>
+					<CardTitle className="font-medium text-muted-foreground text-sm">
+						{t("invoiceDetail.billTo", "Bill to")}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<p className="font-medium">{invoice.customerName ?? "—"}</p>
+					{invoice.customerEmail && (
+						<p className="text-muted-foreground text-sm">
+							{invoice.customerEmail}
+						</p>
+					)}
+					{invoice.customerDocument && (
+						<p className="text-muted-foreground text-sm">
+							{invoice.customerDocument}
+						</p>
+					)}
+				</CardContent>
+			</Card>
+
+			{/* Dates */}
+			<div className="grid grid-cols-2 gap-4">
+				<Card>
+					<CardContent className="pt-4">
+						<p className="text-muted-foreground text-xs">
+							{t("invoiceDetail.issueDate", "Issue date")}
+						</p>
+						<p className="font-medium text-sm">{fmtDate(invoice.issuedAt)}</p>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardContent className="pt-4">
+						<p className="text-muted-foreground text-xs">
+							{t("invoiceDetail.dueDate", "Due date")}
+						</p>
+						<p className="font-medium text-sm">{fmtDate(invoice.dueDate)}</p>
+					</CardContent>
+				</Card>
+				{invoice.paidAt && (
+					<Card className="col-span-2 border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30">
+						<CardContent className="pt-4">
+							<p className="text-green-700 text-xs dark:text-green-400">
+								{t("invoiceDetail.paidOn", "Paid on")}
+							</p>
+							<p className="font-medium text-green-800 text-sm dark:text-green-300">
+								{fmtDate(invoice.paidAt)}
+							</p>
+						</CardContent>
+					</Card>
+				)}
+			</div>
+
+			{/* Line items */}
+			<Card>
+				<CardHeader>
+					<CardTitle className="text-base">
+						{t("invoiceDetail.items", "Line items")}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div className="space-y-0">
+						{/* Header row */}
+						<div className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 pb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+							<span>
+								{t("invoiceDetail.itemsHeader.description", "Description")}
+							</span>
+							<span className="text-center">
+								{t("invoiceDetail.itemsHeader.qty", "Qty")}
+							</span>
+							<span className="text-right">
+								{t("invoiceDetail.itemsHeader.unit", "Unit")}
+							</span>
+							<span className="text-right">
+								{t("invoiceDetail.itemsHeader.total", "Total")}
+							</span>
+						</div>
+						<Separator className="mb-2" />
+						{invoice.items.length === 0 ? (
+							<p className="py-4 text-center text-muted-foreground text-sm">
+								{t("invoiceDetail.noItems", "No line items")}
+							</p>
+						) : (
+							invoice.items.map((item) => (
+								<div
+									key={item.id}
+									className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 border-b py-2 text-sm last:border-0"
+								>
+									<span>{item.description}</span>
+									<span className="text-center">{item.quantity}</span>
+									<span className="text-right">
+										{fmt(item.unitAmount, currency)}
+									</span>
+									<span className="text-right font-medium">
+										{fmt(item.total, currency)}
+									</span>
+								</div>
+							))
+						)}
+					</div>
+
+					{/* Totals */}
+					<div className="mt-4 space-y-1 text-sm">
+						<Separator />
+						<div className="flex justify-between pt-2">
+							<span className="text-muted-foreground">
+								{t("invoiceDetail.subtotal", "Subtotal")}
+							</span>
+							<span>{fmt(invoice.amountSubtotal, currency)}</span>
+						</div>
+						{invoice.amountTax > 0 && (
+							<div className="flex justify-between">
+								<span className="text-muted-foreground">
+									{t("invoiceDetail.tax", "Tax")}
+								</span>
+								<span>{fmt(invoice.amountTax, currency)}</span>
+							</div>
+						)}
+						<Separator />
+						<div className="flex justify-between pt-1 font-semibold text-base">
+							<span>{t("invoiceDetail.total", "Total")}</span>
+							<span>{fmt(invoice.amountTotal, currency)}</span>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+
+			{invoice.description && (
 				<Card>
 					<CardHeader>
-						<CardTitle className="font-medium text-muted-foreground text-sm">
-							{t("invoiceDetail.billTo", "Bill to")}
+						<CardTitle className="text-base">
+							{t("invoiceDetail.notes", "Notes")}
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p className="font-medium">{invoice.customerName ?? "—"}</p>
-						{invoice.customerEmail && (
-							<p className="text-muted-foreground text-sm">
-								{invoice.customerEmail}
-							</p>
-						)}
-						{invoice.customerDocument && (
-							<p className="text-muted-foreground text-sm">
-								{invoice.customerDocument}
-							</p>
-						)}
+						<p className="text-muted-foreground text-sm">
+							{invoice.description}
+						</p>
 					</CardContent>
 				</Card>
+			)}
 
-				{/* Dates */}
-				<div className="grid grid-cols-2 gap-4">
-					<Card>
-						<CardContent className="pt-4">
-							<p className="text-muted-foreground text-xs">
-								{t("invoiceDetail.issueDate", "Issue date")}
-							</p>
-							<p className="font-medium text-sm">{fmtDate(invoice.issuedAt)}</p>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardContent className="pt-4">
-							<p className="text-muted-foreground text-xs">
-								{t("invoiceDetail.dueDate", "Due date")}
-							</p>
-							<p className="font-medium text-sm">{fmtDate(invoice.dueDate)}</p>
-						</CardContent>
-					</Card>
-					{invoice.paidAt && (
-						<Card className="col-span-2 border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30">
-							<CardContent className="pt-4">
-								<p className="text-green-700 text-xs dark:text-green-400">
-									{t("invoiceDetail.paidOn", "Paid on")}
-								</p>
-								<p className="font-medium text-green-800 text-sm dark:text-green-300">
-									{fmtDate(invoice.paidAt)}
-								</p>
-							</CardContent>
-						</Card>
-					)}
-				</div>
-
-				{/* Line items */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="text-base">{t("invoiceDetail.items", "Line items")}</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="space-y-0">
-							{/* Header row */}
-							<div className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 pb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
-								<span>{t("invoiceDetail.itemsHeader.description", "Description")}</span>
-								<span className="text-center">
-									{t("invoiceDetail.itemsHeader.qty", "Qty")}
-								</span>
-								<span className="text-right">
-									{t("invoiceDetail.itemsHeader.unit", "Unit")}
-								</span>
-								<span className="text-right">
-									{t("invoiceDetail.itemsHeader.total", "Total")}
-								</span>
-							</div>
-							<Separator className="mb-2" />
-							{invoice.items.length === 0 ? (
-								<p className="py-4 text-center text-muted-foreground text-sm">
-									{t("invoiceDetail.noItems", "No line items")}
-								</p>
-							) : (
-								invoice.items.map((item) => (
-									<div
-										key={item.id}
-										className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 border-b py-2 text-sm last:border-0"
-									>
-										<span>{item.description}</span>
-										<span className="text-center">{item.quantity}</span>
-										<span className="text-right">
-											{fmt(item.unitAmount, currency)}
-										</span>
-										<span className="text-right font-medium">
-											{fmt(item.total, currency)}
-										</span>
-									</div>
-								))
-							)}
-						</div>
-
-						{/* Totals */}
-						<div className="mt-4 space-y-1 text-sm">
-							<Separator />
-							<div className="flex justify-between pt-2">
-								<span className="text-muted-foreground">
-									{t("invoiceDetail.subtotal", "Subtotal")}
-								</span>
-								<span>{fmt(invoice.amountSubtotal, currency)}</span>
-							</div>
-							{invoice.amountTax > 0 && (
-								<div className="flex justify-between">
-									<span className="text-muted-foreground">
-										{t("invoiceDetail.tax", "Tax")}
-									</span>
-									<span>{fmt(invoice.amountTax, currency)}</span>
-								</div>
-							)}
-							<Separator />
-							<div className="flex justify-between pt-1 font-semibold text-base">
-								<span>{t("invoiceDetail.total", "Total")}</span>
-								<span>{fmt(invoice.amountTotal, currency)}</span>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-
-				{invoice.description && (
-					<Card>
-						<CardHeader>
-							<CardTitle className="text-base">{t("invoiceDetail.notes", "Notes")}</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<p className="text-muted-foreground text-sm">
-								{invoice.description}
-							</p>
-						</CardContent>
-					</Card>
-				)}
-
-				{/* NFSe status — only show for paid/issued invoices */}
-				{(status === "paid" || status === "issued") && (
-					<NfseStatusWidget invoiceId={invoice.id} />
-				)}
+			{/* NFSe status — only show for paid/issued invoices */}
+			{(status === "paid" || status === "issued") && (
+				<NfseStatusWidget invoiceId={invoice.id} />
+			)}
 		</div>
 	);
 }

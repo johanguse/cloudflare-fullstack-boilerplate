@@ -117,7 +117,10 @@ function CompanySettingsPage() {
 		return (
 			<ContentSection
 				title={t("company.title", "Company")}
-				desc={t("company.subtitle", "Configure your company details for NFSe issuance")}
+				desc={t(
+					"company.subtitle",
+					"Configure your company details for NFSe issuance",
+				)}
 			>
 				<div className="space-y-4">
 					<Skeleton className="h-8 w-48" />
@@ -130,12 +133,20 @@ function CompanySettingsPage() {
 	return (
 		<ContentSection
 			title={t("company.title", "Company")}
-			desc={t("company.subtitle", "Configure your company details for NFSe issuance")}
+			desc={t(
+				"company.subtitle",
+				"Configure your company details for NFSe issuance",
+			)}
 		>
 			<div className="space-y-6">
-			<Alert>
+				<Alert>
 					<Info className="h-4 w-4" />
-					<AlertDescription>{t("company.alert", "These details are used to issue service invoices (NFSe). Ensure they match your tax registration exactly.")}</AlertDescription>
+					<AlertDescription>
+						{t(
+							"company.alert",
+							"These details are used to issue service invoices (NFSe). Ensure they match your tax registration exactly.",
+						)}
+					</AlertDescription>
 				</Alert>
 
 				<form onSubmit={handleSubmit} className="space-y-6">
@@ -145,7 +156,12 @@ function CompanySettingsPage() {
 							<CardTitle className="text-base">
 								{t("company.fiscalIdentity", "Fiscal identity")}
 							</CardTitle>
-							<CardDescription>{t("company.fiscalIdentityDesc", "CNPJ, municipal registration and legal name")}</CardDescription>
+							<CardDescription>
+								{t(
+									"company.fiscalIdentityDesc",
+									"CNPJ, municipal registration and legal name",
+								)}
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="grid grid-cols-2 gap-4">
 							<div className="space-y-1.5">
@@ -159,7 +175,10 @@ function CompanySettingsPage() {
 							</div>
 							<div className="space-y-1.5">
 								<Label htmlFor="inscricaoMunicipal">
-									{t("company.fields.inscricaoMunicipal", "Municipal registration")}
+									{t(
+										"company.fields.inscricaoMunicipal",
+										"Municipal registration",
+									)}
 								</Label>
 								<Input
 									id="inscricaoMunicipal"
@@ -183,7 +202,10 @@ function CompanySettingsPage() {
 							</div>
 							<div className="col-span-2 space-y-1.5">
 								<Label htmlFor="nomeFantasia">
-									{t("company.fields.nomeFantasia", "Trade name (Nome Fantasia)")}
+									{t(
+										"company.fields.nomeFantasia",
+										"Trade name (Nome Fantasia)",
+									)}
 								</Label>
 								<Input
 									id="nomeFantasia"
@@ -198,12 +220,18 @@ function CompanySettingsPage() {
 					{/* Address */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">{t("company.address", "Address")}</CardTitle>
-							<CardDescription>{t("company.addressDesc", "Registered business address")}</CardDescription>
+							<CardTitle className="text-base">
+								{t("company.address", "Address")}
+							</CardTitle>
+							<CardDescription>
+								{t("company.addressDesc", "Registered business address")}
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="grid grid-cols-2 gap-4">
 							<div className="col-span-2 space-y-1.5">
-								<Label htmlFor="street">{t("company.fields.street", "Street")}</Label>
+								<Label htmlFor="street">
+									{t("company.fields.street", "Street")}
+								</Label>
 								<Input
 									id="street"
 									value={form.street}
@@ -212,7 +240,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="number">{t("company.fields.number", "Number")}</Label>
+								<Label htmlFor="number">
+									{t("company.fields.number", "Number")}
+								</Label>
 								<Input
 									id="number"
 									value={form.number}
@@ -243,7 +273,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="zipCode">{t("company.fields.zipCode", "ZIP code")}</Label>
+								<Label htmlFor="zipCode">
+									{t("company.fields.zipCode", "ZIP code")}
+								</Label>
 								<Input
 									id="zipCode"
 									value={form.zipCode}
@@ -261,7 +293,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="state">{t("company.fields.state", "State")}</Label>
+								<Label htmlFor="state">
+									{t("company.fields.state", "State")}
+								</Label>
 								<Input
 									id="state"
 									value={form.state}
@@ -279,12 +313,20 @@ function CompanySettingsPage() {
 							<CardTitle className="text-base">
 								{t("company.serviceDefaults", "Service defaults")}
 							</CardTitle>
-							<CardDescription>{t("company.serviceDefaultsDesc", "Pre-fill NFSe service fields")}</CardDescription>
+							<CardDescription>
+								{t(
+									"company.serviceDefaultsDesc",
+									"Pre-fill NFSe service fields",
+								)}
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="grid grid-cols-2 gap-4">
 							<div className="col-span-2 space-y-1.5">
 								<Label htmlFor="serviceDescription">
-									{t("company.fields.serviceDescription", "Service description")}
+									{t(
+										"company.fields.serviceDescription",
+										"Service description",
+									)}
 								</Label>
 								<Input
 									id="serviceDescription"
@@ -296,7 +338,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="cnaeCode">{t("company.fields.cnaeCode", "CNAE code")}</Label>
+								<Label htmlFor="cnaeCode">
+									{t("company.fields.cnaeCode", "CNAE code")}
+								</Label>
 								<Input
 									id="cnaeCode"
 									value={form.cnaeCode}
@@ -305,7 +349,9 @@ function CompanySettingsPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="issRate">{t("company.fields.issRate", "ISS rate (%)")}</Label>
+								<Label htmlFor="issRate">
+									{t("company.fields.issRate", "ISS rate (%)")}
+								</Label>
 								<Input
 									id="issRate"
 									type="number"
@@ -321,7 +367,9 @@ function CompanySettingsPage() {
 							<Separator className="col-span-2" />
 
 							<div className="space-y-1.5">
-								<Label htmlFor="cityCode">{t("company.fields.cityCode", "City code (IBGE)")}</Label>
+								<Label htmlFor="cityCode">
+									{t("company.fields.cityCode", "City code (IBGE)")}
+								</Label>
 								<Input
 									id="cityCode"
 									type="number"
@@ -354,7 +402,7 @@ function CompanySettingsPage() {
 						</Button>
 					</div>
 				</form>
-		</div>
+			</div>
 		</ContentSection>
 	);
 }

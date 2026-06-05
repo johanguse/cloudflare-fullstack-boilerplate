@@ -37,7 +37,12 @@ function LoginPage() {
 	const handleEmailLogin = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!turnstileToken) {
-			toast.error(t("auth.login.completeVerification", "Please complete the verification"));
+			toast.error(
+				t(
+					"auth.login.completeVerification",
+					"Please complete the verification",
+				),
+			);
 			return;
 		}
 		startTransition(async () => {
@@ -47,7 +52,9 @@ function LoginPage() {
 				callbackURL: "/dashboard",
 			});
 			if (error) {
-				toast.error(error.message ?? t("auth.login.signInFailed", "Sign in failed"));
+				toast.error(
+					error.message ?? t("auth.login.signInFailed", "Sign in failed"),
+				);
 				turnstileRef.current?.reset();
 				setTurnstileToken(null);
 				return;
@@ -157,7 +164,9 @@ function LoginPage() {
 							</div>
 							<div className="space-y-1.5">
 								<div className="flex items-center justify-between">
-									<Label htmlFor="password">{t("common.password", "Password")}</Label>
+									<Label htmlFor="password">
+										{t("common.password", "Password")}
+									</Label>
 									<Link
 										to="/forgot-password"
 										className="text-muted-foreground text-xs hover:text-foreground"
