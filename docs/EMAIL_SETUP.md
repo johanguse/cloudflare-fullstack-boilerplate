@@ -45,7 +45,3 @@ Local dev (`env.local`) may omit `send_email`; the app logs skipped sends when `
 - Staging should use a real subdomain (for example `staging.yourdomain.com`) or a separate verified domain if you need real delivery in non-production.
 
 - Never commit API secrets; production secrets remain in `wrangler secret put` / Secret Store as documented in the main README.
-
-## 5. Resend (optional)
-
-`package.json` includes `resend` for optional integration. This boilerplate’s default path is the Cloudflare binding in `src/server/services/email.ts`.

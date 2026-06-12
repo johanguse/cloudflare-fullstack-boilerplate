@@ -80,7 +80,6 @@
 		"react-hook-form": "^7.73.1",
 		"react-i18next": "^15.0.0",
 		"recharts": "^3.8.1",
-		"resend": "^6.12.2",
 		"sonner": "^2.0.7",
 		"stripe": "^22.1.1",
 		"tailwind-merge": "^3.5.0",

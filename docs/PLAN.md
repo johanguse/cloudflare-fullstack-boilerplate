@@ -224,7 +224,7 @@ cloudflare-boilerplate/
 - Full invoice view
 - PDF download
 - NFSe status + link
-- Resend email action
+- Send invoice email again action
 
 **Invoice Generation:**
 - Auto-generated on successful payment
