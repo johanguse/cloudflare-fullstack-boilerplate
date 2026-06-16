@@ -27,8 +27,8 @@
 - **Decision:** Trigger.dev for NFSe generation (not Cloudflare Queues)
   - *Rationale:* NFSe polling requires long waits (up to several minutes). Trigger.dev checkpointing handles this cleanly. Workers' 50ms CPU limit makes polling impossible inline.
 
-- **Decision:** Cloudflare Email Service (not Resend)
-  - *Rationale:* Native Workers binding, no API key needed for basic sending, tighter Cloudflare integration. Resend remains as fallback if Email Service domain setup is complex.
+- **Decision:** Cloudflare Email Service
+  - *Rationale:* Native Workers binding, no API key needed for basic sending, tighter Cloudflare integration.
 
 ### Frontend
 - **Decision:** shadcn/ui New York style, slate base color

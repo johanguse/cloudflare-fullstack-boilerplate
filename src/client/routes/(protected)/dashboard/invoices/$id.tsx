@@ -69,7 +69,7 @@ function fmtDate(d: Date | string | null | undefined) {
 // NFSe Status Widget
 // ---------------------------------------------------------------------------
 
-type NfseStatus = "pending" | "processing" | "issued" | "error" | "cancelled";
+type NfseStatus = "pending" | "processing" | "issued" | "error" | "cancelled" | "invoice_only";
 
 const NFSE_STATUS_ICONS: Record<
 	NfseStatus,
@@ -83,6 +83,7 @@ const NFSE_STATUS_ICONS: Record<
 	issued: { variant: "default", icon: CheckCircle2 },
 	error: { variant: "destructive", icon: AlertCircle },
 	cancelled: { variant: "destructive", icon: XCircle },
+	invoice_only: { variant: "secondary", icon: Receipt },
 };
 
 function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
@@ -174,16 +175,6 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						<span className="font-medium font-mono">{record.nfseNumber}</span>
 					</div>
 				)}
-				{record.nfseVerificationCode && (
-					<div className="text-sm">
-						<span className="text-muted-foreground">
-							{t("invoiceDetail.nfse.code", "Verification code: ")}
-						</span>
-						<span className="font-mono text-xs">
-							{record.nfseVerificationCode}
-						</span>
-					</div>
-				)}
 				{record.emittedAt && (
 					<div className="text-sm">
 						<span className="text-muted-foreground">
@@ -235,7 +226,12 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 							size="sm"
 							variant="ghost"
 							className="text-destructive"
-							onClick={() => cancelMutation.mutate({ nfseRecordId: record.id })}
+							onClick={() =>
+								cancelMutation.mutate({
+									nfseRecordId: record.id,
+									reason: "Cancelled by customer request",
+								})
+							}
 							disabled={cancelMutation.isPending}
 						>
 							<XCircle className="mr-1.5 size-3.5" />

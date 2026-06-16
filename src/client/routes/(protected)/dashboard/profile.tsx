@@ -9,6 +9,11 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@client/components/ui/alert-dialog";
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from "@client/components/ui/avatar";
 import { Badge } from "@client/components/ui/badge";
 import { Button } from "@client/components/ui/button";
 import {
@@ -18,20 +23,48 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@client/components/ui/form";
 import { Input } from "@client/components/ui/input";
-import { Label } from "@client/components/ui/label";
+import { Separator } from "@client/components/ui/separator";
 import { Skeleton } from "@client/components/ui/skeleton";
 import { authClient } from "@client/lib/auth-client";
 import { trpc } from "@client/lib/trpc-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { z } from "zod";
 
 export const Route = createFileRoute("/(protected)/dashboard/profile")({
 	component: ProfilePage,
 });
+
+const profileSchema = z.object({
+	name: z.string().min(2, "Name must be at least 2 characters").max(100),
+});
+type ProfileForm = z.infer<typeof profileSchema>;
+
+const passwordSchema = z
+	.object({
+		currentPassword: z.string().min(1, "Current password is required"),
+		newPassword: z.string().min(8, "Password must be at least 8 characters"),
+		confirmPassword: z.string(),
+	})
+	.refine((d) => d.newPassword === d.confirmPassword, {
+		message: "Passwords do not match",
+		path: ["confirmPassword"],
+	});
+type PasswordForm = z.infer<typeof passwordSchema>;
 
 function ProfilePage() {
 	const { t } = useTranslation();
@@ -43,62 +76,54 @@ function ProfilePage() {
 			toast.success(t("profile.updated", "Profile updated"));
 			profileQuery.refetch();
 		},
-		onError: (err) =>
-			toast.error(
-				err.message ?? t("profile.failedToUpdate", "Failed to update profile"),
-			),
+		onError: (err) => toast.error(err.message),
 	});
-
 	const deleteAccountMutation = trpc.user.deleteAccount.useMutation({
 		onSuccess: () => {
 			toast.success(t("settings.deleted", "Account deleted"));
 			navigate({ to: "/" });
 		},
-		onError: (err) => {
-			toast.error(
-				err.message ?? t("settings.failedToDelete", "Failed to delete account"),
-			);
+		onError: (err) => toast.error(err.message),
+	});
+
+	const profileForm = useForm<ProfileForm>({
+		resolver: zodResolver(profileSchema),
+		defaultValues: { name: "" },
+	});
+
+	const passwordForm = useForm<PasswordForm>({
+		resolver: zodResolver(passwordSchema),
+		defaultValues: {
+			currentPassword: "",
+			newPassword: "",
+			confirmPassword: "",
 		},
 	});
 
-	const [name, setName] = useState("");
-	const [currentPassword, setCurrentPassword] = useState("");
-	const [newPassword, setNewPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
 	const [isChangingPassword, setIsChangingPassword] = useState(false);
 
 	useEffect(() => {
 		if (profileQuery.data?.name) {
-			setName(profileQuery.data.name);
+			profileForm.reset({ name: profileQuery.data.name });
 		}
-	}, [profileQuery.data]);
+	}, [profileQuery.data, profileForm]);
 
-	const handleSave = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!name.trim()) {
-			toast.error(t("profile.nameEmpty", "Name cannot be empty"));
-			return;
-		}
-		updateMutation.mutate({ name: name.trim() });
-	};
+	const user = profileQuery.data;
+	const initials = user?.name
+		? user.name
+				.split(" ")
+				.map((n) => n[0])
+				.join("")
+				.toUpperCase()
+				.slice(0, 2)
+		: user?.email?.[0]?.toUpperCase() ?? "?";
 
-	const handleChangePassword = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (newPassword !== confirmPassword) {
-			toast.error(t("profile.passwordMismatch", "Passwords do not match"));
-			return;
-		}
-		if (newPassword.length < 8) {
-			toast.error(
-				t("profile.passwordTooShort", "Password must be at least 8 characters"),
-			);
-			return;
-		}
+	const handleChangePassword = async (data: PasswordForm) => {
 		setIsChangingPassword(true);
 		try {
 			const { error } = await authClient.changePassword({
-				currentPassword,
-				newPassword,
+				currentPassword: data.currentPassword,
+				newPassword: data.newPassword,
 				revokeOtherSessions: false,
 			});
 			if (error) {
@@ -107,12 +132,8 @@ function ProfilePage() {
 						t("profile.passwordChangeFailed", "Failed to change password"),
 				);
 			} else {
-				toast.success(
-					t("profile.passwordChanged", "Password changed successfully"),
-				);
-				setCurrentPassword("");
-				setNewPassword("");
-				setConfirmPassword("");
+				toast.success(t("profile.passwordChanged", "Password changed"));
+				passwordForm.reset();
 			}
 		} finally {
 			setIsChangingPassword(false);
@@ -126,87 +147,118 @@ function ProfilePage() {
 					{t("profile.title", "Profile")}
 				</h1>
 				<p className="text-muted-foreground text-sm">
-					{t("profile.subtitle", "Manage your personal information")}
+					{t("profile.subtitle", "Manage your personal information and security.")}
 				</p>
 			</div>
+			<Separator />
 
-			{/* Personal information */}
+			{/* Avatar + info */}
 			<Card>
 				<CardHeader>
 					<CardTitle className="text-base">
 						{t("profile.cardTitle", "Personal information")}
 					</CardTitle>
 					<CardDescription>
-						{t(
-							"profile.cardDescription",
-							"Update your name and account details",
-						)}
+						{t("profile.cardDescription", "Update your display name and review account details.")}
 					</CardDescription>
 				</CardHeader>
-				<CardContent>
-					{profileQuery.isLoading ? (
+				<CardContent className="space-y-6">
+					{/* Avatar row */}
+					<div className="flex items-center gap-4">
+						{profileQuery.isPending ? (
+							<Skeleton className="size-16 rounded-full" />
+						) : (
+							<Avatar size="lg" className="size-16 text-lg">
+								{user?.image && (
+									<AvatarImage src={user.image} alt={user.name ?? ""} />
+								)}
+								<AvatarFallback>{initials}</AvatarFallback>
+							</Avatar>
+						)}
+						<div className="min-w-0">
+							{profileQuery.isPending ? (
+								<>
+									<Skeleton className="mb-1 h-5 w-32" />
+									<Skeleton className="h-4 w-44" />
+								</>
+							) : (
+								<>
+									<p className="truncate font-semibold">{user?.name ?? "—"}</p>
+									<p className="truncate text-muted-foreground text-sm">
+										{user?.email ?? "—"}
+									</p>
+								</>
+							)}
+						</div>
+					</div>
+
+					{profileQuery.isPending ? (
 						<div className="space-y-3">
 							<Skeleton className="h-9 w-full" />
 							<Skeleton className="h-9 w-full" />
-							<Skeleton className="h-9 w-24" />
 						</div>
 					) : (
-						<form onSubmit={handleSave} className="space-y-4">
-							<div className="space-y-1.5">
-								<Label htmlFor="name">
-									{t("profile.fullName", "Full name")}
-								</Label>
-								<Input
-									id="name"
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									placeholder={t("profile.namePlaceholder", "Your name")}
-									required
-								/>
-							</div>
-							<div className="space-y-1.5">
-								<div className="flex items-center justify-between">
-									<Label htmlFor="email">
-										{t("profile.emailAddress", "Email address")}
-									</Label>
-									{profileQuery.data?.emailVerified ? (
-										<Badge
-											variant="secondary"
-											className="gap-1 text-green-700 text-xs dark:text-green-400"
-										>
-											<CheckCircle2 className="size-3" />
-											{t("profile.verified", "Verified")}
-										</Badge>
-									) : (
-										<Badge variant="destructive" className="gap-1 text-xs">
-											<XCircle className="size-3" />
-											{t("profile.notVerified", "Not verified")}
-										</Badge>
-									)}
-								</div>
-								<Input
-									id="email"
-									value={profileQuery.data?.email ?? ""}
-									disabled
-									className="bg-muted"
-								/>
-								<p className="text-muted-foreground text-xs">
-									{t(
-										"profile.emailNote",
-										"Email changes require verification. Contact support to update.",
-									)}
-								</p>
-							</div>
-							<Button
-								type="submit"
-								disabled={updateMutation.isPending || !name.trim()}
-							>
-								{updateMutation.isPending && (
-									<Loader2 className="mr-2 size-4 animate-spin" />
+						<Form {...profileForm}>
+							<form
+								onSubmit={profileForm.handleSubmit((d) =>
+									updateMutation.mutate({ name: d.name }),
 								)}
-								{t("profile.save", "Save changes")}
-							</Button>
-						</form>
+								className="space-y-4"
+							>
+								<FormField
+									control={profileForm.control}
+									name="name"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>{t("profile.fullName", "Full name")}</FormLabel>
+											<FormControl>
+												<Input
+													placeholder={t("profile.namePlaceholder", "Your name")}
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								<div className="space-y-1.5">
+									<div className="flex items-center justify-between">
+										<FormLabel>{t("profile.emailAddress", "Email address")}</FormLabel>
+										{user?.emailVerified ? (
+											<Badge
+												variant="secondary"
+												className="gap-1 text-green-700 text-xs dark:text-green-400"
+											>
+												<CheckCircle2 className="size-3" />
+												{t("profile.verified", "Verified")}
+											</Badge>
+										) : (
+											<Badge variant="destructive" className="gap-1 text-xs">
+												<XCircle className="size-3" />
+												{t("profile.notVerified", "Not verified")}
+											</Badge>
+										)}
+									</div>
+									<Input value={user?.email ?? ""} disabled className="bg-muted" />
+									<p className="text-muted-foreground text-xs">
+										{t("profile.emailNote", "Contact support to update your email.")}
+									</p>
+								</div>
+
+								<Button
+									type="submit"
+									disabled={
+										updateMutation.isPending || !profileForm.formState.isDirty
+									}
+								>
+									{updateMutation.isPending && (
+										<Loader2 className="mr-2 size-4 animate-spin" />
+									)}
+									{t("profile.save", "Save changes")}
+								</Button>
+							</form>
+						</Form>
 					)}
 				</CardContent>
 			</Card>
@@ -218,71 +270,80 @@ function ProfilePage() {
 						{t("profile.changePassword", "Change password")}
 					</CardTitle>
 					<CardDescription>
-						{t(
-							"profile.changePasswordDesc",
-							"Update your password to keep your account secure",
-						)}
+						{t("profile.changePasswordDesc", "Keep your account secure with a strong password.")}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form onSubmit={handleChangePassword} className="space-y-4">
-						<div className="space-y-1.5">
-							<Label htmlFor="current-password">
-								{t("profile.currentPassword", "Current password")}
-							</Label>
-							<Input
-								id="current-password"
-								type="password"
-								value={currentPassword}
-								onChange={(e) => setCurrentPassword(e.target.value)}
-								placeholder="••••••••"
-								required
-								autoComplete="current-password"
-							/>
-						</div>
-						<div className="space-y-1.5">
-							<Label htmlFor="new-password">
-								{t("profile.newPassword", "New password")}
-							</Label>
-							<Input
-								id="new-password"
-								type="password"
-								value={newPassword}
-								onChange={(e) => setNewPassword(e.target.value)}
-								placeholder="••••••••"
-								required
-								autoComplete="new-password"
-							/>
-						</div>
-						<div className="space-y-1.5">
-							<Label htmlFor="confirm-password">
-								{t("profile.confirmPassword", "Confirm new password")}
-							</Label>
-							<Input
-								id="confirm-password"
-								type="password"
-								value={confirmPassword}
-								onChange={(e) => setConfirmPassword(e.target.value)}
-								placeholder="••••••••"
-								required
-								autoComplete="new-password"
-							/>
-						</div>
-						<Button
-							type="submit"
-							disabled={
-								isChangingPassword ||
-								!currentPassword ||
-								!newPassword ||
-								!confirmPassword
-							}
+					<Form {...passwordForm}>
+						<form
+							onSubmit={passwordForm.handleSubmit(handleChangePassword)}
+							className="space-y-4"
 						>
-							{isChangingPassword && (
-								<Loader2 className="mr-2 size-4 animate-spin" />
-							)}
-							{t("profile.updatePassword", "Update password")}
-						</Button>
-					</form>
+							<FormField
+								control={passwordForm.control}
+								name="currentPassword"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("profile.currentPassword", "Current password")}</FormLabel>
+										<FormControl>
+											<Input
+												type="password"
+												placeholder="••••••••"
+												autoComplete="current-password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={passwordForm.control}
+								name="newPassword"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("profile.newPassword", "New password")}</FormLabel>
+										<FormControl>
+											<Input
+												type="password"
+												placeholder="••••••••"
+												autoComplete="new-password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={passwordForm.control}
+								name="confirmPassword"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t("profile.confirmPassword", "Confirm new password")}</FormLabel>
+										<FormControl>
+											<Input
+												type="password"
+												placeholder="••••••••"
+												autoComplete="new-password"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<Button
+								type="submit"
+								disabled={isChangingPassword || !passwordForm.formState.isDirty}
+							>
+								{isChangingPassword && (
+									<Loader2 className="mr-2 size-4 animate-spin" />
+								)}
+								{t("profile.updatePassword", "Update password")}
+							</Button>
+						</form>
+					</Form>
 				</CardContent>
 			</Card>
 
@@ -293,10 +354,7 @@ function ProfilePage() {
 						{t("settings.dangerZone", "Danger zone")}
 					</CardTitle>
 					<CardDescription>
-						{t(
-							"settings.dangerZoneDesc",
-							"Irreversible actions — proceed with caution",
-						)}
+						{t("settings.dangerZoneDesc", "Irreversible actions — proceed with caution.")}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -306,10 +364,7 @@ function ProfilePage() {
 								{t("settings.deleteAccount", "Delete account")}
 							</p>
 							<p className="text-muted-foreground text-xs">
-								{t(
-									"settings.deleteAccountDesc",
-									"Permanently delete your account and all data",
-								)}
+								{t("settings.deleteAccountDesc", "Permanently delete your account and all data.")}
 							</p>
 						</div>
 						<AlertDialog>
@@ -328,10 +383,7 @@ function ProfilePage() {
 							<AlertDialogContent>
 								<AlertDialogHeader>
 									<AlertDialogTitle>
-										{t(
-											"settings.deleteAccountConfirmTitle",
-											"Are you absolutely sure?",
-										)}
+										{t("settings.deleteAccountConfirmTitle", "Are you absolutely sure?")}
 									</AlertDialogTitle>
 									<AlertDialogDescription>
 										{t(
@@ -341,9 +393,7 @@ function ProfilePage() {
 									</AlertDialogDescription>
 								</AlertDialogHeader>
 								<AlertDialogFooter>
-									<AlertDialogCancel>
-										{t("settings.cancel", "Cancel")}
-									</AlertDialogCancel>
+									<AlertDialogCancel>{t("settings.cancel", "Cancel")}</AlertDialogCancel>
 									<AlertDialogAction
 										onClick={() => deleteAccountMutation.mutate()}
 										className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

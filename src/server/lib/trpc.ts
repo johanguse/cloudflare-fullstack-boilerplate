@@ -1,4 +1,6 @@
-import { initTRPC, TRPCError } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
+import { eq } from "drizzle-orm";
+import * as authSchema from "../db/schema/auth";
 import type { tRPCContext } from "./types";
 
 export const t = initTRPC.context<tRPCContext>().create();
@@ -19,4 +21,20 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 			session: ctx.session,
 		},
 	});
+});
+
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+	const dbUser = await ctx.db
+		.select({ role: authSchema.user.role })
+		.from(authSchema.user)
+		.where(eq(authSchema.user.id, ctx.session.userId))
+		.get();
+
+	if (dbUser?.role !== "admin") {
+		throw new TRPCError({
+			code: "FORBIDDEN",
+			message: "Admin access required",
+		});
+	}
+	return next({ ctx });
 });

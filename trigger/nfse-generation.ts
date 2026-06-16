@@ -39,10 +39,10 @@ export const nfseGenerationTask = task({
 		metadata.set("status", "starting");
 
 		// ------------------------------------------------------------------
-		// 1. Fetch invoice + company settings via internal API
+		// 1. Fetch invoice + optional user service description defaults
 		// ------------------------------------------------------------------
 
-		logger.info("Fetching invoice and company settings", { invoiceId });
+		logger.info("Fetching invoice data", { invoiceId });
 		metadata.set("status", "fetching_data");
 
 		const invoiceRes = await fetch(
@@ -65,44 +65,18 @@ export const nfseGenerationTask = task({
 				id: string;
 				number: string;
 				amountTotal: number;
-				amountTax: number;
 				currency: string;
 				customerName: string | null;
 				customerEmail: string | null;
 				customerDocument: string | null;
 				description: string | null;
 			};
-			companySettings: {
-				cnpj: string;
-				razaoSocial: string;
-				inscricaoMunicipal: string;
-				serviceDescription: string;
-				cnaeCode: string;
-				cityCode: number;
-				issRate: number;
-			} | null;
+			serviceDescription: string | null;
+			productName: string | null;
 		};
 
-		const invoiceData = (await invoiceRes.json()) as InvoiceData;
-		const { invoice, companySettings } = invoiceData;
-
-		if (!companySettings?.cnpj) {
-			await updateNfseStatus(internalApiUrl, internalApiKey, nfseRecordId, {
-				status: "error",
-				errorMessage: "Company settings not configured. Set CNPJ and fiscal data in Settings → Company.",
-			});
-			logger.warn("NFSe emission skipped: company settings missing");
-			return { skipped: true, reason: "company_settings_missing" };
-		}
-
-		if (!invoice.customerDocument) {
-			await updateNfseStatus(internalApiUrl, internalApiKey, nfseRecordId, {
-				status: "error",
-				errorMessage: "Customer document (CPF/CNPJ) required for NFSe emission.",
-			});
-			logger.warn("NFSe emission skipped: customer document missing");
-			return { skipped: true, reason: "customer_document_missing" };
-		}
+		const { invoice, serviceDescription, productName } =
+			(await invoiceRes.json()) as InvoiceData;
 
 		// ------------------------------------------------------------------
 		// 2. Update status to processing
@@ -114,36 +88,31 @@ export const nfseGenerationTask = task({
 		metadata.set("status", "emitting");
 
 		// ------------------------------------------------------------------
-		// 3. Emit to Fiscal Nacional
+		// 3. Emit via internal API (which calls Fiscal Nacional External API)
 		// ------------------------------------------------------------------
 
-		logger.info("Emitting NFSe to Fiscal Nacional", {
-			cnpj: companySettings.cnpj,
-			invoiceId,
-		});
+		logger.info("Emitting NFSe", { invoiceId });
 
-		const emitRes = await fetch(
-			`${internalApiUrl}/api/internal/nfse/emit`,
-			{
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${internalApiKey}`,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					nfseRecordId,
-					invoice: {
-						id: invoice.id,
-						amountTotal: invoice.amountTotal,
-						customerName: invoice.customerName,
-						customerEmail: invoice.customerEmail,
-						customerDocument: invoice.customerDocument,
-						description: invoice.description,
-					},
-					companySettings,
-				}),
+		const emitRes = await fetch(`${internalApiUrl}/api/internal/nfse/emit`, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${internalApiKey}`,
+				"Content-Type": "application/json",
 			},
-		);
+			body: JSON.stringify({
+				nfseRecordId,
+				invoice: {
+					id: invoice.id,
+					amountTotal: invoice.amountTotal,
+					customerName: invoice.customerName,
+					customerEmail: invoice.customerEmail,
+					customerDocument: invoice.customerDocument,
+					description: invoice.description,
+				},
+				serviceDescription,
+				productName,
+			}),
+		});
 
 		if (!emitRes.ok) {
 			const body = await emitRes.text();
@@ -157,15 +126,24 @@ export const nfseGenerationTask = task({
 
 		type EmitResult = {
 			fiscalNacionalId: string;
+			fiscalNacionalReference: string;
 			status: string;
 		};
 
 		const emitResult = (await emitRes.json()) as EmitResult;
-		logger.info("NFSe emission initiated", { fiscalNacionalId: emitResult.fiscalNacionalId });
-		metadata.set("fiscalNacionalId", emitResult.fiscalNacionalId);
+		logger.info("NFSe emission initiated", {
+			reference: emitResult.fiscalNacionalReference,
+		});
+		metadata.set("fiscalNacionalReference", emitResult.fiscalNacionalReference);
+
+		// Synchronous result (invoice_only or already issued)
+		if (emitResult.status === "issued" || emitResult.status === "invoice_only") {
+			metadata.set("status", emitResult.status);
+			return { issued: true, reference: emitResult.fiscalNacionalReference };
+		}
 
 		// ------------------------------------------------------------------
-		// 4. Poll until issued or error (up to ~5 minutes)
+		// 4. Poll for status (up to ~5 minutes)
 		// ------------------------------------------------------------------
 
 		metadata.set("status", "polling");
@@ -178,12 +156,8 @@ export const nfseGenerationTask = task({
 			metadata.set("pollAttempts", pollAttempts);
 
 			const statusRes = await fetch(
-				`${internalApiUrl}/api/internal/nfse/status/${emitResult.fiscalNacionalId}`,
-				{
-					headers: {
-						Authorization: `Bearer ${internalApiKey}`,
-					},
-				},
+				`${internalApiUrl}/api/internal/nfse/status/${encodeURIComponent(emitResult.fiscalNacionalReference)}`,
+				{ headers: { Authorization: `Bearer ${internalApiKey}` } },
 			);
 
 			if (!statusRes.ok) {
@@ -192,11 +166,11 @@ export const nfseGenerationTask = task({
 			}
 
 			type StatusResult = {
-				status: "pending" | "processing" | "issued" | "error" | "cancelled";
+				status: "pending" | "processing" | "issued" | "error" | "cancelled" | "invoice_only";
 				nfseNumber?: string;
-				nfseVerificationCode?: string;
 				pdfUrl?: string;
 				xmlUrl?: string;
+				invoiceUrl?: string;
 				errorMessage?: string;
 				issuedAt?: string;
 			};
@@ -205,38 +179,29 @@ export const nfseGenerationTask = task({
 			logger.info("NFSe status", { status: statusResult.status, attempt: pollAttempts });
 
 			if (statusResult.status === "issued") {
-				// Update DB record with final state
 				await updateNfseStatus(internalApiUrl, internalApiKey, nfseRecordId, {
 					status: "issued",
 					nfseNumber: statusResult.nfseNumber,
-					nfseVerificationCode: statusResult.nfseVerificationCode,
 					pdfUrl: statusResult.pdfUrl,
 					xmlUrl: statusResult.xmlUrl,
+					invoiceUrl: statusResult.invoiceUrl,
 					issuedAt: statusResult.issuedAt,
 				});
 
-				// Store PDF/XML in R2 if URLs are available
 				if (statusResult.pdfUrl ?? statusResult.xmlUrl) {
 					await storeNfseFiles(
 						internalApiUrl,
 						internalApiKey,
 						nfseRecordId,
-						emitResult.fiscalNacionalId,
+						emitResult.fiscalNacionalReference,
 						statusResult.pdfUrl,
 						statusResult.xmlUrl,
 					);
 				}
 
 				metadata.set("status", "issued");
-				logger.info("NFSe issued successfully", {
-					nfseNumber: statusResult.nfseNumber,
-				});
-
-				return {
-					issued: true,
-					fiscalNacionalId: emitResult.fiscalNacionalId,
-					nfseNumber: statusResult.nfseNumber,
-				};
+				logger.info("NFSe issued", { nfseNumber: statusResult.nfseNumber });
+				return { issued: true, reference: emitResult.fiscalNacionalReference };
 			}
 
 			if (statusResult.status === "error" || statusResult.status === "cancelled") {
@@ -249,7 +214,6 @@ export const nfseGenerationTask = task({
 			}
 		}
 
-		// Timed out polling — mark as error for manual retry
 		const timeoutMsg = "NFSe status polling timed out after 10 attempts";
 		await updateNfseStatus(internalApiUrl, internalApiKey, nfseRecordId, {
 			status: "error",
@@ -260,7 +224,7 @@ export const nfseGenerationTask = task({
 });
 
 // ---------------------------------------------------------------------------
-// Helpers — thin wrappers around internal API calls
+// Helpers
 // ---------------------------------------------------------------------------
 
 async function updateNfseStatus(
@@ -268,11 +232,11 @@ async function updateNfseStatus(
 	apiKey: string,
 	nfseRecordId: string,
 	data: {
-		status: "pending" | "processing" | "issued" | "error" | "cancelled";
+		status: "pending" | "processing" | "issued" | "error" | "cancelled" | "invoice_only";
 		nfseNumber?: string;
-		nfseVerificationCode?: string;
 		pdfUrl?: string;
 		xmlUrl?: string;
+		invoiceUrl?: string;
 		errorMessage?: string;
 		issuedAt?: string;
 	},
@@ -291,7 +255,7 @@ async function storeNfseFiles(
 	baseUrl: string,
 	apiKey: string,
 	nfseRecordId: string,
-	fiscalNacionalId: string,
+	reference: string,
 	pdfUrl?: string,
 	xmlUrl?: string,
 ) {
@@ -301,6 +265,6 @@ async function storeNfseFiles(
 			Authorization: `Bearer ${apiKey}`,
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ fiscalNacionalId, pdfUrl, xmlUrl }),
+		body: JSON.stringify({ reference, pdfUrl, xmlUrl }),
 	});
 }

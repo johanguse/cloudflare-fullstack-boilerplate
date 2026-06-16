@@ -8,8 +8,6 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuPortal,
 	DropdownMenuSeparator,
 	DropdownMenuSub,
 	DropdownMenuSubContent,
@@ -26,8 +24,9 @@ import {
 	CreditCard,
 	Languages,
 	LogOut,
+	Monitor,
 	Moon,
-	Settings,
+	Settings2,
 	Sun,
 	User,
 } from "lucide-react";
@@ -37,6 +36,12 @@ const LANGUAGES = [
 	{ code: "en", label: "English", flag: "🇺🇸" },
 	{ code: "pt-BR", label: "Português (BR)", flag: "🇧🇷" },
 	{ code: "es", label: "Español", flag: "🇪🇸" },
+] as const;
+
+const THEMES = [
+	{ value: "light" as const, label: "Light", Icon: Sun },
+	{ value: "dark" as const, label: "Dark", Icon: Moon },
+	{ value: "system" as const, label: "System", Icon: Monitor },
 ] as const;
 
 export function UserMenu() {
@@ -61,8 +66,6 @@ export function UserMenu() {
 		await authClient.signOut();
 		navigate({ to: "/login" });
 	};
-
-	const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
 	const currentLang = i18n.language;
 
@@ -92,90 +95,102 @@ export function UserMenu() {
 					<ChevronsUpDown className="ml-auto size-4 shrink-0" />
 				</SidebarMenuButton>
 			</DropdownMenuTrigger>
+
 			<DropdownMenuContent
 				align="end"
 				side="top"
 				className="w-60 rounded-xl"
 				sideOffset={4}
 			>
-				<DropdownMenuLabel className="font-normal">
-					<div className="flex flex-col space-y-1">
-						<p className="font-medium text-sm leading-none">
-							{user.name ?? "User"}
-						</p>
-						<p className="text-muted-foreground text-xs leading-none">
-							{user.email}
-						</p>
-					</div>
-				</DropdownMenuLabel>
+				{/* User info header — plain div, not a GroupLabel */}
+				<div className="flex flex-col gap-0.5 px-2 py-1.5">
+					<p className="truncate font-medium text-sm leading-none">
+						{user.name ?? "User"}
+					</p>
+					<p className="truncate text-muted-foreground text-xs leading-none">
+						{user.email}
+					</p>
+				</div>
+
 				<DropdownMenuSeparator />
+
 				<DropdownMenuItem asChild>
-					<Link
-						to="/dashboard/profile"
-						className="flex cursor-pointer items-center"
-					>
-						<User className="mr-2 size-4" />
+					<Link to="/dashboard/profile">
+						<User className="size-4" />
 						{t("userMenu.profile", "Profile")}
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<Link
-						to="/dashboard/settings"
-						className="flex cursor-pointer items-center"
-					>
-						<Settings className="mr-2 size-4" />
+					<Link to="/dashboard/settings">
+						<Settings2 className="size-4" />
 						{t("userMenu.settings", "Settings")}
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<Link
-						to="/dashboard/billing"
-						className="flex cursor-pointer items-center"
-					>
-						<CreditCard className="mr-2 size-4" />
+					<Link to="/dashboard/billing">
+						<CreditCard className="size-4" />
 						{t("userMenu.billing", "Billing")}
 					</Link>
 				</DropdownMenuItem>
+
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
-					{theme === "dark" ? (
-						<Sun className="mr-2 size-4" />
-					) : (
-						<Moon className="mr-2 size-4" />
-					)}
-					{theme === "dark"
-						? t("userMenu.lightMode", "Light mode")
-						: t("userMenu.darkMode", "Dark mode")}
-				</DropdownMenuItem>
+
+				{/* Theme submenu */}
 				<DropdownMenuSub>
-					<DropdownMenuSubTrigger className="cursor-pointer">
-						<Languages className="mr-2 size-4" />
+					<DropdownMenuSubTrigger>
+						{theme === "dark" ? (
+							<Moon className="size-4" />
+						) : theme === "light" ? (
+							<Sun className="size-4" />
+						) : (
+							<Monitor className="size-4" />
+						)}
+						{t("userMenu.appearance", "Appearance")}
+					</DropdownMenuSubTrigger>
+					<DropdownMenuSubContent>
+						{THEMES.map(({ value, label, Icon }) => (
+							<DropdownMenuItem
+								key={value}
+								onClick={() => setTheme(value)}
+							>
+								<Icon className="size-4" />
+								{t(`userMenu.theme.${value}`, label)}
+								{theme === value && <Check className="ml-auto size-3.5" />}
+							</DropdownMenuItem>
+						))}
+					</DropdownMenuSubContent>
+				</DropdownMenuSub>
+
+				{/* Language submenu */}
+				<DropdownMenuSub>
+					<DropdownMenuSubTrigger>
+						<Languages className="size-4" />
 						{t("userMenu.language", "Language")}
 					</DropdownMenuSubTrigger>
-					<DropdownMenuPortal>
-						<DropdownMenuSubContent>
-							{LANGUAGES.map((lang) => (
-								<DropdownMenuItem
-									key={lang.code}
-									className="cursor-pointer gap-2"
-									onClick={() => i18n.changeLanguage(lang.code)}
-								>
-									<span>{lang.flag}</span>
-									<span>{lang.label}</span>
-									{currentLang === lang.code && (
-										<Check className="ml-auto size-3.5" />
-									)}
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuSubContent>
-					</DropdownMenuPortal>
+					<DropdownMenuSubContent>
+						{LANGUAGES.map((lang) => (
+							<DropdownMenuItem
+								key={lang.code}
+								onClick={() => i18n.changeLanguage(lang.code)}
+							>
+								<span>{lang.flag}</span>
+								<span>{lang.label}</span>
+								{(currentLang === lang.code ||
+									currentLang.startsWith(lang.code.split("-")[0])) && (
+									<Check className="ml-auto size-3.5" />
+								)}
+							</DropdownMenuItem>
+						))}
+					</DropdownMenuSubContent>
 				</DropdownMenuSub>
+
 				<DropdownMenuSeparator />
+
 				<DropdownMenuItem
 					onClick={handleSignOut}
-					className="cursor-pointer text-destructive focus:text-destructive"
+					className="text-destructive focus:text-destructive"
 				>
-					<LogOut className="mr-2 size-4" />
+					<LogOut className="size-4" />
 					{t("userMenu.signOut", "Sign out")}
 				</DropdownMenuItem>
 			</DropdownMenuContent>

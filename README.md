@@ -1,6 +1,6 @@
 # Cloudflare SaaS Boilerplate
 
-Production-minded monolith: **Hono** on **Cloudflare Workers**, **React 19** SPA (TanStack Router), **D1** + **Drizzle**, **Better Auth**, **Stripe** billing, **NFSe** via Fiscal Nacional, **Trigger.dev** jobs, **Cloudflare Email**, optional **Sentry** and **PostHog**.
+Production-ready SaaS starter: **Hono** on **Cloudflare Workers**, **React 19** SPA (TanStack Router), **D1** + **Drizzle**, **Better Auth**, **Stripe** billing, **Trigger.dev** background jobs, **Cloudflare Email**, optional **Sentry** and **PostHog**.
 
 ## Architecture
 
@@ -22,9 +22,26 @@ flowchart LR
   Trigger[Trigger.dev] -. internal API .-> R1
 ```
 
-- **Single Worker** serves the API and static client (`run_worker_first: true`).
+- **Single Worker** serves both the API and the static client (`run_worker_first: true`).
 - **Dashboard** uses **tRPC**; **REST** exposes webhooks and public API routes.
-- **Background work** (e.g. NFSe polling) uses **Trigger.dev** calling an **internal** REST route.
+- **Background work** uses **Trigger.dev** calling an internal REST route.
+
+## What's included
+
+| Area | Details |
+|------|---------|
+| Auth | Email/password, email OTP, Google + GitHub OAuth (Better Auth) |
+| Dashboard | Sidebar layout, KPI overview, profile editor, account settings |
+| Billing | Stripe subscriptions + credit system, Checkout, Customer Portal, webhooks |
+| Invoices | Auto-generated on payment, PDF download, CSV export, manual creation |
+| Email | Cloudflare Email binding — welcome, verify, reset, receipts, alerts |
+| API Keys | Create / revoke keys, SHA-256 stored, full key shown once |
+| Notifications | Per-user email notification preferences |
+| Background jobs | Trigger.dev tasks with internal API auth |
+| Observability | Sentry (Workers + React), PostHog, Cloudflare `observability.enabled` |
+| i18n | i18next wired, locale files for `en`, `pt-BR`, `es` |
+| Tests | Vitest + `@cloudflare/vitest-pool-workers` |
+| CI/CD | GitHub Actions — lint/type-check/test, PR checks, production deploy |
 
 ## Quick start
 
@@ -40,7 +57,7 @@ bun install
 bash scripts/setup.sh
 ```
 
-Then update `wrangler.jsonc` with the real `database_id` and KV namespace IDs printed by the script. See [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for details.
+Update `wrangler.jsonc` with the `database_id` and KV namespace IDs printed by the script. Full details in [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md).
 
 ### 3. Configure secrets
 
@@ -56,53 +73,49 @@ Minimum required for local dev:
 | `BETTER_AUTH_SECRET` | Any 32+ char random string |
 | `STRIPE_API_KEY` | `sk_test_...` from Stripe dashboard |
 | `STRIPE_WEBHOOK_SECRET` | From `bun stripe:listen` output |
-| `INTERNAL_API_KEY` | Any random string (used by Trigger.dev) |
+| `INTERNAL_API_KEY` | Any random string (Trigger.dev auth) |
 
-OAuth (`BETTER_AUTH_GOOGLE_*`, `BETTER_AUTH_GITHUB_*`) and NFSe/Trigger keys are optional for basic local dev.
+OAuth (`BETTER_AUTH_GOOGLE_*`, `BETTER_AUTH_GITHUB_*`) and Trigger.dev keys are optional for basic local dev.
 
 ### 4. Set up the database
 
 ```bash
 bun db:migrate       # Apply all migrations to local D1
-bun db:seed:local    # Insert seed users (see table below)
+bun db:seed:local    # Insert seed accounts
 ```
 
 ### 5. Start the development server
 
 ```bash
 bun dev
-# → http://localhost:5173  (client HMR + worker inline via @cloudflare/vite-plugin)
+# → http://localhost:5173
 ```
 
-`bun dev` runs **both** the React client (with hot reload) and the Cloudflare Worker in the same Vite process — no separate wrangler needed.
+`bun dev` runs the React client (with HMR) and the Cloudflare Worker together via `@cloudflare/vite-plugin` — no separate wrangler process needed.
 
-Convenience script (also starts Trigger.dev if `TRIGGER_API_KEY` is set):
+To also start Trigger.dev:
 
 ```bash
 bun run dev:all:wsl   # WSL / Linux
 bun run dev:all:mac   # macOS (opens Terminal tabs)
 ```
 
-For local Stripe webhooks in a second terminal:
+For Stripe webhooks in a second terminal:
 
 ```bash
 bun stripe:listen     # Forwards to localhost:5173/api/v1/webhooks/stripe
 ```
 
-> **`bun cf:dev`** runs wrangler standalone (`--env local`) and is useful for testing production-like Worker behaviour. It requires `dist/client` to exist, but the updated script creates the directory automatically. Access the app via `bun dev` (port 5173) during normal development.
-
 ---
 
 ## Seed accounts
-
-After running `bun db:seed:local` the following accounts are available:
 
 | Email | Password | Plan | Credits |
 |-------|----------|------|---------|
 | `admin@example.com` | `Admin1234!` | Professional | 600 |
 | `user@example.com` | `User1234!` | Free | 50 |
 
-Both accounts have email already verified so you can sign in immediately without going through the email verification flow.
+Both accounts have email pre-verified.
 
 ---
 
@@ -115,7 +128,7 @@ Both accounts have email already verified so you can sign in immediately without
 | `bun dev` | Vite + worker inline (port 5173) — primary dev command |
 | `bun run dev:all:wsl` | Vite + Trigger.dev in parallel (WSL) |
 | `bun run dev:all:mac` | Vite + Trigger.dev in separate tabs (macOS) |
-| `bun cf:dev` | Wrangler standalone (`--env local`, port 8787) — production-like testing |
+| `bun cf:dev` | Wrangler standalone (`--env local`, port 8787) |
 
 ### Quality
 
@@ -134,8 +147,8 @@ Both accounts have email already verified so you can sign in immediately without
 | `bun db:migrate` | Apply migrations to local D1 |
 | `bun db:migrate:staging` | Apply migrations to staging D1 |
 | `bun db:migrate:prod` | Apply migrations to production D1 |
-| `bun db:seed:local` | Seed local database with dev accounts |
-| `bun db:seed:staging` | Seed staging database (via wrangler remote) |
+| `bun db:seed:local` | Seed local database |
+| `bun db:seed:staging` | Seed staging database |
 | `bun db:reset` | Reset local database (wipe data, keep schema) |
 | `bun db:studio` | Open Drizzle Studio (local DB) |
 
@@ -144,8 +157,8 @@ Both accounts have email already verified so you can sign in immediately without
 | Command | Description |
 |---------|-------------|
 | `bun build` | TypeScript + Vite build |
-| `bun build:staging` | Build for staging environment |
-| `bun build:production` | Build for production environment |
+| `bun build:staging` | Build for staging |
+| `bun build:production` | Build for production |
 | `bun cf:check` | Type-check + build + dry-run deploy |
 | `bun cf:deploy` | Deploy to production |
 | `bun cf:deploy:staging` | Deploy to staging |
@@ -167,9 +180,8 @@ Both accounts have email already verified so you can sign in immediately without
 |-----|---------|
 | [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Staging/production deploy, secrets, Sentry source maps |
 | [docs/STRIPE_SETUP.md](./docs/STRIPE_SETUP.md) | Stripe products, webhooks, test mode |
-| [docs/NFSE_SETUP.md](./docs/NFSE_SETUP.md) | Fiscal Nacional external API reference |
-| [docs/EMAIL_SETUP.md](./docs/EMAIL_SETUP.md) | Cloudflare Email binding, DNS setup |
-| [docs/TODO.md](./docs/TODO.md) | Task IDs and phases |
+| [docs/EMAIL_SETUP.md](./docs/EMAIL_SETUP.md) | Cloudflare Email binding, DNS (SPF/DKIM/DMARC) |
+| [docs/NFSE_SETUP.md](./docs/NFSE_SETUP.md) | Fiscal Nacional External API — NFS-e integration |
 
 ## CI/CD
 
@@ -181,21 +193,20 @@ Three GitHub Actions workflows in `.github/workflows/`:
 | `pr-checks.yml` | PR to `main` | quality matrix · DB schema validation · test · security scan |
 | `deploy-production.yml` | Push to `main` + manual | typecheck → build → D1 migrations → wrangler deploy |
 
-**Required GitHub secrets** for the deploy workflow:
-- `CLOUDFLARE_API_TOKEN` — Wrangler deploy token
-- `CLOUDFLARE_ACCOUNT_ID`
+**Required GitHub secrets:**
+- `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
 - `VITE_SENTRY_DSN`, `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST` (optional)
-- `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` (optional source maps)
+- `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` (optional, for source maps)
 
 ## Observability
 
-- **Workers:** `SENTRY_DSN` secret + `@sentry/cloudflare` (Hono integration). Omit the DSN to disable.
-- **Browser:** `VITE_SENTRY_DSN` at Vite build time; `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` for PostHog analytics.
-- **Cloudflare:** `observability.enabled` in `wrangler.jsonc`.
+- **Workers:** `SENTRY_DSN` secret + `@sentry/cloudflare`. Omit the DSN to disable.
+- **Browser:** `VITE_SENTRY_DSN` at Vite build time; `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` for PostHog.
+- **Cloudflare:** `observability.enabled: true` in `wrangler.jsonc`.
 
 ## Cron
 
-Daily **06:00 UTC** — deletes expired Better Auth `verification` and `session` rows (`triggers.crons` in `wrangler.jsonc`).
+Daily **06:00 UTC** — deletes expired Better Auth `verification` and `session` rows.
 
 ## Project layout
 
@@ -203,17 +214,18 @@ Daily **06:00 UTC** — deletes expired Better Auth `verification` and `session`
 src/
 ├── client/          # React SPA (TanStack Router, tRPC client, i18n)
 │   ├── routes/      # File-based routes — (auth)/ and (protected)/
-│   └── locales/     # i18n translation JSON files (en, pt-BR, es)
+│   └── locales/     # i18n JSON files (en, pt-BR, es)
 ├── server/          # Hono worker
 │   ├── db/          # Drizzle schema, migrations, seeds
-│   ├── lib/         # Auth, tRPC, config, types
+│   ├── lib/         # Auth, tRPC, config
 │   ├── routers/     # tRPC and REST route handlers
-│   └── services/    # Business logic (billing, email, NFSe, PDF)
+│   └── services/    # Business logic (billing, email, invoice PDF)
 ├── shared/          # Types shared between client and server
 trigger/             # Trigger.dev background tasks
-test/                # Vitest tests
+test/                # Vitest integration tests
+docs/                # Setup guides
 ```
 
 ## License
 
-Private / your license — set in `package.json` as needed.
+MIT — see `LICENSE`.

@@ -24,14 +24,18 @@ import { Route as protectedDashboardProfileRouteImport } from './routes/(protect
 import { Route as protectedDashboardInvoicesRouteImport } from './routes/(protected)/dashboard/invoices'
 import { Route as protectedDashboardBillingRouteImport } from './routes/(protected)/dashboard/billing'
 import { Route as protectedDashboardApiKeysRouteImport } from './routes/(protected)/dashboard/api-keys'
+import { Route as protectedDashboardAdminRouteImport } from './routes/(protected)/dashboard/admin'
 import { Route as protectedDashboardSettingsIndexRouteImport } from './routes/(protected)/dashboard/settings/index'
 import { Route as protectedDashboardInvoicesIndexRouteImport } from './routes/(protected)/dashboard/invoices/index'
 import { Route as protectedDashboardBillingIndexRouteImport } from './routes/(protected)/dashboard/billing/index'
+import { Route as protectedDashboardAdminIndexRouteImport } from './routes/(protected)/dashboard/admin/index'
 import { Route as protectedDashboardSettingsNotificationsRouteImport } from './routes/(protected)/dashboard/settings/notifications'
 import { Route as protectedDashboardSettingsCompanyRouteImport } from './routes/(protected)/dashboard/settings/company'
 import { Route as protectedDashboardInvoicesIdRouteImport } from './routes/(protected)/dashboard/invoices/$id'
 import { Route as protectedDashboardBillingUpgradeRouteImport } from './routes/(protected)/dashboard/billing/upgrade'
 import { Route as protectedDashboardBillingHistoryRouteImport } from './routes/(protected)/dashboard/billing/history'
+import { Route as protectedDashboardAdminUsersRouteImport } from './routes/(protected)/dashboard/admin/users'
+import { Route as protectedDashboardAdminActivityRouteImport } from './routes/(protected)/dashboard/admin/activity'
 
 const protectedRouteRoute = protectedRouteRouteImport.update({
   id: '/(protected)',
@@ -111,6 +115,11 @@ const protectedDashboardApiKeysRoute =
     path: '/api-keys',
     getParentRoute: () => protectedDashboardRoute,
   } as any)
+const protectedDashboardAdminRoute = protectedDashboardAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => protectedDashboardRoute,
+} as any)
 const protectedDashboardSettingsIndexRoute =
   protectedDashboardSettingsIndexRouteImport.update({
     id: '/',
@@ -128,6 +137,12 @@ const protectedDashboardBillingIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => protectedDashboardBillingRoute,
+  } as any)
+const protectedDashboardAdminIndexRoute =
+  protectedDashboardAdminIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => protectedDashboardAdminRoute,
   } as any)
 const protectedDashboardSettingsNotificationsRoute =
   protectedDashboardSettingsNotificationsRouteImport.update({
@@ -159,6 +174,18 @@ const protectedDashboardBillingHistoryRoute =
     path: '/history',
     getParentRoute: () => protectedDashboardBillingRoute,
   } as any)
+const protectedDashboardAdminUsersRoute =
+  protectedDashboardAdminUsersRouteImport.update({
+    id: '/users',
+    path: '/users',
+    getParentRoute: () => protectedDashboardAdminRoute,
+  } as any)
+const protectedDashboardAdminActivityRoute =
+  protectedDashboardAdminActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => protectedDashboardAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -168,17 +195,21 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
   '/dashboard': typeof protectedDashboardRouteWithChildren
+  '/dashboard/admin': typeof protectedDashboardAdminRouteWithChildren
   '/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
   '/dashboard/billing': typeof protectedDashboardBillingRouteWithChildren
   '/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
   '/dashboard/profile': typeof protectedDashboardProfileRoute
   '/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
   '/dashboard/': typeof protectedDashboardIndexRoute
+  '/dashboard/admin/activity': typeof protectedDashboardAdminActivityRoute
+  '/dashboard/admin/users': typeof protectedDashboardAdminUsersRoute
   '/dashboard/billing/history': typeof protectedDashboardBillingHistoryRoute
   '/dashboard/billing/upgrade': typeof protectedDashboardBillingUpgradeRoute
   '/dashboard/invoices/$id': typeof protectedDashboardInvoicesIdRoute
   '/dashboard/settings/company': typeof protectedDashboardSettingsCompanyRoute
   '/dashboard/settings/notifications': typeof protectedDashboardSettingsNotificationsRoute
+  '/dashboard/admin/': typeof protectedDashboardAdminIndexRoute
   '/dashboard/billing/': typeof protectedDashboardBillingIndexRoute
   '/dashboard/invoices/': typeof protectedDashboardInvoicesIndexRoute
   '/dashboard/settings/': typeof protectedDashboardSettingsIndexRoute
@@ -193,11 +224,14 @@ export interface FileRoutesByTo {
   '/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
   '/dashboard/profile': typeof protectedDashboardProfileRoute
   '/dashboard': typeof protectedDashboardIndexRoute
+  '/dashboard/admin/activity': typeof protectedDashboardAdminActivityRoute
+  '/dashboard/admin/users': typeof protectedDashboardAdminUsersRoute
   '/dashboard/billing/history': typeof protectedDashboardBillingHistoryRoute
   '/dashboard/billing/upgrade': typeof protectedDashboardBillingUpgradeRoute
   '/dashboard/invoices/$id': typeof protectedDashboardInvoicesIdRoute
   '/dashboard/settings/company': typeof protectedDashboardSettingsCompanyRoute
   '/dashboard/settings/notifications': typeof protectedDashboardSettingsNotificationsRoute
+  '/dashboard/admin': typeof protectedDashboardAdminIndexRoute
   '/dashboard/billing': typeof protectedDashboardBillingIndexRoute
   '/dashboard/invoices': typeof protectedDashboardInvoicesIndexRoute
   '/dashboard/settings': typeof protectedDashboardSettingsIndexRoute
@@ -213,17 +247,21 @@ export interface FileRoutesById {
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
   '/(protected)/dashboard': typeof protectedDashboardRouteWithChildren
+  '/(protected)/dashboard/admin': typeof protectedDashboardAdminRouteWithChildren
   '/(protected)/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
   '/(protected)/dashboard/billing': typeof protectedDashboardBillingRouteWithChildren
   '/(protected)/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
   '/(protected)/dashboard/profile': typeof protectedDashboardProfileRoute
   '/(protected)/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
+  '/(protected)/dashboard/admin/activity': typeof protectedDashboardAdminActivityRoute
+  '/(protected)/dashboard/admin/users': typeof protectedDashboardAdminUsersRoute
   '/(protected)/dashboard/billing/history': typeof protectedDashboardBillingHistoryRoute
   '/(protected)/dashboard/billing/upgrade': typeof protectedDashboardBillingUpgradeRoute
   '/(protected)/dashboard/invoices/$id': typeof protectedDashboardInvoicesIdRoute
   '/(protected)/dashboard/settings/company': typeof protectedDashboardSettingsCompanyRoute
   '/(protected)/dashboard/settings/notifications': typeof protectedDashboardSettingsNotificationsRoute
+  '/(protected)/dashboard/admin/': typeof protectedDashboardAdminIndexRoute
   '/(protected)/dashboard/billing/': typeof protectedDashboardBillingIndexRoute
   '/(protected)/dashboard/invoices/': typeof protectedDashboardInvoicesIndexRoute
   '/(protected)/dashboard/settings/': typeof protectedDashboardSettingsIndexRoute
@@ -238,17 +276,21 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/dashboard'
+    | '/dashboard/admin'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/invoices'
     | '/dashboard/profile'
     | '/dashboard/settings'
     | '/dashboard/'
+    | '/dashboard/admin/activity'
+    | '/dashboard/admin/users'
     | '/dashboard/billing/history'
     | '/dashboard/billing/upgrade'
     | '/dashboard/invoices/$id'
     | '/dashboard/settings/company'
     | '/dashboard/settings/notifications'
+    | '/dashboard/admin/'
     | '/dashboard/billing/'
     | '/dashboard/invoices/'
     | '/dashboard/settings/'
@@ -263,11 +305,14 @@ export interface FileRouteTypes {
     | '/dashboard/api-keys'
     | '/dashboard/profile'
     | '/dashboard'
+    | '/dashboard/admin/activity'
+    | '/dashboard/admin/users'
     | '/dashboard/billing/history'
     | '/dashboard/billing/upgrade'
     | '/dashboard/invoices/$id'
     | '/dashboard/settings/company'
     | '/dashboard/settings/notifications'
+    | '/dashboard/admin'
     | '/dashboard/billing'
     | '/dashboard/invoices'
     | '/dashboard/settings'
@@ -282,17 +327,21 @@ export interface FileRouteTypes {
     | '/(auth)/reset-password'
     | '/(auth)/verify-email'
     | '/(protected)/dashboard'
+    | '/(protected)/dashboard/admin'
     | '/(protected)/dashboard/api-keys'
     | '/(protected)/dashboard/billing'
     | '/(protected)/dashboard/invoices'
     | '/(protected)/dashboard/profile'
     | '/(protected)/dashboard/settings'
     | '/(protected)/dashboard/'
+    | '/(protected)/dashboard/admin/activity'
+    | '/(protected)/dashboard/admin/users'
     | '/(protected)/dashboard/billing/history'
     | '/(protected)/dashboard/billing/upgrade'
     | '/(protected)/dashboard/invoices/$id'
     | '/(protected)/dashboard/settings/company'
     | '/(protected)/dashboard/settings/notifications'
+    | '/(protected)/dashboard/admin/'
     | '/(protected)/dashboard/billing/'
     | '/(protected)/dashboard/invoices/'
     | '/(protected)/dashboard/settings/'
@@ -411,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof protectedDashboardApiKeysRouteImport
       parentRoute: typeof protectedDashboardRoute
     }
+    '/(protected)/dashboard/admin': {
+      id: '/(protected)/dashboard/admin'
+      path: '/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof protectedDashboardAdminRouteImport
+      parentRoute: typeof protectedDashboardRoute
+    }
     '/(protected)/dashboard/settings/': {
       id: '/(protected)/dashboard/settings/'
       path: '/'
@@ -431,6 +487,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/billing/'
       preLoaderRoute: typeof protectedDashboardBillingIndexRouteImport
       parentRoute: typeof protectedDashboardBillingRoute
+    }
+    '/(protected)/dashboard/admin/': {
+      id: '/(protected)/dashboard/admin/'
+      path: '/'
+      fullPath: '/dashboard/admin/'
+      preLoaderRoute: typeof protectedDashboardAdminIndexRouteImport
+      parentRoute: typeof protectedDashboardAdminRoute
     }
     '/(protected)/dashboard/settings/notifications': {
       id: '/(protected)/dashboard/settings/notifications'
@@ -467,6 +530,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof protectedDashboardBillingHistoryRouteImport
       parentRoute: typeof protectedDashboardBillingRoute
     }
+    '/(protected)/dashboard/admin/users': {
+      id: '/(protected)/dashboard/admin/users'
+      path: '/users'
+      fullPath: '/dashboard/admin/users'
+      preLoaderRoute: typeof protectedDashboardAdminUsersRouteImport
+      parentRoute: typeof protectedDashboardAdminRoute
+    }
+    '/(protected)/dashboard/admin/activity': {
+      id: '/(protected)/dashboard/admin/activity'
+      path: '/activity'
+      fullPath: '/dashboard/admin/activity'
+      preLoaderRoute: typeof protectedDashboardAdminActivityRouteImport
+      parentRoute: typeof protectedDashboardAdminRoute
+    }
   }
 }
 
@@ -489,6 +566,24 @@ const authRouteRouteChildren: authRouteRouteChildren = {
 const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
   authRouteRouteChildren,
 )
+
+interface protectedDashboardAdminRouteChildren {
+  protectedDashboardAdminActivityRoute: typeof protectedDashboardAdminActivityRoute
+  protectedDashboardAdminUsersRoute: typeof protectedDashboardAdminUsersRoute
+  protectedDashboardAdminIndexRoute: typeof protectedDashboardAdminIndexRoute
+}
+
+const protectedDashboardAdminRouteChildren: protectedDashboardAdminRouteChildren =
+  {
+    protectedDashboardAdminActivityRoute: protectedDashboardAdminActivityRoute,
+    protectedDashboardAdminUsersRoute: protectedDashboardAdminUsersRoute,
+    protectedDashboardAdminIndexRoute: protectedDashboardAdminIndexRoute,
+  }
+
+const protectedDashboardAdminRouteWithChildren =
+  protectedDashboardAdminRoute._addFileChildren(
+    protectedDashboardAdminRouteChildren,
+  )
 
 interface protectedDashboardBillingRouteChildren {
   protectedDashboardBillingHistoryRoute: typeof protectedDashboardBillingHistoryRoute
@@ -547,6 +642,7 @@ const protectedDashboardSettingsRouteWithChildren =
   )
 
 interface protectedDashboardRouteChildren {
+  protectedDashboardAdminRoute: typeof protectedDashboardAdminRouteWithChildren
   protectedDashboardApiKeysRoute: typeof protectedDashboardApiKeysRoute
   protectedDashboardBillingRoute: typeof protectedDashboardBillingRouteWithChildren
   protectedDashboardInvoicesRoute: typeof protectedDashboardInvoicesRouteWithChildren
@@ -556,6 +652,7 @@ interface protectedDashboardRouteChildren {
 }
 
 const protectedDashboardRouteChildren: protectedDashboardRouteChildren = {
+  protectedDashboardAdminRoute: protectedDashboardAdminRouteWithChildren,
   protectedDashboardApiKeysRoute: protectedDashboardApiKeysRoute,
   protectedDashboardBillingRoute: protectedDashboardBillingRouteWithChildren,
   protectedDashboardInvoicesRoute: protectedDashboardInvoicesRouteWithChildren,

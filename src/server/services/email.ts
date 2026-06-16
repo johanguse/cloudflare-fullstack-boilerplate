@@ -202,7 +202,6 @@ export async function sendNfseIssuedEmail(
 	args: {
 		invoiceNumber: string;
 		nfseNumber?: string | null;
-		verifyCode?: string | null;
 		pdfUrl?: string | null;
 		xmlUrl?: string | null;
 	},
@@ -211,7 +210,6 @@ export async function sendNfseIssuedEmail(
 		appName: config.appName,
 		invoiceNumber: args.invoiceNumber,
 		nfseNumber: args.nfseNumber ?? undefined,
-		verifyCode: args.verifyCode ?? undefined,
 		pdfUrl: args.pdfUrl ?? undefined,
 		xmlUrl: args.xmlUrl ?? undefined,
 	});

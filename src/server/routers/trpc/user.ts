@@ -30,6 +30,15 @@ export const userRouter = router({
 			return { success: true };
 		}),
 
+	getRole: protectedProcedure.query(async ({ ctx }) => {
+		const dbUser = await ctx.db
+			.select({ role: schema.user.role })
+			.from(schema.user)
+			.where(eq(schema.user.id, ctx.session.userId))
+			.get();
+		return { role: dbUser?.role ?? "user" };
+	}),
+
 	deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
 		await ctx.db
 			.delete(schema.user)

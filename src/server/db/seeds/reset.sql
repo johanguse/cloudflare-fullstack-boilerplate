@@ -6,6 +6,8 @@
 
 DELETE FROM api_keys;
 DELETE FROM user_notification_settings;
+DELETE FROM company_settings;
+DELETE FROM nfse_records;
 DELETE FROM invoice_items;
 DELETE FROM invoices;
 DELETE FROM credit_transactions;
