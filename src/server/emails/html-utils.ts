@@ -11,12 +11,13 @@ export function wrapEmailBody(
 	title: string,
 	innerHtml: string,
 	footerNote?: string,
+	lang = "en",
 ): string {
 	const footer = footerNote
 		? `<p style="margin:24px 0 0;font-size:12px;color:#6b7280;">${footerNote}</p>`
 		: "";
 	return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${escapeHtml(lang)}">
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/></head>
 <body style="margin:0;background:#f4f4f5;font-family:system-ui,-apple-system,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:24px 16px;">

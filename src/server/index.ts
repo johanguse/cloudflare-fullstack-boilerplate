@@ -165,6 +165,7 @@ const scheduled = async (
 };
 
 export type AppType = typeof app;
+export { NfseGenerationWorkflow } from "./workflows/nfse-generation";
 
 const workerHandler: ExportedHandler<AppBindings["Bindings"]> = {
 	fetch(request, env, ctx) {

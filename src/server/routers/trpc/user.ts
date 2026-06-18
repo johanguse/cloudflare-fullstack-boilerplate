@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import * as schema from "../../db/schema/auth";
+import { SUPPORTED_LOCALES } from "../../emails/i18n";
 import { protectedProcedure, router } from "../../lib/trpc";
 
 export const userRouter = router({
@@ -17,6 +18,7 @@ export const userRouter = router({
 			email: user?.email ?? null,
 			image: user?.image ?? null,
 			emailVerified: user?.emailVerified ?? false,
+			locale: user?.locale ?? "en",
 		};
 	}),
 
@@ -38,6 +40,16 @@ export const userRouter = router({
 			.get();
 		return { role: dbUser?.role ?? "user" };
 	}),
+
+	updateLocale: protectedProcedure
+		.input(z.object({ locale: z.enum(SUPPORTED_LOCALES as [string, ...string[]]) }))
+		.mutation(async ({ ctx, input }) => {
+			await ctx.db
+				.update(schema.user)
+				.set({ locale: input.locale, updatedAt: new Date() })
+				.where(eq(schema.user.id, ctx.session.userId));
+			return { success: true };
+		}),
 
 	deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
 		await ctx.db

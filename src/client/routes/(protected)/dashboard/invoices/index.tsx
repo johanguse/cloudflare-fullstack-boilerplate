@@ -226,7 +226,10 @@ function CreateInvoiceDialog({
 							<Input
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
-								placeholder="Optional internal note"
+								placeholder={t(
+									"invoices.create.notePlaceholder",
+									"Optional internal note",
+								)}
 							/>
 						</div>
 					</div>
@@ -360,7 +363,7 @@ function InvoicesPage() {
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="mx-auto w-full max-w-6xl space-y-6">
 			<div className="flex items-start justify-between">
 				<div>
 					<h1 className="font-semibold text-2xl tracking-tight">

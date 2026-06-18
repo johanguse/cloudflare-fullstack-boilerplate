@@ -56,15 +56,9 @@ export const nfseRouter = router({
 				status: "pending",
 			});
 
-			const { tasks } = await import("@trigger.dev/sdk");
-			await tasks.trigger("nfse-generation", {
-				invoiceId: invoice.id,
-				nfseRecordId,
-				internalApiKey: ctx.env.INTERNAL_API_KEY,
-				internalApiUrl: ctx.env.APP_URL,
-				fiscalNacionalApiKey: ctx.env.FISCAL_NACIONAL_API_KEY,
-				fiscalNacionalEnvironment:
-					(ctx.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ?? "staging",
+			await ctx.env.NFSE_WORKFLOW.create({
+				id: nfseRecordId,
+				params: { invoiceId: invoice.id, nfseRecordId },
 			});
 
 			return { nfseRecordId, queued: true };

@@ -6,6 +6,21 @@
 		"createAccount": "Crear cuenta"
 	},
 	"auth": {
+		"verifyEmail": {
+			"title": "Verifica tu correo",
+			"enterCode": "Ingresa el código de 6 dígitos que enviamos a tu correo",
+			"sendCode": "Te enviaremos un código de verificación a tu correo",
+			"emailLabel": "Dirección de correo",
+			"sendButton": "Enviar código de verificación",
+			"codeLabel": "Código de verificación",
+			"verifyButton": "Verificar correo",
+			"useDifferentEmail": "Usar un correo diferente",
+			"enterEmail": "Por favor ingresa tu correo",
+			"failedToSend": "Error al enviar el código",
+			"codeSent": "Código de verificación enviado a tu correo",
+			"invalidCode": "Código inválido",
+			"verified": "¡Correo verificado! Redirigiendo..."
+		},
 		"login": {
 			"title": "Bienvenido de nuevo",
 			"subtitle": "Inicia sesión en tu cuenta",
@@ -73,25 +88,52 @@
 		"password": "Contraseña",
 		"name": "Nombre",
 		"or": "o",
-		"forgotPassword": "¿Olvidaste tu contraseña?"
+		"forgotPassword": "¿Olvidaste tu contraseña?",
+		"google": "Google",
+		"github": "GitHub"
 	},
 	"dashboard": {
 		"title": "Panel",
-		"subtitle": "Bienvenido de nuevo. Aquí hay un resumen de tu cuenta.",
-		"stats": {
-			"invoices": "Facturas",
-			"totalInvoices": "Total de facturas",
-			"revenue": "Ingresos",
-			"thisMonth": "Este mes",
-			"files": "Archivos",
-			"documentsStored": "Documentos almacenados",
-			"activePlan": "Plan activo",
-			"currentSubscription": "Suscripción actual"
-		},
+		"overview": "Resumen de cuenta",
+		"refreshing": "Actualizando",
+		"greeting": "Hola, {{name}}",
+		"user": "Usuario",
+		"subscriptionStatus": "Estado: {{status}}",
+		"credits": "Créditos",
+		"managePlan": "Gestionar plan",
+		"loadError": "No se pudieron cargar algunos datos del panel. Intenta actualizar los paneles afectados.",
+		"retry": "Reintentar",
+		"planSnapshot": "Resumen del plan",
+		"planSnapshotDescription": "Acceso y créditos actuales",
+		"createApiKey": "Nueva clave de API",
+		"createInvoice": "Nueva factura",
 		"recentInvoices": "Facturas recientes",
-		"noInvoicesYet": "Sin facturas aún. Las facturas aparecerán aquí después de tu primer pago.",
+		"recentInvoicesDescription": "Actividad de facturación reciente",
+		"viewAll": "Ver todo",
+		"noInvoicesYet": "Sin facturas aún",
+		"noInvoicesDescription": "Crea tu primera factura para empezar a rastrear la actividad de facturación.",
 		"quickActions": "Acciones rápidas",
-		"quickActionsDesc": "Configura los ajustes de NFSe, gestiona la facturación y visualiza tus claves de API desde la barra lateral."
+		"quickActionsDescription": "Tareas comunes de cuenta",
+		"stats": {
+			"invoices": "Total de facturas",
+			"paidInvoices": "Pagadas recientes",
+			"overdue": "Vencidas recientes",
+			"apiKeys": "Claves de API",
+			"allTime": "Desde siempre",
+			"lastFiveInvoices": "De las últimas 5",
+			"needsAttention": "Requiere atención",
+			"programmaticAccess": "Acceso programático"
+		},
+		"actions": {
+			"invoices": "Revisar facturas",
+			"invoicesDescription": "Abrir historial de facturas",
+			"billing": "Gestionar facturación",
+			"billingDescription": "Plan, portal y créditos",
+			"apiKeys": "Crear una clave de API",
+			"apiKeysDescription": "Conectar sistemas externos",
+			"company": "Configuración de empresa",
+			"companyDescription": "Configuración fiscal y de NFSe"
+		}
 	},
 	"profile": {
 		"title": "Perfil",
@@ -124,7 +166,8 @@
 		"noTransactions": "Sin transacciones aún",
 		"viewAll": "Ver todas las transacciones",
 		"activated": "¡Suscripción activada! Bienvenido a tu plan.",
-		"canceled": "El pago fue cancelado."
+		"canceled": "El pago fue cancelado.",
+		"failedToOpenPortal": "Error al abrir el portal de facturación"
 	},
 	"upgrade": {
 		"title": "Mejora tu plan",
@@ -134,7 +177,12 @@
 		"upgrade": "Mejorar",
 		"downgrade": "Degradar vía portal",
 		"footer": "Todos los planes incluyen un período de prueba gratuito de 14 días. Cancela cuando quieras. No se requiere tarjeta de crédito para el plan Free.",
-		"perMonth": "/mes"
+		"perMonth": "/mes",
+		"noCheckoutUrl": "No se devolvió URL de pago",
+		"priceNotConfigured": "ID de precio de Stripe no configurado. Establece VITE_STRIPE_PRICE_* en .env.",
+		"failedToStartCheckout": "Error al iniciar el pago",
+		"stripeNotConfigured": "Stripe no está configurado. Establece VITE_STRIPE_PRICE_STARTER, VITE_STRIPE_PRICE_PROFESSIONAL, VITE_STRIPE_PRICE_BUSINESS y VITE_STRIPE_PRICE_AGENCY en tu .env para habilitar los planes de pago.",
+		"notConfigured": "No configurado"
 	},
 	"history": {
 		"title": "Historial de créditos",
@@ -205,7 +253,8 @@
 			"submit": "Crear factura",
 			"creating": "Creando…",
 			"noItems": "Agrega al menos un artículo",
-			"created": "Factura creada"
+			"created": "Factura creada",
+			"notePlaceholder": "Nota interna opcional"
 		}
 	},
 	"invoiceDetail": {
@@ -263,7 +312,8 @@
 		},
 		"emailQueued": "Correo en cola para entrega",
 		"invoiceIssued": "Factura emitida",
-		"invoiceCancelled": "Factura cancelada"
+		"invoiceCancelled": "Factura cancelada",
+		"invoiceNumber": "Factura #{{number}}"
 	},
 	"apiKeys": {
 		"title": "Claves de API",
@@ -298,6 +348,18 @@
 	"settings": {
 		"title": "Configuración",
 		"subtitle": "Gestiona la configuración de tu cuenta",
+		"navGroup": {
+			"preferences": "Preferencias",
+			"billing": "Facturación",
+			"integrations": "Integraciones"
+		},
+		"nav": {
+			"general": "General",
+			"notifications": "Notificaciones",
+			"billing": "Facturación",
+			"invoices": "Facturas",
+			"company": "NFSe"
+		},
 		"company": "Empresa & fiscal",
 		"companyDesc": "CNPJ, CNAE, valores predeterminados de NFSe",
 		"notifications": "Notificaciones",
@@ -391,5 +453,37 @@
 		"profile": "Perfil",
 		"settings": "Configuración",
 		"apiKeys": "Claves de API"
+	},
+	"admin": {
+		"reports": {
+			"title": "Reportes",
+			"subtitle": "Estadísticas globales de la plataforma y resumen de ingresos."
+		},
+		"stats": {
+			"totalUsers": "Total de usuarios",
+			"paidUsers": "Suscripciones activas",
+			"totalInvoices": "Facturas pagadas",
+			"totalRevenue": "Ingresos totales"
+		},
+		"users": {
+			"title": "Todos los usuarios",
+			"subtitle": "Ver y gestionar todos los usuarios registrados.",
+			"list": "Lista de usuarios",
+			"count": "{{count}} usuarios en total",
+			"roleUpdated": "Rol actualizado",
+			"removeAdmin": "Quitar admin",
+			"makeAdmin": "Hacer admin"
+		},
+		"activity": {
+			"title": "Registros de actividad",
+			"subtitle": "Inicios de sesión y eventos de pago recientes en la plataforma.",
+			"recent": "Eventos recientes",
+			"count": "{{count}} eventos",
+			"empty": "No se encontró actividad reciente.",
+			"type": {
+				"sign_in": "inició sesión",
+				"payment": "pago"
+			}
+		}
 	}
 }

@@ -8,6 +8,7 @@ import {
 } from "@client/components/ui/card";
 import { ContentSection } from "@client/components/ui/content-section";
 import i18n from "@client/lib/i18n";
+import { trpc } from "@client/lib/trpc-client";
 import { cn } from "@client/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Monitor, Moon, Sun } from "lucide-react";
@@ -48,10 +49,16 @@ function SettingsPage() {
 	const { t } = useTranslation();
 	const { theme, setTheme } = useTheme();
 	const currentLang = i18n.language;
+	const updateLocale = trpc.user.updateLocale.useMutation();
 
 	const isLangActive = (code: string) => {
 		if (code === "pt-BR") return currentLang === "pt-BR" || currentLang.startsWith("pt");
 		return currentLang === code || currentLang.startsWith(code);
+	};
+
+	const handleLanguageChange = (code: string) => {
+		i18n.changeLanguage(code);
+		updateLocale.mutate({ locale: code });
 	};
 
 	return (
@@ -114,7 +121,7 @@ function SettingsPage() {
 									<button
 										key={code}
 										type="button"
-										onClick={() => i18n.changeLanguage(code)}
+										onClick={() => handleLanguageChange(code)}
 										className={cn(
 											"flex flex-1 items-center gap-3 rounded-lg border px-4 py-3 text-sm transition-all",
 											active

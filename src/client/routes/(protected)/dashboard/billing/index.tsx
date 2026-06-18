@@ -68,7 +68,10 @@ function BillingPage() {
 			if (url) window.location.href = url;
 		},
 		onError: (err) =>
-			toast.error(err.message ?? "Failed to open billing portal"),
+			toast.error(
+				err.message ??
+					t("billing.failedToOpenPortal", "Failed to open billing portal"),
+			),
 	});
 
 	useEffect(() => {
@@ -83,7 +86,7 @@ function BillingPage() {
 	const currentPlanIdx = PLANS.findIndex((p) => p.id === (sub?.plan ?? "free"));
 
 	return (
-		<div className="space-y-6">
+		<div className="mx-auto w-full max-w-5xl space-y-6">
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">
 					{t("billing.title", "Billing")}

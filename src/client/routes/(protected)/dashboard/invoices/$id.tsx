@@ -324,7 +324,7 @@ function InvoiceDetailPage() {
 	const currency = invoice.currency ?? "BRL";
 
 	return (
-		<div className="max-w-2xl space-y-6">
+		<div className="mx-auto w-full max-w-3xl space-y-6">
 			{/* Header */}
 			<div className="flex items-start justify-between">
 				<div className="flex items-center gap-3">
@@ -336,7 +336,7 @@ function InvoiceDetailPage() {
 					<div>
 						<div className="flex items-center gap-2">
 							<h1 className="font-semibold text-xl tracking-tight">
-								Invoice #{invoice.number}
+								{t("invoiceDetail.invoiceNumber", { number: invoice.number, defaultValue: "Invoice #{{number}}" })}
 							</h1>
 							<Badge variant={STATUS_VARIANT[status]}>
 								{statusLabels[status]}

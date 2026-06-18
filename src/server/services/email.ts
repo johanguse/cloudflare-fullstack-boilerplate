@@ -1,4 +1,5 @@
 import { renderInvoiceEmail } from "../emails/invoice";
+import { getEmailT } from "../emails/i18n";
 import { renderLowBalanceAlertEmail } from "../emails/low-balance-alert";
 import { renderNfseIssuedEmail } from "../emails/nfse-issued";
 import { renderPaymentReceiptEmail } from "../emails/payment-receipt";
@@ -74,15 +75,18 @@ export async function sendWelcomeEmail(
 	config: AppConfig,
 	to: string,
 	name: string,
+	locale?: string,
 ) {
+	const t = getEmailT(locale);
 	const html = renderWelcomeEmail({
 		appName: config.appName,
 		name: name.trim() || "there",
 		loginUrl: `${config.frontendUrl}/login`,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Welcome to ${config.appName}`,
+		subject: t.welcome.subject(config.appName),
 		html,
 	});
 }
@@ -92,14 +96,17 @@ export async function sendVerifyEmailLink(
 	config: AppConfig,
 	to: string,
 	verifyUrl: string,
+	locale?: string,
 ) {
+	const t = getEmailT(locale);
 	const html = renderVerifyEmail({
 		appName: config.appName,
 		verifyUrl,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Verify your email — ${config.appName}`,
+		subject: t.verifyEmail.subject(config.appName),
 		html,
 	});
 }
@@ -109,14 +116,17 @@ export async function sendPasswordResetEmail(
 	config: AppConfig,
 	to: string,
 	resetUrl: string,
+	locale?: string,
 ) {
+	const t = getEmailT(locale);
 	const html = renderResetPasswordEmail({
 		appName: config.appName,
 		resetUrl,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Reset your password — ${config.appName}`,
+		subject: t.resetPassword.subject(config.appName),
 		html,
 	});
 }
@@ -127,11 +137,13 @@ export async function sendOtpEmail(
 	to: string,
 	otp: string,
 	kind: string,
+	locale?: string,
 ) {
-	const html = `<!DOCTYPE html><html><body style="font-family:sans-serif;"><p>Your ${kind} code for ${config.appName}:</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${otp}</p><p style="color:#666;font-size:13px;">Expires in 10 minutes.</p></body></html>`;
+	const t = getEmailT(locale);
+	const html = `<!DOCTYPE html><html lang="${locale ?? "en"}"><body style="font-family:sans-serif;"><p>${t.otp.body(kind, config.appName)}</p><p style="font-size:28px;font-weight:700;letter-spacing:4px;">${otp}</p><p style="color:#666;font-size:13px;">${t.otp.footer}</p></body></html>`;
 	return sendEmail(env, config, {
 		to,
-		subject: `Your sign-in code — ${config.appName}`,
+		subject: t.otp.subject(config.appName),
 		html,
 		text: `Your code: ${otp}`,
 	});
@@ -144,8 +156,10 @@ export async function sendPaymentReceiptEmail(
 	amountCents: number,
 	currency: string,
 	planName?: string,
+	locale?: string,
 ) {
-	const amountLabel = new Intl.NumberFormat("pt-BR", {
+	const t = getEmailT(locale);
+	const amountLabel = new Intl.NumberFormat(locale ?? "en", {
 		style: "currency",
 		currency: currency.toUpperCase(),
 	}).format(amountCents / 100);
@@ -154,10 +168,11 @@ export async function sendPaymentReceiptEmail(
 		amountLabel,
 		planName,
 		dashboardUrl: `${config.frontendUrl}/dashboard/billing`,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Payment received — ${config.appName}`,
+		subject: t.paymentReceipt.subject(config.appName),
 		html,
 	});
 }
@@ -172,9 +187,12 @@ export async function sendInvoiceNotificationEmail(
 		currency: string;
 		invoiceId: string;
 		nfsePdfUrl?: string | null;
+		locale?: string;
 	},
 ) {
-	const amountLabel = new Intl.NumberFormat("pt-BR", {
+	const locale = args.locale;
+	const t = getEmailT(locale);
+	const amountLabel = new Intl.NumberFormat(locale ?? "en", {
 		style: "currency",
 		currency: args.currency.toUpperCase(),
 	}).format(args.amountCents / 100);
@@ -187,10 +205,11 @@ export async function sendInvoiceNotificationEmail(
 		amountLabel,
 		invoiceUrl,
 		nfseUrl: args.nfsePdfUrl ?? undefined,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Invoice ${args.invoiceNumber} — ${config.appName}`,
+		subject: t.invoice.subject(args.invoiceNumber, config.appName),
 		html,
 	});
 }
@@ -204,18 +223,22 @@ export async function sendNfseIssuedEmail(
 		nfseNumber?: string | null;
 		pdfUrl?: string | null;
 		xmlUrl?: string | null;
+		locale?: string;
 	},
 ) {
+	const locale = args.locale;
+	const t = getEmailT(locale);
 	const html = renderNfseIssuedEmail({
 		appName: config.appName,
 		invoiceNumber: args.invoiceNumber,
 		nfseNumber: args.nfseNumber ?? undefined,
 		pdfUrl: args.pdfUrl ?? undefined,
 		xmlUrl: args.xmlUrl ?? undefined,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `NFSe issued — ${config.appName}`,
+		subject: t.nfseIssued.subject(config.appName),
 		html,
 	});
 }
@@ -226,16 +249,19 @@ export async function sendLowBalanceEmail(
 	to: string,
 	balance: number,
 	threshold: number,
+	locale?: string,
 ) {
+	const t = getEmailT(locale);
 	const html = renderLowBalanceAlertEmail({
 		appName: config.appName,
 		balance,
 		threshold,
 		billingUrl: `${config.frontendUrl}/dashboard/billing/upgrade`,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Low credit balance — ${config.appName}`,
+		subject: t.lowBalance.subject(config.appName),
 		html,
 	});
 }
@@ -245,15 +271,18 @@ export async function sendSubscriptionChangedEmail(
 	config: AppConfig,
 	to: string,
 	message: string,
+	locale?: string,
 ) {
+	const t = getEmailT(locale);
 	const html = renderSubscriptionChangedEmail({
 		appName: config.appName,
 		message,
 		dashboardUrl: `${config.frontendUrl}/dashboard/billing`,
+		locale,
 	});
 	return sendEmail(env, config, {
 		to,
-		subject: `Subscription update — ${config.appName}`,
+		subject: t.subscriptionChanged.subject(config.appName),
 		html,
 	});
 }

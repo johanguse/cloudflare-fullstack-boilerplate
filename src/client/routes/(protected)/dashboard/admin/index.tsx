@@ -62,7 +62,7 @@ function AdminReportsPage() {
 		}).format(n / 100);
 
 	return (
-		<div className="space-y-6">
+		<div className="mx-auto w-full max-w-5xl space-y-6">
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">
 					{t("admin.reports.title", "Reports")}

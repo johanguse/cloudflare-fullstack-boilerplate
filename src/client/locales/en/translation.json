@@ -6,6 +6,21 @@
 		"createAccount": "Create account"
 	},
 	"auth": {
+		"verifyEmail": {
+			"title": "Verify your email",
+			"enterCode": "Enter the 6-digit code we sent to your email",
+			"sendCode": "We'll send a verification code to your email",
+			"emailLabel": "Email address",
+			"sendButton": "Send verification code",
+			"codeLabel": "Verification code",
+			"verifyButton": "Verify email",
+			"useDifferentEmail": "Use different email",
+			"enterEmail": "Please enter your email",
+			"failedToSend": "Failed to send code",
+			"codeSent": "Verification code sent to your email",
+			"invalidCode": "Invalid code",
+			"verified": "Email verified! Redirecting..."
+		},
 		"login": {
 			"title": "Welcome back",
 			"subtitle": "Sign in to your account",
@@ -73,25 +88,52 @@
 		"password": "Password",
 		"name": "Name",
 		"or": "or",
-		"forgotPassword": "Forgot password?"
+		"forgotPassword": "Forgot password?",
+		"google": "Google",
+		"github": "GitHub"
 	},
 	"dashboard": {
 		"title": "Dashboard",
-		"subtitle": "Welcome back. Here's an overview of your account.",
+		"overview": "Account overview",
+		"refreshing": "Refreshing",
+		"greeting": "Hello, {{name}}",
+		"user": "User",
+		"subscriptionStatus": "{{status}} status",
+		"credits": "Credits",
+		"managePlan": "Manage plan",
+		"loadError": "Some dashboard data could not be loaded. Try refreshing the affected panels.",
+		"retry": "Retry",
+		"planSnapshot": "Plan snapshot",
+		"planSnapshotDescription": "Current access and credits",
+		"createApiKey": "New API key",
+		"createInvoice": "New invoice",
+		"recentInvoices": "Recent invoices",
+		"recentInvoicesDescription": "Latest billing activity",
+		"viewAll": "View all",
+		"noInvoicesYet": "No invoices yet",
+		"noInvoicesDescription": "Create your first invoice to start tracking billing activity.",
+		"quickActions": "Quick actions",
+		"quickActionsDescription": "Common account tasks",
 		"stats": {
-			"invoices": "Invoices",
-			"totalInvoices": "Total invoices",
-			"revenue": "Revenue",
-			"thisMonth": "This month",
-			"files": "Files",
-			"documentsStored": "Documents stored",
-			"activePlan": "Active Plan",
-			"currentSubscription": "Current subscription"
+			"invoices": "Total invoices",
+			"paidInvoices": "Paid recent",
+			"overdue": "Overdue recent",
+			"apiKeys": "API keys",
+			"allTime": "All time",
+			"lastFiveInvoices": "From the latest 5",
+			"needsAttention": "Needs attention",
+			"programmaticAccess": "Programmatic access"
 		},
-		"recentInvoices": "Recent Invoices",
-		"noInvoicesYet": "No invoices yet. Invoices will appear here after your first payment.",
-		"quickActions": "Quick Actions",
-		"quickActionsDesc": "Configure NFSe settings, manage billing, and view your API keys from the sidebar."
+		"actions": {
+			"invoices": "Review invoices",
+			"invoicesDescription": "Open invoice history",
+			"billing": "Manage billing",
+			"billingDescription": "Plan, portal, and credits",
+			"apiKeys": "Create an API key",
+			"apiKeysDescription": "Connect external systems",
+			"company": "Company settings",
+			"companyDescription": "Fiscal and NFSe setup"
+		}
 	},
 	"profile": {
 		"title": "Profile",
@@ -124,7 +166,8 @@
 		"noTransactions": "No transactions yet",
 		"viewAll": "View all transactions",
 		"activated": "Subscription activated! Welcome to your plan.",
-		"canceled": "Checkout was canceled."
+		"canceled": "Checkout was canceled.",
+		"failedToOpenPortal": "Failed to open billing portal"
 	},
 	"upgrade": {
 		"title": "Upgrade your plan",
@@ -134,7 +177,12 @@
 		"upgrade": "Upgrade",
 		"downgrade": "Downgrade via portal",
 		"footer": "All plans include a 14-day free trial. Cancel anytime. No credit card required for Free.",
-		"perMonth": "/month"
+		"perMonth": "/month",
+		"noCheckoutUrl": "No checkout URL returned",
+		"priceNotConfigured": "Stripe Price ID not configured. Set VITE_STRIPE_PRICE_* in .env.",
+		"failedToStartCheckout": "Failed to start checkout",
+		"stripeNotConfigured": "Stripe is not configured. Set VITE_STRIPE_PRICE_STARTER, VITE_STRIPE_PRICE_PROFESSIONAL, VITE_STRIPE_PRICE_BUSINESS, and VITE_STRIPE_PRICE_AGENCY in your .env to enable paid plans.",
+		"notConfigured": "Not configured"
 	},
 	"history": {
 		"title": "Credit history",
@@ -205,7 +253,8 @@
 			"submit": "Create invoice",
 			"creating": "Creating…",
 			"noItems": "Add at least one item",
-			"created": "Invoice created"
+			"created": "Invoice created",
+			"notePlaceholder": "Optional internal note"
 		}
 	},
 	"invoiceDetail": {
@@ -263,7 +312,8 @@
 		},
 		"emailQueued": "Email queued for delivery",
 		"invoiceIssued": "Invoice issued",
-		"invoiceCancelled": "Invoice cancelled"
+		"invoiceCancelled": "Invoice cancelled",
+		"invoiceNumber": "Invoice #{{number}}"
 	},
 	"apiKeys": {
 		"title": "API Keys",
@@ -298,6 +348,18 @@
 	"settings": {
 		"title": "Settings",
 		"subtitle": "Manage your account settings",
+		"navGroup": {
+			"preferences": "Preferences",
+			"billing": "Billing",
+			"integrations": "Integrations"
+		},
+		"nav": {
+			"general": "General",
+			"notifications": "Notifications",
+			"billing": "Billing",
+			"invoices": "Invoices",
+			"company": "NFSe"
+		},
 		"company": "Company & fiscal",
 		"companyDesc": "CNPJ, CNAE, NFSe defaults",
 		"notifications": "Notifications",
@@ -391,5 +453,37 @@
 		"profile": "Profile",
 		"settings": "Settings",
 		"apiKeys": "API Keys"
+	},
+	"admin": {
+		"reports": {
+			"title": "Reports",
+			"subtitle": "Platform-wide statistics and revenue overview."
+		},
+		"stats": {
+			"totalUsers": "Total users",
+			"paidUsers": "Active subscriptions",
+			"totalInvoices": "Paid invoices",
+			"totalRevenue": "Total revenue"
+		},
+		"users": {
+			"title": "All Users",
+			"subtitle": "View and manage all registered users.",
+			"list": "User list",
+			"count": "{{count}} users total",
+			"roleUpdated": "Role updated",
+			"removeAdmin": "Remove admin",
+			"makeAdmin": "Make admin"
+		},
+		"activity": {
+			"title": "Activity Logs",
+			"subtitle": "Recent sign-ins and payment events across the platform.",
+			"recent": "Recent events",
+			"count": "{{count}} events",
+			"empty": "No recent activity found.",
+			"type": {
+				"sign_in": "signed in",
+				"payment": "payment"
+			}
+		}
 	}
 }

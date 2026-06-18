@@ -20,12 +20,10 @@ export const Route = createFileRoute("/(protected)/dashboard/admin/activity")({
 const TYPE_CONFIG = {
 	sign_in: {
 		icon: LogIn,
-		label: "Signed in",
 		className: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
 	},
 	payment: {
 		icon: CreditCard,
-		label: "Payment",
 		className: "bg-green-500/10 text-green-600 dark:text-green-400",
 	},
 } as const;
@@ -45,7 +43,7 @@ function AdminActivityPage() {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="mx-auto w-full max-w-5xl space-y-6">
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">
 					{t("admin.activity.title", "Activity Logs")}
@@ -112,7 +110,7 @@ function AdminActivityPage() {
 												</span>
 												{" "}
 												<span className="text-muted-foreground">
-													{cfg.label.toLowerCase()}
+													{t(`admin.activity.type.${event.type}`, event.type)}
 													{event.detail ? ` · ${event.detail}` : ""}
 												</span>
 											</p>

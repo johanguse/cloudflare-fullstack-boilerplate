@@ -9,7 +9,7 @@ import {
 import { Separator } from "@client/components/ui/separator";
 import { cn } from "@client/lib/utils";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, Building2, Settings2 } from "lucide-react";
+import { Bell, Building2, CreditCard, FileText, Settings2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface NavItem {
@@ -45,6 +45,24 @@ const navGroups: NavGroup[] = [
 		],
 	},
 	{
+		labelKey: "settings.navGroup.billing",
+		fallback: "Billing",
+		items: [
+			{
+				href: "/dashboard/billing",
+				titleKey: "settings.nav.billing",
+				fallback: "Billing",
+				icon: <CreditCard size={15} />,
+			},
+			{
+				href: "/dashboard/invoices",
+				titleKey: "settings.nav.invoices",
+				fallback: "Invoices",
+				icon: <FileText size={15} />,
+			},
+		],
+	},
+	{
 		labelKey: "settings.navGroup.integrations",
 		fallback: "Integrations",
 		items: [
@@ -73,7 +91,7 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
 		pathname === href || pathname === `${href}/`;
 
 	return (
-		<div className="space-y-0.5">
+		<div className="mx-auto w-full max-w-4xl space-y-0.5">
 			<h1 className="font-semibold text-2xl tracking-tight">
 				{t("settings.title", "Settings")}
 			</h1>

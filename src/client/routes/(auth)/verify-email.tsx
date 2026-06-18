@@ -12,6 +12,7 @@ import { authClient } from "@client/lib/auth-client";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Mail } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/(auth)/verify-email")({
 });
 
 function VerifyEmailPage() {
+	const { t } = useTranslation();
 	const { email: emailParam } = Route.useSearch();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState(emailParam ?? "");
@@ -35,7 +37,7 @@ function VerifyEmailPage() {
 
 	const handleSendOtp = async () => {
 		if (!email) {
-			toast.error("Please enter your email");
+			toast.error(t("auth.verifyEmail.enterEmail", "Please enter your email"));
 			return;
 		}
 		setIsSending(true);
@@ -45,11 +47,15 @@ function VerifyEmailPage() {
 		});
 		setIsSending(false);
 		if (error) {
-			toast.error(error.message ?? "Failed to send code");
+			toast.error(
+				error.message ?? t("auth.verifyEmail.failedToSend", "Failed to send code"),
+			);
 			return;
 		}
 		setOtpSent(true);
-		toast.success("Verification code sent to your email");
+		toast.success(
+			t("auth.verifyEmail.codeSent", "Verification code sent to your email"),
+		);
 	};
 
 	const handleVerify = async (e: React.FormEvent) => {
@@ -58,10 +64,12 @@ function VerifyEmailPage() {
 		const { error } = await authClient.emailOtp.verifyEmail({ email, otp });
 		setIsVerifying(false);
 		if (error) {
-			toast.error(error.message ?? "Invalid code");
+			toast.error(
+				error.message ?? t("auth.verifyEmail.invalidCode", "Invalid code"),
+			);
 			return;
 		}
-		toast.success("Email verified! Redirecting...");
+		toast.success(t("auth.verifyEmail.verified", "Email verified! Redirecting..."));
 		navigate({ to: "/dashboard" });
 	};
 
@@ -73,24 +81,26 @@ function VerifyEmailPage() {
 						<div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary/10">
 							<Mail className="size-6 text-primary" />
 						</div>
-						<CardTitle>Verify your email</CardTitle>
+						<CardTitle>{t("auth.verifyEmail.title", "Verify your email")}</CardTitle>
 						<CardDescription>
 							{otpSent
-								? "Enter the 6-digit code we sent to your email"
-								: "We'll send a verification code to your email"}
+								? t("auth.verifyEmail.enterCode", "Enter the 6-digit code we sent to your email")
+								: t("auth.verifyEmail.sendCode", "We'll send a verification code to your email")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{!otpSent ? (
 							<>
 								<div className="space-y-1.5">
-									<Label htmlFor="email">Email address</Label>
+									<Label htmlFor="email">
+										{t("auth.verifyEmail.emailLabel", "Email address")}
+									</Label>
 									<Input
 										id="email"
 										type="email"
 										value={email}
 										onChange={(e) => setEmail(e.target.value)}
-										placeholder="you@example.com"
+										placeholder={t("common.emailPlaceholder", "you@example.com")}
 									/>
 								</div>
 								<Button
@@ -101,13 +111,15 @@ function VerifyEmailPage() {
 									{isSending && (
 										<Loader2 className="mr-2 size-4 animate-spin" />
 									)}
-									Send verification code
+									{t("auth.verifyEmail.sendButton", "Send verification code")}
 								</Button>
 							</>
 						) : (
 							<form onSubmit={handleVerify} className="space-y-4">
 								<div className="space-y-1.5">
-									<Label htmlFor="otp">Verification code</Label>
+									<Label htmlFor="otp">
+										{t("auth.verifyEmail.codeLabel", "Verification code")}
+									</Label>
 									<Input
 										id="otp"
 										value={otp}
@@ -126,7 +138,7 @@ function VerifyEmailPage() {
 									{isVerifying && (
 										<Loader2 className="mr-2 size-4 animate-spin" />
 									)}
-									Verify email
+									{t("auth.verifyEmail.verifyButton", "Verify email")}
 								</Button>
 								<Button
 									type="button"
@@ -137,7 +149,7 @@ function VerifyEmailPage() {
 										setOtp("");
 									}}
 								>
-									Use different email
+									{t("auth.verifyEmail.useDifferentEmail", "Use different email")}
 								</Button>
 							</form>
 						)}

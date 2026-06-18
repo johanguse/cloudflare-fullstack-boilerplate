@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import type { AppBindings } from "../../lib/types";
-import { internalRouter } from "./internal";
 import { registerInvoiceRoutes } from "./invoices";
 import { registerWebhookRoutes } from "./webhooks";
 
@@ -16,6 +15,3 @@ restApiRouter.get("/health", (c) => {
 
 registerWebhookRoutes(restApiRouter);
 registerInvoiceRoutes(restApiRouter);
-
-// Internal API — Trigger.dev callbacks (auth middleware is inside the router)
-restApiRouter.route("/", internalRouter);

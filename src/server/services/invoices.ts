@@ -46,6 +46,9 @@ export interface StripeInvoiceInput {
 	customerName: string | null;
 	customerEmail: string | null;
 	description: string | null;
+	foreignCurrencyCode?: string | null;
+	foreignCurrencyAmount?: number | null;
+	customerCountryIso2?: string | null;
 	lines: Array<{
 		description: string;
 		quantity: number;
@@ -85,6 +88,9 @@ export async function createInvoiceFromStripe(
 			description: input.description,
 			customerName: input.customerName,
 			customerEmail: input.customerEmail,
+			foreignCurrencyCode: input.foreignCurrencyCode ?? null,
+			foreignCurrencyAmount: input.foreignCurrencyAmount ?? null,
+			customerCountryIso2: input.customerCountryIso2 ?? null,
 			issuedAt: now,
 			paidAt: input.paidAt,
 		});

@@ -17,8 +17,7 @@ export type AppEnv = Env & {
 	STRIPE_WEBHOOK_SECRET: string;
 	FISCAL_NACIONAL_API_KEY: string;
 	FISCAL_NACIONAL_ENVIRONMENT: string;
-	TRIGGER_API_KEY: string;
-	INTERNAL_API_KEY: string;
+	NFSE_WORKFLOW: Workflow;
 	SENTRY_DSN?: string;
 	CLOUDFLARE_ACCOUNT_ID?: string;
 	CLOUDFLARE_API_TOKEN?: string;
