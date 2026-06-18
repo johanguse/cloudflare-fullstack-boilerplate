@@ -1,0 +1,1 @@
+ALTER TABLE `invoices` ADD `customer_country_iso2` text;

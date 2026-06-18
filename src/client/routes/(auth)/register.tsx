@@ -84,7 +84,10 @@ function PasswordStrengthBar({ password }: { password: string }) {
 			<p
 				className={`font-medium text-xs ${filled <= 1 ? "text-destructive" : filled <= 2 ? "text-orange-500" : "text-green-600"}`}
 			>
-				{t(`auth.register.strength.${labelKey}`, strengthFallback[labelKey] ?? labelKey)}
+				{t(
+					`auth.register.strength.${labelKey}`,
+					strengthFallback[labelKey] ?? labelKey,
+				)}
 			</p>
 		</div>
 	);
@@ -103,11 +106,21 @@ function RegisterPage() {
 	const handleRegister = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (password.length < 8) {
-			toast.error(t("auth.register.passwordTooShort", "Password must be at least 8 characters"));
+			toast.error(
+				t(
+					"auth.register.passwordTooShort",
+					"Password must be at least 8 characters",
+				),
+			);
 			return;
 		}
 		if (!turnstileToken) {
-			toast.error(t("auth.register.completeVerification", "Please complete the verification"));
+			toast.error(
+				t(
+					"auth.register.completeVerification",
+					"Please complete the verification",
+				),
+			);
 			return;
 		}
 		startTransition(async () => {
@@ -118,12 +131,23 @@ function RegisterPage() {
 				callbackURL: "/verify-email",
 			});
 			if (error) {
-				toast.error(error.message ?? t("auth.register.passwordTooShort", "Password must be at least 8 characters"));
+				toast.error(
+					error.message ??
+						t(
+							"auth.register.passwordTooShort",
+							"Password must be at least 8 characters",
+						),
+				);
 				turnstileRef.current?.reset();
 				setTurnstileToken(null);
 				return;
 			}
-			toast.success(t("auth.register.accountCreated", "Account created! Check your email to verify."));
+			toast.success(
+				t(
+					"auth.register.accountCreated",
+					"Account created! Check your email to verify.",
+				),
+			);
 			navigate({ to: "/verify-email" });
 		});
 	};
@@ -160,7 +184,10 @@ function RegisterPage() {
 							{t("auth.register.cardTitle", "Sign up")}
 						</CardTitle>
 						<CardDescription>
-							{t("auth.register.cardDescription", "Create your account to get started")}
+							{t(
+								"auth.register.cardDescription",
+								"Create your account to get started",
+							)}
 						</CardDescription>
 					</CardHeader>
 
@@ -189,7 +216,7 @@ function RegisterPage() {
 										d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
 									/>
 								</svg>
-								Google
+								{t("common.google", "Google")}
 							</Button>
 							<Button
 								variant="outline"
@@ -197,7 +224,7 @@ function RegisterPage() {
 								className="w-full gap-2"
 							>
 								<Github className="size-4" />
-								GitHub
+								{t("common.github", "GitHub")}
 							</Button>
 						</div>
 
@@ -237,11 +264,16 @@ function RegisterPage() {
 								/>
 							</div>
 							<div className="space-y-1.5">
-								<Label htmlFor="password">{t("common.password", "Password")}</Label>
+								<Label htmlFor="password">
+									{t("common.password", "Password")}
+								</Label>
 								<Input
 									id="password"
 									type="password"
-									placeholder={t("auth.register.passwordPlaceholder", "Min. 8 characters")}
+									placeholder={t(
+										"auth.register.passwordPlaceholder",
+										"Min. 8 characters",
+									)}
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
 									required
@@ -268,7 +300,10 @@ function RegisterPage() {
 
 					<CardFooter className="justify-center pt-0">
 						<p className="text-muted-foreground text-sm">
-							{t("auth.register.alreadyHaveAccount", "Already have an account?")}{" "}
+							{t(
+								"auth.register.alreadyHaveAccount",
+								"Already have an account?",
+							)}{" "}
 							<Link
 								to="/login"
 								className="font-medium text-foreground hover:underline"

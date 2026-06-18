@@ -8,19 +8,24 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarSeparator,
 } from "@client/components/ui/sidebar";
+import { trpc } from "@client/lib/trpc-client";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-	Bell,
-	Building2,
+	ActivitySquare,
+	ChevronRight,
+	CircleUser,
 	CreditCard,
 	KeyRound,
 	LayoutDashboard,
-	Receipt,
-	Settings,
-	User,
+	ScrollText,
+	Settings2,
+	ShieldCheck,
+	Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SidebarPlanCard } from "./SidebarPlanCard";
 import { UserMenu } from "./UserMenu";
 
 export function AppSidebar() {
@@ -29,11 +34,13 @@ export function AppSidebar() {
 	const path = location.pathname;
 
 	const isExact = (to: string) => path === to || path === `${to}/`;
-
 	const isPrefixed = (to: string) => path === to || path.startsWith(`${to}/`);
 
+	const { data: roleData } = trpc.user.getRole.useQuery();
+	const isAdmin = roleData?.role === "admin";
+
 	return (
-		<Sidebar collapsible="none">
+		<Sidebar collapsible="icon">
 			{/* Brand */}
 			<SidebarHeader>
 				<SidebarMenu>
@@ -56,7 +63,7 @@ export function AppSidebar() {
 			</SidebarHeader>
 
 			<SidebarContent>
-				{/* Main navigation */}
+				{/* Main */}
 				<SidebarGroup>
 					<SidebarGroupLabel>{t("nav.main", "Main")}</SidebarGroupLabel>
 					<SidebarMenu>
@@ -67,7 +74,7 @@ export function AppSidebar() {
 								tooltip={t("nav.dashboard", "Dashboard")}
 							>
 								<Link to="/dashboard">
-									<LayoutDashboard className="size-4" />
+									<LayoutDashboard />
 									<span>{t("nav.dashboard", "Dashboard")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -80,7 +87,7 @@ export function AppSidebar() {
 								tooltip={t("nav.invoices", "Invoices")}
 							>
 								<Link to="/dashboard/invoices">
-									<Receipt className="size-4" />
+									<ScrollText />
 									<span>{t("nav.invoices", "Invoices")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -93,7 +100,7 @@ export function AppSidebar() {
 								tooltip={t("nav.billing", "Billing")}
 							>
 								<Link to="/dashboard/billing">
-									<CreditCard className="size-4" />
+									<CreditCard />
 									<span>{t("nav.billing", "Billing")}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -112,47 +119,8 @@ export function AppSidebar() {
 								tooltip={t("nav.profile", "Profile")}
 							>
 								<Link to="/dashboard/profile">
-									<User className="size-4" />
+									<CircleUser />
 									<span>{t("nav.profile", "Profile")}</span>
-								</Link>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-
-						<SidebarMenuItem>
-							<SidebarMenuButton
-								asChild
-								isActive={isExact("/dashboard/settings")}
-								tooltip={t("nav.settings", "Settings")}
-							>
-								<Link to="/dashboard/settings">
-									<Settings className="size-4" />
-									<span>{t("nav.settings", "Settings")}</span>
-								</Link>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-
-						<SidebarMenuItem>
-							<SidebarMenuButton
-								asChild
-								isActive={isExact("/dashboard/settings/company")}
-								tooltip={t("nav.company", "Company")}
-							>
-								<Link to="/dashboard/settings/company">
-									<Building2 className="size-4" />
-									<span>{t("nav.company", "Company")}</span>
-								</Link>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-
-						<SidebarMenuItem>
-							<SidebarMenuButton
-								asChild
-								isActive={isExact("/dashboard/settings/notifications")}
-								tooltip={t("nav.notifications", "Notifications")}
-							>
-								<Link to="/dashboard/settings/notifications">
-									<Bell className="size-4" />
-									<span>{t("nav.notifications", "Notifications")}</span>
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -164,16 +132,84 @@ export function AppSidebar() {
 								tooltip={t("nav.apiKeys", "API Keys")}
 							>
 								<Link to="/dashboard/api-keys">
-									<KeyRound className="size-4" />
+									<KeyRound />
 									<span>{t("nav.apiKeys", "API Keys")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isPrefixed("/dashboard/settings")}
+								tooltip={t("nav.settings", "Settings")}
+							>
+								<Link to="/dashboard/settings">
+									<Settings2 />
+									<span>{t("nav.settings", "Settings")}</span>
+									<ChevronRight className="ml-auto size-3.5 text-muted-foreground/60" />
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
 				</SidebarGroup>
+
+				{/* Admin — only shown for admin users */}
+				{isAdmin && (
+					<>
+						<SidebarSeparator />
+						<SidebarGroup>
+							<SidebarGroupLabel className="flex items-center gap-1.5">
+								<ShieldCheck className="size-3" />
+								{t("nav.admin", "Admin")}
+							</SidebarGroupLabel>
+							<SidebarMenu>
+								<SidebarMenuItem>
+									<SidebarMenuButton
+										asChild
+										isActive={isExact("/dashboard/admin")}
+										tooltip={t("nav.adminReports", "Reports")}
+									>
+										<Link to="/dashboard/admin">
+											<ScrollText />
+											<span>{t("nav.adminReports", "Reports")}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+
+								<SidebarMenuItem>
+									<SidebarMenuButton
+										asChild
+										isActive={isExact("/dashboard/admin/users")}
+										tooltip={t("nav.adminUsers", "All Users")}
+									>
+										<Link to="/dashboard/admin/users">
+											<Users />
+											<span>{t("nav.adminUsers", "All Users")}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+
+								<SidebarMenuItem>
+									<SidebarMenuButton
+										asChild
+										isActive={isExact("/dashboard/admin/activity")}
+										tooltip={t("nav.adminActivity", "Activity Logs")}
+									>
+										<Link to="/dashboard/admin/activity">
+											<ActivitySquare />
+											<span>{t("nav.adminActivity", "Activity Logs")}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							</SidebarMenu>
+						</SidebarGroup>
+					</>
+				)}
 			</SidebarContent>
 
 			<SidebarFooter>
+				<SidebarPlanCard />
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<UserMenu />

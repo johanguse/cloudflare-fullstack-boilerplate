@@ -12,6 +12,7 @@ import {
 	storeInvoicePdf,
 } from "../../services/invoices";
 import { getNotificationPrefs } from "../../services/notification-prefs";
+import { getUserLocale } from "../../services/user-locale";
 
 const invoiceStatusEnum = z.enum([
 	"draft",
@@ -153,6 +154,7 @@ export const invoicesRouter = router({
 			}
 
 			const config = createAppConfig(ctx.env);
+			const locale = await getUserLocale(ctx.db, ctx.session.userId);
 			await sendInvoiceNotificationEmail(
 				ctx.env,
 				config,
@@ -162,6 +164,7 @@ export const invoicesRouter = router({
 					amountCents: invoice.amountTotal,
 					currency: invoice.currency,
 					invoiceId: invoice.id,
+					locale,
 				},
 			);
 

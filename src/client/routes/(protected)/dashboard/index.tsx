@@ -445,6 +445,7 @@ function QuickAction({
 }
 
 function StatusBadge({ status }: { status: string }) {
+	const { t } = useTranslation();
 	const variant =
 		status === "paid"
 			? "default"
@@ -454,11 +455,9 @@ function StatusBadge({ status }: { status: string }) {
 					? "outline"
 					: "secondary";
 
-	return (
-		<Badge variant={variant} className="capitalize">
-			{status}
-		</Badge>
-	);
+	const label = t(`invoices.status.${status}`, status);
+
+	return <Badge variant={variant}>{label}</Badge>;
 }
 
 function formatCurrency(cents: number, currency: string) {

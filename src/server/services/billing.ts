@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 function createStripeClient(secretKey: string): Stripe {
 	return new Stripe(secretKey, {
-		apiVersion: "2026-04-22.dahlia",
+		apiVersion: "2026-05-27.dahlia",
 		httpClient: Stripe.createFetchHttpClient(),
 	});
 }
@@ -35,7 +35,6 @@ export function getBillingService(secretKey: string) {
 		}) {
 			return stripe.checkout.sessions.create({
 				customer: params.customerId,
-				payment_method_types: ["card"],
 				line_items: [{ price: params.priceId, quantity: 1 }],
 				mode: params.mode,
 				success_url: params.successUrl,

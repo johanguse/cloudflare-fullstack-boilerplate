@@ -121,6 +121,14 @@
 			// Run: wrangler email sending enable yourdomain.com
 		}
 	],
+	// Cloudflare Workflows
+	"workflows": [
+		{
+			"name": "nfse-generation",
+			"binding": "NFSE_WORKFLOW",
+			"class_name": "NfseGenerationWorkflow"
+		}
+	],
 	// Secrets are managed via `wrangler secret put NAME`
 	// NEVER hardcode secrets here. See .dev.vars.example for the full list.
 	// Required production secrets:
@@ -132,8 +140,6 @@
 	//   STRIPE_API_KEY
 	//   STRIPE_WEBHOOK_SECRET
 	//   FISCAL_NACIONAL_API_KEY
-	//   TRIGGER_API_KEY
-	//   INTERNAL_API_KEY
 	//   SENTRY_DSN (optional)
 	"env": {
 		// --------------------------------
@@ -222,6 +228,13 @@
 			"send_email": [
 				{
 					"name": "EMAIL"
+				}
+			],
+			"workflows": [
+				{
+					"name": "nfse-generation-staging",
+					"binding": "NFSE_WORKFLOW",
+					"class_name": "NfseGenerationWorkflow"
 				}
 			]
 			// Staging secrets: `wrangler secret put NAME --env staging`

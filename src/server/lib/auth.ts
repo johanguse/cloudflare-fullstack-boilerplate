@@ -4,6 +4,7 @@ import { emailOTP } from "better-auth/plugins";
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "../db/schema/auth";
 import { sendOtpEmail } from "../services/email";
+import { getUserLocale } from "../services/user-locale";
 import { createAppConfig } from "./config";
 import type { AppBindings } from "./types";
 
@@ -35,8 +36,9 @@ export const createAuth = (
 					console.log(`[DEV] Password reset link for ${user.email}: ${url}`);
 					return;
 				}
+				const locale = await getUserLocale(db, user.id);
 				const { sendPasswordResetEmail } = await import("../services/email");
-				await sendPasswordResetEmail(env, config, user.email, url);
+				await sendPasswordResetEmail(env, config, user.email, url, locale);
 			},
 		},
 		emailVerification: {
@@ -47,8 +49,9 @@ export const createAuth = (
 					);
 					return;
 				}
+				const locale = await getUserLocale(db, user.id);
 				const { sendVerifyEmailLink } = await import("../services/email");
-				await sendVerifyEmailLink(env, config, user.email, url);
+				await sendVerifyEmailLink(env, config, user.email, url, locale);
 			},
 		},
 		socialProviders: {
@@ -87,7 +90,9 @@ export const createAuth = (
 						}
 						try {
 							const { sendWelcomeEmail } = await import("../services/email");
-							await sendWelcomeEmail(env, config, created.email, created.name);
+							// locale defaults to "en" for new users; they can update it in settings
+							const locale = (created as { locale?: string }).locale ?? "en";
+							await sendWelcomeEmail(env, config, created.email, created.name, locale);
 						} catch (e) {
 							console.error("[auth] welcome email failed:", e);
 						}

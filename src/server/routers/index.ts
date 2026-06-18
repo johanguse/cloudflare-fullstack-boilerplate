@@ -1,4 +1,5 @@
 import { router } from "../lib/trpc";
+import { adminRouter } from "./trpc/admin";
 import { apiKeysRouter } from "./trpc/api-keys";
 import { billingRouter } from "./trpc/billing";
 import { invoicesRouter } from "./trpc/invoices";
@@ -13,6 +14,7 @@ export const appRouter = router({
 	nfse: nfseRouter,
 	apiKeys: apiKeysRouter,
 	settings: settingsRouter,
+	admin: adminRouter,
 });
 
 export type AppRouter = typeof appRouter;

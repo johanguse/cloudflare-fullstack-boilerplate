@@ -1,10 +1,9 @@
+import en from "@client/locales/en/translation.json";
+import es from "@client/locales/es/translation.json";
+import ptBR from "@client/locales/pt-BR/translation.json";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-
-import en from "@client/locales/en/translation.json";
-import ptBR from "@client/locales/pt-BR/translation.json";
-import es from "@client/locales/es/translation.json";
 
 i18n
 	.use(LanguageDetector)

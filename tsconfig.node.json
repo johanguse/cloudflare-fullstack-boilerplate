@@ -15,5 +15,5 @@
 		},
 		"types": ["node"]
 	},
-	"include": ["vite.config.ts", "drizzle.config.ts", "trigger.config.ts", "scripts/**/*.ts"]
+	"include": ["vite.config.ts", "drizzle.config.ts", "scripts/**/*.ts"]
 }

@@ -7,13 +7,9 @@ import { protectedProcedure, router } from "../../lib/trpc";
 import { getFiscalNacionalService } from "../../services/nfse";
 
 export const nfseRouter = router({
-	// -------------------------------------------------------------------------
-	// CF-126: Get NFSe status for an invoice
-	// -------------------------------------------------------------------------
 	getStatus: protectedProcedure
 		.input(z.object({ invoiceId: z.string() }))
 		.query(async ({ ctx, input }) => {
-			// Verify the invoice belongs to this user
 			const invoice = await ctx.db
 				.select({ id: invoiceSchema.invoices.id })
 				.from(invoiceSchema.invoices)
@@ -36,9 +32,6 @@ export const nfseRouter = router({
 			return record ?? null;
 		}),
 
-	// -------------------------------------------------------------------------
-	// CF-127: Re-emit NFSe manually (resets status to pending and re-triggers)
-	// -------------------------------------------------------------------------
 	reEmit: protectedProcedure
 		.input(z.object({ invoiceId: z.string() }))
 		.mutation(async ({ ctx, input }) => {
@@ -53,11 +46,8 @@ export const nfseRouter = router({
 				)
 				.get();
 
-			if (!invoice) {
-				throw new Error("Invoice not found");
-			}
+			if (!invoice) throw new Error("Invoice not found");
 
-			// Create a new NFSe record (previous error record preserved for audit)
 			const nfseRecordId = nanoid();
 			await ctx.db.insert(nfseSchema.nfseRecords).values({
 				id: nfseRecordId,
@@ -66,25 +56,14 @@ export const nfseRouter = router({
 				status: "pending",
 			});
 
-			// Trigger the background task
-			const { tasks } = await import("@trigger.dev/sdk");
-			await tasks.trigger("nfse-generation", {
-				invoiceId: invoice.id,
-				nfseRecordId,
-				internalApiKey: ctx.env.INTERNAL_API_KEY,
-				internalApiUrl: ctx.env.APP_URL,
-				fiscalNacionalApiKey: ctx.env.FISCAL_NACIONAL_API_KEY,
-				fiscalNacionalEnvironment:
-					(ctx.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ??
-					"staging",
+			await ctx.env.NFSE_WORKFLOW.create({
+				id: nfseRecordId,
+				params: { invoiceId: invoice.id, nfseRecordId },
 			});
 
 			return { nfseRecordId, queued: true };
 		}),
 
-	// -------------------------------------------------------------------------
-	// CF-128a: Get company settings
-	// -------------------------------------------------------------------------
 	getSettings: protectedProcedure.query(async ({ ctx }) => {
 		const settings = await ctx.db
 			.select()
@@ -95,28 +74,11 @@ export const nfseRouter = router({
 		return settings ?? null;
 	}),
 
-	// -------------------------------------------------------------------------
-	// CF-128b: Update company settings
-	// -------------------------------------------------------------------------
 	updateSettings: protectedProcedure
 		.input(
 			z.object({
-				cnpj: z.string().optional(),
-				razaoSocial: z.string().optional(),
-				inscricaoMunicipal: z.string().optional(),
-				nomeFantasia: z.string().optional(),
-				street: z.string().optional(),
-				number: z.string().optional(),
-				complement: z.string().optional(),
-				neighborhood: z.string().optional(),
-				city: z.string().optional(),
-				state: z.string().optional(),
-				zipCode: z.string().optional(),
-				cityCode: z.number().int().optional(),
 				serviceDescription: z.string().optional(),
-				cnaeCode: z.string().optional(),
-				issRate: z.number().int().min(0).max(10000).optional(),
-				municipalityCode: z.string().optional(),
+				productName: z.string().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -141,11 +103,13 @@ export const nfseRouter = router({
 			return { saved: true };
 		}),
 
-	// -------------------------------------------------------------------------
-	// Extra: cancel an issued NFSe
-	// -------------------------------------------------------------------------
 	cancel: protectedProcedure
-		.input(z.object({ nfseRecordId: z.string() }))
+		.input(
+			z.object({
+				nfseRecordId: z.string(),
+				reason: z.string().min(10).max(500),
+			}),
+		)
 		.mutation(async ({ ctx, input }) => {
 			const record = await ctx.db
 				.select()
@@ -159,26 +123,26 @@ export const nfseRouter = router({
 				.get();
 
 			if (!record) throw new Error("NFSe record not found");
-			if (!record.fiscalNacionalId) throw new Error("NFSe not yet emitted");
+			if (!record.fiscalNacionalReference) throw new Error("NFSe not yet emitted");
 
 			const environment =
-				(ctx.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ??
-				"staging";
+				(ctx.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ?? "staging";
 			const service = getFiscalNacionalService(
 				ctx.env.FISCAL_NACIONAL_API_KEY,
 				environment,
 			);
 
-			const result = await service.cancelNfse(record.fiscalNacionalId);
+			const result = await service.cancelNfse(
+				record.fiscalNacionalReference,
+				input.reason,
+			);
 
 			if (result.cancelled) {
 				await ctx.db
 					.update(nfseSchema.nfseRecords)
 					.set({
 						status: "cancelled",
-						cancelledAt: result.cancelledAt
-							? new Date(result.cancelledAt)
-							: new Date(),
+						cancelledAt: result.cancelledAt ? new Date(result.cancelledAt) : new Date(),
 						updatedAt: new Date(),
 					})
 					.where(eq(nfseSchema.nfseRecords.id, record.id));

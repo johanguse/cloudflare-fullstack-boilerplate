@@ -7,6 +7,7 @@ import type { AppConfig } from "../lib/config";
 import type { AppEnv } from "../lib/types";
 import { sendLowBalanceEmail } from "./email";
 import { getNotificationPrefs } from "./notification-prefs";
+import { getUserLocale } from "./user-locale";
 
 export const LOW_CREDIT_NOTIFY_THRESHOLD = 10;
 
@@ -118,25 +119,23 @@ export async function deductCredits(
 			newBalance <= LOW_CREDIT_NOTIFY_THRESHOLD &&
 			balance > LOW_CREDIT_NOTIFY_THRESHOLD
 		) {
-			const prefs = await getNotificationPrefs(db, userId);
-			if (prefs.notifyLowBalance) {
-				const u = await db
-					.select({ email: userSchema.user.email })
-					.from(userSchema.user)
-					.where(eq(userSchema.user.id, userId))
-					.get();
-				if (u?.email) {
-					try {
-						await sendLowBalanceEmail(
-							notify.env,
-							notify.config,
-							u.email,
-							newBalance,
-							LOW_CREDIT_NOTIFY_THRESHOLD,
-						);
-					} catch (e) {
-						console.error("[credits] low balance email failed", e);
-					}
+			const [prefs, u, locale] = await Promise.all([
+				getNotificationPrefs(db, userId),
+				db.select({ email: userSchema.user.email }).from(userSchema.user).where(eq(userSchema.user.id, userId)).get(),
+				getUserLocale(db, userId),
+			]);
+			if (prefs.notifyLowBalance && u?.email) {
+				try {
+					await sendLowBalanceEmail(
+						notify.env,
+						notify.config,
+						u.email,
+						newBalance,
+						LOW_CREDIT_NOTIFY_THRESHOLD,
+						locale,
+					);
+				} catch (e) {
+					console.error("[credits] low balance email failed", e);
 				}
 			}
 		}

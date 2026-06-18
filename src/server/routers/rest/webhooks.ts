@@ -6,6 +6,7 @@ import * as authSchema from "../../db/schema/auth";
 import * as billingSchema from "../../db/schema/billing";
 import { plans } from "../../db/schema/billing";
 import * as nfseSchema from "../../db/schema/nfse";
+import { getEmailT } from "../../emails/i18n";
 import { createAppConfig } from "../../lib/config";
 import type { AppBindings } from "../../lib/types";
 import { getBillingService } from "../../services/billing";
@@ -16,7 +17,9 @@ import {
 	sendSubscriptionChangedEmail,
 } from "../../services/email";
 import { createInvoiceFromStripe } from "../../services/invoices";
+import { resolveForeignCurrencyAmount } from "../../services/currency-conversion";
 import { getNotificationPrefs } from "../../services/notification-prefs";
+import { getUserLocale } from "../../services/user-locale";
 
 export function registerWebhookRoutes(app: Hono<AppBindings>) {
 	app.post("/api/webhooks/stripe", async (c) => {
@@ -44,7 +47,12 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 			return c.json({ error: message }, 400);
 		}
 
-		const env = c.env as unknown as Record<string, string>;
+		const planPriceMap: Record<string, string | undefined> = {
+			starter: c.env.STRIPE_PRICE_STARTER,
+			professional: c.env.STRIPE_PRICE_PROFESSIONAL,
+			business: c.env.STRIPE_PRICE_BUSINESS,
+			agency: c.env.STRIPE_PRICE_AGENCY,
+		};
 
 		switch (event.type) {
 			case "checkout.session.completed": {
@@ -58,15 +66,12 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 					);
 					const priceId = stripeSubscription.items.data[0]?.price.id;
 					const plan = plans.find(
-						(p) => env[`STRIPE_PRICE_${p.id.toUpperCase()}`] === priceId,
+						(p) => planPriceMap[p.id] === priceId,
 					);
 
-					const periodStart = (
-						stripeSubscription as unknown as Record<string, unknown>
-					).current_period_start as number | undefined;
-					const periodEnd = (
-						stripeSubscription as unknown as Record<string, unknown>
-					).current_period_end as number | undefined;
+					const firstItem = stripeSubscription.items.data[0];
+					const periodStart = firstItem?.current_period_start ?? 0;
+					const periodEnd = firstItem?.current_period_end ?? 0;
 
 					await db
 						.insert(billingSchema.subscriptions)
@@ -78,12 +83,8 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 							stripePriceId: priceId ?? null,
 							plan: plan?.id ?? "starter",
 							status: "active",
-							currentPeriodStart: periodStart
-								? new Date(periodStart * 1000)
-								: undefined,
-							currentPeriodEnd: periodEnd
-								? new Date(periodEnd * 1000)
-								: undefined,
+							currentPeriodStart: new Date(periodStart * 1000),
+							currentPeriodEnd: new Date(periodEnd * 1000),
 						})
 						.onConflictDoUpdate({
 							target: billingSchema.subscriptions.userId,
@@ -93,12 +94,8 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 								stripePriceId: priceId ?? null,
 								plan: plan?.id ?? "starter",
 								status: "active",
-								currentPeriodStart: periodStart
-									? new Date(periodStart * 1000)
-									: undefined,
-								currentPeriodEnd: periodEnd
-									? new Date(periodEnd * 1000)
-									: undefined,
+								currentPeriodStart: new Date(periodStart * 1000),
+								currentPeriodEnd: new Date(periodEnd * 1000),
 								updatedAt: new Date(),
 							},
 						});
@@ -120,18 +117,14 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 				const userId = subscription.metadata?.userId;
 				if (!userId) break;
 
-				const subPeriodEnd = (
-					subscription as unknown as Record<string, unknown>
-				).current_period_end as number | undefined;
-
 				await db
 					.update(billingSchema.subscriptions)
 					.set({
 						status: subscription.status === "active" ? "active" : "inactive",
 						cancelAtPeriodEnd: subscription.cancel_at_period_end,
-						currentPeriodEnd: subPeriodEnd
-							? new Date(subPeriodEnd * 1000)
-							: undefined,
+						currentPeriodEnd: new Date(
+							(subscription.items.data[0]?.current_period_end ?? 0) * 1000,
+						),
 						updatedAt: new Date(),
 					})
 					.where(eq(billingSchema.subscriptions.userId, userId));
@@ -140,22 +133,17 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 					(async () => {
 						try {
 							const appCfg = createAppConfig(c.env);
-							const prefs = await getNotificationPrefs(db, userId);
-							const owner = await db
-								.select({ email: authSchema.user.email })
-								.from(authSchema.user)
-								.where(eq(authSchema.user.id, userId))
-								.get();
+							const [prefs, owner, locale] = await Promise.all([
+								getNotificationPrefs(db, userId),
+								db.select({ email: authSchema.user.email }).from(authSchema.user).where(eq(authSchema.user.id, userId)).get(),
+								getUserLocale(db, userId),
+							]);
 							if (owner?.email && prefs.notifySubscriptionChanged) {
+								const t = getEmailT(locale);
 								const msg = subscription.cancel_at_period_end
-									? "Your subscription is set to cancel at the end of the billing period."
-									: `Your subscription status is now "${subscription.status}".`;
-								await sendSubscriptionChangedEmail(
-									c.env,
-									appCfg,
-									owner.email,
-									msg,
-								);
+									? t.subscriptionChanged.cancelAtPeriodEnd
+									: t.subscriptionChanged.statusChanged(subscription.status);
+								await sendSubscriptionChangedEmail(c.env, appCfg, owner.email, msg, locale);
 							}
 						} catch (e) {
 							console.error("[email] subscription.updated", e);
@@ -186,19 +174,14 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 					(async () => {
 						try {
 							const appCfg = createAppConfig(c.env);
-							const prefs = await getNotificationPrefs(db, userId);
-							const owner = await db
-								.select({ email: authSchema.user.email })
-								.from(authSchema.user)
-								.where(eq(authSchema.user.id, userId))
-								.get();
+							const [prefs, owner, locale] = await Promise.all([
+								getNotificationPrefs(db, userId),
+								db.select({ email: authSchema.user.email }).from(authSchema.user).where(eq(authSchema.user.id, userId)).get(),
+								getUserLocale(db, userId),
+							]);
 							if (owner?.email && prefs.notifySubscriptionChanged) {
-								await sendSubscriptionChangedEmail(
-									c.env,
-									appCfg,
-									owner.email,
-									"Your subscription has ended and your plan is now Free.",
-								);
+								const t = getEmailT(locale);
+								await sendSubscriptionChangedEmail(c.env, appCfg, owner.email, t.subscriptionChanged.deleted, locale);
 							}
 						} catch (e) {
 							console.error("[email] subscription.deleted", e);
@@ -224,25 +207,40 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 					if (stripeInvoice.billing_reason === "subscription_cycle") {
 						const plan = plans.find((p) => p.id === sub.plan);
 						if (plan) {
-							const paymentIntent = (
-								stripeInvoice as unknown as Record<string, unknown>
-							).payment_intent as string | undefined;
 							await addCredits(
 								db,
 								sub.userId,
 								plan.creditsPerMonth,
 								"subscription_grant",
 								`${plan.name} plan renewal credits`,
-								paymentIntent,
 							);
 						}
 					}
 
+					// Resolve foreign currency data via adaptive pricing presentment details
+					let foreignCurrencyCode: string | null = null;
+					let foreignCurrencyAmount: number | null = null;
+					let customerCountryIso2: string | null = null;
+					if (sub.stripeSubscriptionId) {
+						const stripeSub = await billing.stripe.subscriptions.retrieve(
+							sub.stripeSubscriptionId,
+						);
+						const presentmentCurrency =
+							stripeSub.presentment_details?.presentment_currency;
+						if (presentmentCurrency && presentmentCurrency !== "brl") {
+							const result = await resolveForeignCurrencyAmount({
+								presentmentCurrency,
+								amountBrl: stripeInvoice.amount_paid,
+								stripeInvoiceId: stripeInvoice.id,
+								stripe: billing.stripe,
+							});
+							foreignCurrencyCode = result.foreignCurrencyCode;
+							foreignCurrencyAmount = result.foreignCurrencyAmount;
+							customerCountryIso2 = result.customerCountryIso2;
+						}
+					}
+
 					// Auto-create an internal invoice record for every paid Stripe invoice
-					const invoiceRaw = stripeInvoice as unknown as Record<
-						string,
-						unknown
-					>;
 					const stripeInvoiceId = stripeInvoice.id;
 					if (stripeInvoiceId) {
 						const lines: Array<{
@@ -252,33 +250,33 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 							total: number;
 						}> = [];
 
-						const linesData = invoiceRaw.lines as
-							| { data: Array<Record<string, unknown>> }
-							| undefined;
-						if (linesData?.data) {
-							for (const line of linesData.data) {
-								lines.push({
-									description: (line.description as string | null) ?? "Service",
-									quantity: (line.quantity as number | null) ?? 1,
-									unitAmount:
-										(line.unit_amount_excluding_tax as number | null) ?? 0,
-									total: (line.amount as number | null) ?? 0,
-								});
-							}
+						for (const line of stripeInvoice.lines.data) {
+							lines.push({
+								description: line.description ?? "Service",
+								quantity: line.quantity ?? 1,
+								unitAmount: Number(line.pricing?.unit_amount_decimal) || 0,
+								total: line.amount,
+							});
 						}
+
+						const amountTax =
+							stripeInvoice.total_excluding_tax != null
+								? stripeInvoice.total - stripeInvoice.total_excluding_tax
+								: 0;
 
 						const invoice = await createInvoiceFromStripe(db, {
 							stripeInvoiceId,
 							userId: sub.userId,
-							amountSubtotal: (invoiceRaw.subtotal as number | null) ?? 0,
-							amountTax: (invoiceRaw.tax as number | null) ?? 0,
-							amountTotal: (invoiceRaw.amount_paid as number | null) ?? 0,
-							currency: (stripeInvoice.currency as string | null) ?? "brl",
-							customerName:
-								(stripeInvoice.customer_name as string | null) ?? null,
-							customerEmail:
-								(stripeInvoice.customer_email as string | null) ?? null,
-							description: (stripeInvoice.description as string | null) ?? null,
+							amountSubtotal: stripeInvoice.subtotal,
+							amountTax,
+							amountTotal: stripeInvoice.amount_paid,
+							currency: stripeInvoice.currency,
+							customerName: stripeInvoice.customer_name,
+							customerEmail: stripeInvoice.customer_email,
+							description: stripeInvoice.description,
+							foreignCurrencyCode,
+							foreignCurrencyAmount,
+							customerCountryIso2,
 							lines,
 							paidAt: new Date(),
 						});
@@ -291,13 +289,10 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 								try {
 									const appCfg = createAppConfig(c.env);
 									const planMeta = plans.find((p) => p.id === sub.plan);
-									const [prefs, owner] = await Promise.all([
+									const [prefs, owner, locale] = await Promise.all([
 										getNotificationPrefs(db, sub.userId),
-										db
-											.select({ email: authSchema.user.email })
-											.from(authSchema.user)
-											.where(eq(authSchema.user.id, sub.userId))
-											.get(),
+										db.select({ email: authSchema.user.email }).from(authSchema.user).where(eq(authSchema.user.id, sub.userId)).get(),
+										getUserLocale(db, sub.userId),
 									]);
 
 									if (owner?.email && prefs.notifyPaymentReceipt) {
@@ -308,6 +303,7 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 											invoice.amountTotal,
 											invoice.currency,
 											planMeta?.name,
+											locale,
 										);
 									}
 									if (invoice.customerEmail && prefs.notifyInvoice) {
@@ -320,6 +316,7 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 												amountCents: invoice.amountTotal,
 												currency: invoice.currency,
 												invoiceId: invoice.id,
+												locale,
 											},
 										);
 									}
@@ -335,17 +332,9 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 										status: "pending",
 									});
 
-									const { tasks } = await import("@trigger.dev/sdk");
-									await tasks.trigger("nfse-generation", {
-										invoiceId: invoice.id,
-										nfseRecordId,
-										internalApiKey: c.env.INTERNAL_API_KEY,
-										internalApiUrl: c.env.APP_URL,
-										fiscalNacionalApiKey: c.env.FISCAL_NACIONAL_API_KEY,
-										fiscalNacionalEnvironment:
-											(c.env.FISCAL_NACIONAL_ENVIRONMENT as
-												| "staging"
-												| "production") ?? "staging",
+									await c.env.NFSE_WORKFLOW.create({
+										id: nfseRecordId,
+										params: { invoiceId: invoice.id, nfseRecordId },
 									});
 								} catch (err) {
 									console.error("[nfse] Failed to queue NFSe task:", err);

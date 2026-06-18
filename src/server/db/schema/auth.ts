@@ -8,6 +8,8 @@ export const user = sqliteTable(
 		email: text("email").notNull().unique(),
 		emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
 		image: text("image"),
+		role: text("role").$type<"user" | "admin">().notNull().default("user"),
+		locale: text("locale").notNull().default("en"),
 		stripeCustomerId: text("stripe_customer_id").unique(),
 		createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 		updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),

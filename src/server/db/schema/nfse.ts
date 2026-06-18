@@ -17,31 +17,24 @@ export const nfseRecords = sqliteTable("nfse_records", {
 
 	// Fiscal Nacional identifiers
 	fiscalNacionalId: text("fiscal_nacional_id"),
-	nfseNumber: text("nfse_number"),
-	nfseVerificationCode: text("nfse_verification_code"),
+	fiscalNacionalReference: text("fiscal_nacional_reference"),
 
-	// Status: pending → processing → issued | error | cancelled
+	// NFSe data
+	nfseNumber: text("nfse_number"),
+
+	// Status: pending → processing → issued | error | cancelled | invoice_only
 	status: text("status", {
-		enum: ["pending", "processing", "issued", "error", "cancelled"],
+		enum: ["pending", "processing", "issued", "error", "cancelled", "invoice_only"],
 	})
 		.notNull()
 		.default("pending"),
 
-	// Stored files in R2
+	// File URLs (from Fiscal Nacional) and R2 mirrors
 	pdfUrl: text("pdf_url"),
 	pdfR2Key: text("pdf_r2_key"),
 	xmlUrl: text("xml_url"),
 	xmlR2Key: text("xml_r2_key"),
-
-	// Provider snapshot (denormalised for audit trail)
-	cnpj: text("cnpj"),
-	razaoSocial: text("razao_social"),
-	inscricaoMunicipal: text("inscricao_municipal"),
-	serviceDescription: text("service_description"),
-	cnaeCode: text("cnae_code"),
-	cityCode: integer("city_code"),
-	issAmount: integer("iss_amount"),
-	netAmount: integer("net_amount"),
+	invoiceUrl: text("invoice_url"),
 
 	// Error info
 	errorMessage: text("error_message"),
@@ -62,7 +55,9 @@ export type NfseRecord = typeof nfseRecords.$inferSelect;
 export type NewNfseRecord = typeof nfseRecords.$inferInsert;
 
 // ---------------------------------------------------------------------------
-// Company Settings — per-user Brazilian fiscal configuration
+// Company Settings — optional per-user defaults for NFSe descriptions
+// CNPJ, ISS rate, and service codes are configured in the Fiscal Nacional
+// project dashboard, not stored here.
 // ---------------------------------------------------------------------------
 
 export const companySettings = sqliteTable("company_settings", {
@@ -70,29 +65,9 @@ export const companySettings = sqliteTable("company_settings", {
 		.primaryKey()
 		.references(() => user.id, { onDelete: "cascade" }),
 
-	// Fiscal identity
-	cnpj: text("cnpj"),
-	razaoSocial: text("razao_social"),
-	inscricaoMunicipal: text("inscricao_municipal"),
-	nomeFantasia: text("nome_fantasia"),
-
-	// Address
-	street: text("street"),
-	number: text("number"),
-	complement: text("complement"),
-	neighborhood: text("neighborhood"),
-	city: text("city"),
-	state: text("state"),
-	zipCode: text("zip_code"),
-	cityCode: integer("city_code"),
-
-	// Service defaults
+	// Optional defaults sent with each NFSe request
 	serviceDescription: text("service_description"),
-	cnaeCode: text("cnae_code"),
-	issRate: integer("iss_rate"),
-
-	// Fiscal Nacional credentials
-	municipalityCode: text("municipality_code"),
+	productName: text("product_name"),
 
 	createdAt: integer("created_at", { mode: "timestamp" })
 		.notNull()
@@ -105,11 +80,11 @@ export const companySettings = sqliteTable("company_settings", {
 export type CompanySettings = typeof companySettings.$inferSelect;
 export type NewCompanySettings = typeof companySettings.$inferInsert;
 
-// Human-readable status labels
 export const nfseStatusLabels: Record<NfseRecord["status"], string> = {
 	pending: "Pending",
 	processing: "Processing",
 	issued: "Issued",
 	error: "Error",
 	cancelled: "Cancelled",
+	invoice_only: "Invoice only",
 };

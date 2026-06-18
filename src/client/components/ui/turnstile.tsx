@@ -18,7 +18,13 @@ export interface TurnstileRef {
 	render: () => void;
 }
 
-export function TurnstileWidget({ onVerify, onError, onExpire, className, ref }: TurnstileProps) {
+export function TurnstileWidget({
+	onVerify,
+	onError,
+	onExpire,
+	className,
+	ref,
+}: TurnstileProps) {
 	const turnstileRef = useRef<TurnstileInstance>(null);
 
 	useImperativeHandle(ref, () => ({

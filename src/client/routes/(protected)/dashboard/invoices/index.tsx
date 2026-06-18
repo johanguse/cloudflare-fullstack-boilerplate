@@ -70,7 +70,9 @@ function fmt(cents: number, currency: string) {
 	return f.format(cents / 100);
 }
 
-const _mediumDateFmt = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
+const _mediumDateFmt = new Intl.DateTimeFormat("pt-BR", {
+	dateStyle: "medium",
+});
 function fmtDate(d: Date | string | null | undefined) {
 	if (!d) return "—";
 	return _mediumDateFmt.format(new Date(d));
@@ -169,12 +171,19 @@ function CreateInvoiceDialog({
 			<DialogContent className="max-w-2xl">
 				<DialogHeader>
 					<DialogTitle>{t("invoices.create.title", "New invoice")}</DialogTitle>
-					<DialogDescription>{t("invoices.create.description", "Fill in the details to create a new invoice")}</DialogDescription>
+					<DialogDescription>
+						{t(
+							"invoices.create.description",
+							"Fill in the details to create a new invoice",
+						)}
+					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={handleSubmit} className="space-y-5">
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-1.5">
-							<Label>{t("invoices.create.customerName", "Customer name")}</Label>
+							<Label>
+								{t("invoices.create.customerName", "Customer name")}
+							</Label>
 							<Input
 								required
 								value={customerName}
@@ -183,7 +192,9 @@ function CreateInvoiceDialog({
 							/>
 						</div>
 						<div className="space-y-1.5">
-							<Label>{t("invoices.create.customerEmail", "Customer email")}</Label>
+							<Label>
+								{t("invoices.create.customerEmail", "Customer email")}
+							</Label>
 							<Input
 								required
 								type="email"
@@ -193,7 +204,9 @@ function CreateInvoiceDialog({
 							/>
 						</div>
 						<div className="space-y-1.5">
-							<Label>{t("invoices.create.document", "Document (CNPJ/CPF)")}</Label>
+							<Label>
+								{t("invoices.create.document", "Document (CNPJ/CPF)")}
+							</Label>
 							<Input
 								value={customerDocument}
 								onChange={(e) => setCustomerDocument(e.target.value)}
@@ -213,7 +226,10 @@ function CreateInvoiceDialog({
 							<Input
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
-								placeholder="Optional internal note"
+								placeholder={t(
+									"invoices.create.notePlaceholder",
+									"Optional internal note",
+								)}
 							/>
 						</div>
 					</div>
@@ -232,7 +248,10 @@ function CreateInvoiceDialog({
 								<div key={item.id} className="flex gap-2">
 									<Input
 										className="flex-1"
-										placeholder={t("invoices.create.descriptionPlaceholder", "Service description")}
+										placeholder={t(
+											"invoices.create.descriptionPlaceholder",
+											"Service description",
+										)}
 										value={item.description}
 										onChange={(e) =>
 											updateItem(idx, "description", e.target.value)
@@ -253,7 +272,10 @@ function CreateInvoiceDialog({
 										type="number"
 										min={0}
 										step="0.01"
-										placeholder={t("invoices.create.unitPlaceholder", "Unit price")}
+										placeholder={t(
+											"invoices.create.unitPlaceholder",
+											"Unit price",
+										)}
 										value={item.unitAmount}
 										onChange={(e) =>
 											updateItem(idx, "unitAmount", e.target.value)
@@ -341,7 +363,7 @@ function InvoicesPage() {
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="mx-auto w-full max-w-6xl space-y-6">
 			<div className="flex items-start justify-between">
 				<div>
 					<h1 className="font-semibold text-2xl tracking-tight">
@@ -373,10 +395,14 @@ function InvoicesPage() {
 					}}
 				>
 					<SelectTrigger className="w-40">
-						<SelectValue placeholder={t("invoices.allStatuses", "All statuses")} />
+						<SelectValue
+							placeholder={t("invoices.allStatuses", "All statuses")}
+						/>
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">{t("invoices.allStatuses", "All statuses")}</SelectItem>
+						<SelectItem value="all">
+							{t("invoices.allStatuses", "All statuses")}
+						</SelectItem>
 						{(Object.keys(statusLabels) as InvoiceStatus[]).map((s) => (
 							<SelectItem key={s} value={s}>
 								{statusLabels[s]}
@@ -394,11 +420,19 @@ function InvoicesPage() {
 				) : rows.length === 0 ? (
 					<CardContent className="flex flex-col items-center justify-center py-16 text-center">
 						<Receipt className="mb-3 size-10 text-muted-foreground/40" />
-						<p className="font-medium text-sm">{t("invoices.noInvoices", "No invoices found")}</p>
+						<p className="font-medium text-sm">
+							{t("invoices.noInvoices", "No invoices found")}
+						</p>
 						<p className="text-muted-foreground text-sm">
 							{statusFilter !== "all"
-								? t("invoices.noInvoicesFilter", "No invoices match the selected filter")
-								: t("invoices.noInvoicesFirst", "Create your first invoice to get started")}
+								? t(
+										"invoices.noInvoicesFilter",
+										"No invoices match the selected filter",
+									)
+								: t(
+										"invoices.noInvoicesFirst",
+										"Create your first invoice to get started",
+									)}
 						</p>
 					</CardContent>
 				) : (
@@ -407,11 +441,17 @@ function InvoicesPage() {
 							<TableHeader>
 								<TableRow>
 									<TableHead>{t("invoices.headers.number", "#")}</TableHead>
-									<TableHead>{t("invoices.headers.customer", "Customer")}</TableHead>
+									<TableHead>
+										{t("invoices.headers.customer", "Customer")}
+									</TableHead>
 									<TableHead>{t("invoices.headers.date", "Date")}</TableHead>
 									<TableHead>{t("invoices.headers.due", "Due")}</TableHead>
-									<TableHead>{t("invoices.headers.amount", "Amount")}</TableHead>
-									<TableHead>{t("invoices.headers.status", "Status")}</TableHead>
+									<TableHead>
+										{t("invoices.headers.amount", "Amount")}
+									</TableHead>
+									<TableHead>
+										{t("invoices.headers.status", "Status")}
+									</TableHead>
 									<TableHead className="text-right">
 										{t("invoices.headers.actions", "Actions")}
 									</TableHead>
