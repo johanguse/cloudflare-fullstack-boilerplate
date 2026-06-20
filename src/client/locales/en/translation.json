@@ -181,7 +181,7 @@
 		"noCheckoutUrl": "No checkout URL returned",
 		"priceNotConfigured": "Stripe Price ID not configured. Set VITE_STRIPE_PRICE_* in .env.",
 		"failedToStartCheckout": "Failed to start checkout",
-		"stripeNotConfigured": "Stripe is not configured. Set VITE_STRIPE_PRICE_STARTER, VITE_STRIPE_PRICE_PROFESSIONAL, VITE_STRIPE_PRICE_BUSINESS, and VITE_STRIPE_PRICE_AGENCY in your .env to enable paid plans.",
+		"stripeNotConfigured": "Stripe is not configured. Set VITE_STRIPE_PRICE_STARTER, VITE_STRIPE_PRICE_PROFESSIONAL, and VITE_STRIPE_PRICE_BUSINESS in your .env to enable paid plans.",
 		"notConfigured": "Not configured"
 	},
 	"history": {

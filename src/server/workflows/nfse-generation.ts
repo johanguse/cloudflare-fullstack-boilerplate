@@ -1,5 +1,5 @@
-import { WorkflowEntrypoint } from "cloudflare:workers";
 import type { WorkflowEvent, WorkflowStep } from "cloudflare:workers";
+import { WorkflowEntrypoint } from "cloudflare:workers";
 import { NonRetryableError } from "cloudflare:workflows";
 import { eq } from "drizzle-orm";
 import { initDb } from "../db";
@@ -8,7 +8,11 @@ import * as nfseSchema from "../db/schema/nfse";
 import { createAppConfig } from "../lib/config";
 import type { AppEnv } from "../lib/types";
 import { sendNfseIssuedEmail } from "../services/email";
-import { getFiscalNacionalService, storeNfsePdf, storeNfseXml } from "../services/nfse";
+import {
+	getFiscalNacionalService,
+	storeNfsePdf,
+	storeNfseXml,
+} from "../services/nfse";
 import { getNotificationPrefs } from "../services/notification-prefs";
 import { getUserLocale } from "../services/user-locale";
 
@@ -17,7 +21,10 @@ export type NfseWorkflowParams = {
 	nfseRecordId: string;
 };
 
-export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkflowParams> {
+export class NfseGenerationWorkflow extends WorkflowEntrypoint<
+	AppEnv,
+	NfseWorkflowParams
+> {
 	async run(event: WorkflowEvent<NfseWorkflowParams>, step: WorkflowStep) {
 		const { invoiceId, nfseRecordId } = event.payload;
 
@@ -69,14 +76,19 @@ export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkf
 			},
 			async () => {
 				const environment =
-					(this.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ?? "staging";
-				const service = getFiscalNacionalService(this.env.FISCAL_NACIONAL_API_KEY, environment);
+					(this.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ??
+					"staging";
+				const service = getFiscalNacionalService(
+					this.env.FISCAL_NACIONAL_API_KEY,
+					environment,
+				);
 
 				const result = await service.emitNfse({
 					customerName: invoice.customerName ?? "Customer",
 					customerEmail: invoice.customerEmail ?? undefined,
 					customerDocument: invoice.customerDocument ?? undefined,
-					serviceDescription: invoice.description ?? serviceDescription ?? undefined,
+					serviceDescription:
+						invoice.description ?? serviceDescription ?? undefined,
 					productName: productName ?? undefined,
 					amount: invoice.amountTotal / 100,
 					currencyCode: invoice.foreignCurrencyCode ?? undefined,
@@ -119,7 +131,10 @@ export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkf
 		);
 
 		// Synchronous resolution (issued or invoice_only)
-		if (emitResult.status === "issued" || emitResult.status === "invoice_only") {
+		if (
+			emitResult.status === "issued" ||
+			emitResult.status === "invoice_only"
+		) {
 			await step.do("store files and notify", async () => {
 				await this.storeFilesAndNotify(nfseRecordId, invoiceId, {
 					nfseNumber: emitResult.nfseNumber,
@@ -143,7 +158,9 @@ export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkf
 				{ retries: { limit: 2, delay: "3 seconds" } },
 				async () => {
 					const environment =
-						(this.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ?? "staging";
+						(this.env.FISCAL_NACIONAL_ENVIRONMENT as
+							| "staging"
+							| "production") ?? "staging";
 					const service = getFiscalNacionalService(
 						this.env.FISCAL_NACIONAL_API_KEY,
 						environment,
@@ -163,7 +180,9 @@ export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkf
 							pdfUrl: pollResult.pdfUrl,
 							xmlUrl: pollResult.xmlUrl,
 							invoiceUrl: pollResult.invoiceUrl,
-							emittedAt: pollResult.issuedAt ? new Date(pollResult.issuedAt) : new Date(),
+							emittedAt: pollResult.issuedAt
+								? new Date(pollResult.issuedAt)
+								: new Date(),
 							updatedAt: new Date(),
 						})
 						.where(eq(nfseSchema.nfseRecords.id, nfseRecordId));
@@ -184,7 +203,11 @@ export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkf
 					const db = initDb(this.env);
 					await db
 						.update(nfseSchema.nfseRecords)
-						.set({ status: "error", errorMessage: errorMsg, updatedAt: new Date() })
+						.set({
+							status: "error",
+							errorMessage: errorMsg,
+							updatedAt: new Date(),
+						})
 						.where(eq(nfseSchema.nfseRecords.id, nfseRecordId));
 				});
 				throw new NonRetryableError(errorMsg);
@@ -197,7 +220,11 @@ export class NfseGenerationWorkflow extends WorkflowEntrypoint<AppEnv, NfseWorkf
 			const db = initDb(this.env);
 			await db
 				.update(nfseSchema.nfseRecords)
-				.set({ status: "error", errorMessage: timeoutMsg, updatedAt: new Date() })
+				.set({
+					status: "error",
+					errorMessage: timeoutMsg,
+					updatedAt: new Date(),
+				})
 				.where(eq(nfseSchema.nfseRecords.id, nfseRecordId));
 		});
 		throw new NonRetryableError(timeoutMsg);

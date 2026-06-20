@@ -123,10 +123,12 @@ export const nfseRouter = router({
 				.get();
 
 			if (!record) throw new Error("NFSe record not found");
-			if (!record.fiscalNacionalReference) throw new Error("NFSe not yet emitted");
+			if (!record.fiscalNacionalReference)
+				throw new Error("NFSe not yet emitted");
 
 			const environment =
-				(ctx.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ?? "staging";
+				(ctx.env.FISCAL_NACIONAL_ENVIRONMENT as "staging" | "production") ??
+				"staging";
 			const service = getFiscalNacionalService(
 				ctx.env.FISCAL_NACIONAL_API_KEY,
 				environment,
@@ -142,7 +144,9 @@ export const nfseRouter = router({
 					.update(nfseSchema.nfseRecords)
 					.set({
 						status: "cancelled",
-						cancelledAt: result.cancelledAt ? new Date(result.cancelledAt) : new Date(),
+						cancelledAt: result.cancelledAt
+							? new Date(result.cancelledAt)
+							: new Date(),
 						updatedAt: new Date(),
 					})
 					.where(eq(nfseSchema.nfseRecords.id, record.id));

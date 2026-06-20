@@ -17,5 +17,11 @@ export function renderLowBalanceAlertEmail(data: LowBalanceEmailData): string {
 <p style="margin:0 0 8px;"><strong>${t.lowBalance.current}</strong> ${t.lowBalance.currentValue(data.balance)}</p>
 <p style="margin:0 0 16px;font-size:13px;color:#6b7280;">${t.lowBalance.threshold(data.threshold)}</p>
 <p style="margin:0;"><a href="${escapeHtml(data.billingUrl)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px;font-weight:600;">${t.lowBalance.cta}</a></p>`;
-	return wrapEmailBody(data.appName, t.lowBalance.title, inner, undefined, lang);
+	return wrapEmailBody(
+		data.appName,
+		t.lowBalance.title,
+		inner,
+		undefined,
+		lang,
+	);
 }

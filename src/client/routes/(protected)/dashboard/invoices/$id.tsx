@@ -69,7 +69,13 @@ function fmtDate(d: Date | string | null | undefined) {
 // NFSe Status Widget
 // ---------------------------------------------------------------------------
 
-type NfseStatus = "pending" | "processing" | "issued" | "error" | "cancelled" | "invoice_only";
+type NfseStatus =
+	| "pending"
+	| "processing"
+	| "issued"
+	| "error"
+	| "cancelled"
+	| "invoice_only";
 
 const NFSE_STATUS_ICONS: Record<
 	NfseStatus,
@@ -295,7 +301,7 @@ function InvoiceDetailPage() {
 
 	if (invoiceQuery.isPending) {
 		return (
-			<div className="max-w-2xl space-y-4">
+			<div className="w-full space-y-4">
 				<Skeleton className="h-6 w-48" />
 				<Skeleton className="h-64 w-full" />
 			</div>
@@ -324,7 +330,7 @@ function InvoiceDetailPage() {
 	const currency = invoice.currency ?? "BRL";
 
 	return (
-		<div className="mx-auto w-full max-w-3xl space-y-6">
+		<div className="w-full space-y-6">
 			{/* Header */}
 			<div className="flex items-start justify-between">
 				<div className="flex items-center gap-3">
@@ -336,7 +342,10 @@ function InvoiceDetailPage() {
 					<div>
 						<div className="flex items-center gap-2">
 							<h1 className="font-semibold text-xl tracking-tight">
-								{t("invoiceDetail.invoiceNumber", { number: invoice.number, defaultValue: "Invoice #{{number}}" })}
+								{t("invoiceDetail.invoiceNumber", {
+									number: invoice.number,
+									defaultValue: "Invoice #{{number}}",
+								})}
 							</h1>
 							<Badge variant={STATUS_VARIANT[status]}>
 								{statusLabels[status]}

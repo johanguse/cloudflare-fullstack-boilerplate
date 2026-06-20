@@ -11,13 +11,13 @@ import { createAppConfig } from "../../lib/config";
 import type { AppBindings } from "../../lib/types";
 import { getBillingService } from "../../services/billing";
 import { addCredits } from "../../services/credits";
+import { resolveForeignCurrencyAmount } from "../../services/currency-conversion";
 import {
 	sendInvoiceNotificationEmail,
 	sendPaymentReceiptEmail,
 	sendSubscriptionChangedEmail,
 } from "../../services/email";
 import { createInvoiceFromStripe } from "../../services/invoices";
-import { resolveForeignCurrencyAmount } from "../../services/currency-conversion";
 import { getNotificationPrefs } from "../../services/notification-prefs";
 import { getUserLocale } from "../../services/user-locale";
 
@@ -47,11 +47,17 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 			return c.json({ error: message }, 400);
 		}
 
-		const planPriceMap: Record<string, string | undefined> = {
-			starter: c.env.STRIPE_PRICE_STARTER,
-			professional: c.env.STRIPE_PRICE_PROFESSIONAL,
-			business: c.env.STRIPE_PRICE_BUSINESS,
-			agency: c.env.STRIPE_PRICE_AGENCY,
+		const planPriceMap: Record<string, Array<string | undefined>> = {
+			starter: [c.env.STRIPE_PRICE_STARTER, c.env.STRIPE_PRICE_STARTER_ANNUAL],
+			professional: [
+				c.env.STRIPE_PRICE_PROFESSIONAL,
+				c.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL,
+			],
+			business: [
+				c.env.STRIPE_PRICE_BUSINESS,
+				c.env.STRIPE_PRICE_BUSINESS_ANNUAL,
+			],
+			agency: [c.env.STRIPE_PRICE_AGENCY, c.env.STRIPE_PRICE_AGENCY_ANNUAL],
 		};
 
 		switch (event.type) {
@@ -65,9 +71,9 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 						session.subscription as string,
 					);
 					const priceId = stripeSubscription.items.data[0]?.price.id;
-					const plan = plans.find(
-						(p) => planPriceMap[p.id] === priceId,
-					);
+					const plan = priceId
+						? plans.find((p) => planPriceMap[p.id]?.includes(priceId))
+						: undefined;
 
 					const firstItem = stripeSubscription.items.data[0];
 					const periodStart = firstItem?.current_period_start ?? 0;
@@ -135,7 +141,11 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 							const appCfg = createAppConfig(c.env);
 							const [prefs, owner, locale] = await Promise.all([
 								getNotificationPrefs(db, userId),
-								db.select({ email: authSchema.user.email }).from(authSchema.user).where(eq(authSchema.user.id, userId)).get(),
+								db
+									.select({ email: authSchema.user.email })
+									.from(authSchema.user)
+									.where(eq(authSchema.user.id, userId))
+									.get(),
 								getUserLocale(db, userId),
 							]);
 							if (owner?.email && prefs.notifySubscriptionChanged) {
@@ -143,7 +153,13 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 								const msg = subscription.cancel_at_period_end
 									? t.subscriptionChanged.cancelAtPeriodEnd
 									: t.subscriptionChanged.statusChanged(subscription.status);
-								await sendSubscriptionChangedEmail(c.env, appCfg, owner.email, msg, locale);
+								await sendSubscriptionChangedEmail(
+									c.env,
+									appCfg,
+									owner.email,
+									msg,
+									locale,
+								);
 							}
 						} catch (e) {
 							console.error("[email] subscription.updated", e);
@@ -176,12 +192,22 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 							const appCfg = createAppConfig(c.env);
 							const [prefs, owner, locale] = await Promise.all([
 								getNotificationPrefs(db, userId),
-								db.select({ email: authSchema.user.email }).from(authSchema.user).where(eq(authSchema.user.id, userId)).get(),
+								db
+									.select({ email: authSchema.user.email })
+									.from(authSchema.user)
+									.where(eq(authSchema.user.id, userId))
+									.get(),
 								getUserLocale(db, userId),
 							]);
 							if (owner?.email && prefs.notifySubscriptionChanged) {
 								const t = getEmailT(locale);
-								await sendSubscriptionChangedEmail(c.env, appCfg, owner.email, t.subscriptionChanged.deleted, locale);
+								await sendSubscriptionChangedEmail(
+									c.env,
+									appCfg,
+									owner.email,
+									t.subscriptionChanged.deleted,
+									locale,
+								);
 							}
 						} catch (e) {
 							console.error("[email] subscription.deleted", e);
@@ -291,7 +317,11 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 									const planMeta = plans.find((p) => p.id === sub.plan);
 									const [prefs, owner, locale] = await Promise.all([
 										getNotificationPrefs(db, sub.userId),
-										db.select({ email: authSchema.user.email }).from(authSchema.user).where(eq(authSchema.user.id, sub.userId)).get(),
+										db
+											.select({ email: authSchema.user.email })
+											.from(authSchema.user)
+											.where(eq(authSchema.user.id, sub.userId))
+											.get(),
 										getUserLocale(db, sub.userId),
 									]);
 

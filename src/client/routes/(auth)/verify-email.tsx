@@ -48,7 +48,8 @@ function VerifyEmailPage() {
 		setIsSending(false);
 		if (error) {
 			toast.error(
-				error.message ?? t("auth.verifyEmail.failedToSend", "Failed to send code"),
+				error.message ??
+					t("auth.verifyEmail.failedToSend", "Failed to send code"),
 			);
 			return;
 		}
@@ -69,7 +70,9 @@ function VerifyEmailPage() {
 			);
 			return;
 		}
-		toast.success(t("auth.verifyEmail.verified", "Email verified! Redirecting..."));
+		toast.success(
+			t("auth.verifyEmail.verified", "Email verified! Redirecting..."),
+		);
 		navigate({ to: "/dashboard" });
 	};
 
@@ -81,11 +84,19 @@ function VerifyEmailPage() {
 						<div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary/10">
 							<Mail className="size-6 text-primary" />
 						</div>
-						<CardTitle>{t("auth.verifyEmail.title", "Verify your email")}</CardTitle>
+						<CardTitle>
+							{t("auth.verifyEmail.title", "Verify your email")}
+						</CardTitle>
 						<CardDescription>
 							{otpSent
-								? t("auth.verifyEmail.enterCode", "Enter the 6-digit code we sent to your email")
-								: t("auth.verifyEmail.sendCode", "We'll send a verification code to your email")}
+								? t(
+										"auth.verifyEmail.enterCode",
+										"Enter the 6-digit code we sent to your email",
+									)
+								: t(
+										"auth.verifyEmail.sendCode",
+										"We'll send a verification code to your email",
+									)}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -100,7 +111,10 @@ function VerifyEmailPage() {
 										type="email"
 										value={email}
 										onChange={(e) => setEmail(e.target.value)}
-										placeholder={t("common.emailPlaceholder", "you@example.com")}
+										placeholder={t(
+											"common.emailPlaceholder",
+											"you@example.com",
+										)}
 									/>
 								</div>
 								<Button
@@ -149,7 +163,10 @@ function VerifyEmailPage() {
 										setOtp("");
 									}}
 								>
-									{t("auth.verifyEmail.useDifferentEmail", "Use different email")}
+									{t(
+										"auth.verifyEmail.useDifferentEmail",
+										"Use different email",
+									)}
 								</Button>
 							</form>
 						)}

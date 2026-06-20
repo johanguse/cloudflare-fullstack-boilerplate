@@ -1,7 +1,4 @@
-import {
-	Avatar,
-	AvatarFallback,
-} from "@client/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@client/components/ui/avatar";
 import { Badge } from "@client/components/ui/badge";
 import { Button } from "@client/components/ui/button";
 import {
@@ -41,7 +38,7 @@ function AdminUsersPage() {
 	};
 
 	return (
-		<div className="mx-auto w-full max-w-5xl space-y-6">
+		<div className="w-full space-y-6">
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">
 					{t("admin.users.title", "All Users")}
@@ -83,7 +80,12 @@ function AdminUsersPage() {
 						<div className="divide-y">
 							{users?.map((user) => {
 								const initials = user.name
-									? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+									? user.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")
+											.toUpperCase()
+											.slice(0, 2)
 									: user.email[0].toUpperCase();
 								return (
 									<div
@@ -109,14 +111,17 @@ function AdminUsersPage() {
 											) : (
 												<XCircle className="size-3.5 text-muted-foreground" />
 											)}
-											<Badge variant={planBadgeVariant(user.plan)} className="capitalize">
+											<Badge
+												variant={planBadgeVariant(user.plan)}
+												className="capitalize"
+											>
 												{user.plan}
 											</Badge>
 											{user.role === "admin" ? (
 												<Button
 													variant="ghost"
 													size="sm"
-													className="h-6 px-2 text-xs text-muted-foreground"
+													className="h-6 px-2 text-muted-foreground text-xs"
 													disabled={updateRoleMutation.isPending}
 													onClick={() =>
 														updateRoleMutation.mutate({

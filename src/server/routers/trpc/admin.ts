@@ -3,6 +3,7 @@ import { z } from "zod";
 import * as authSchema from "../../db/schema/auth";
 import * as billingSchema from "../../db/schema/billing";
 import * as invoicesSchema from "../../db/schema/invoices";
+import * as settingsSchema from "../../db/schema/settings";
 import { adminProcedure, router } from "../../lib/trpc";
 
 export const adminRouter = router({
@@ -76,7 +77,7 @@ export const adminRouter = router({
 		}),
 
 	getActivity: adminProcedure.query(async ({ ctx }) => {
-		const [recentSessions, recentInvoices] = await Promise.all([
+		const [recentSessions, recentInvoices, recentApiKeys] = await Promise.all([
 			ctx.db
 				.select({
 					id: authSchema.session.id,
@@ -98,12 +99,25 @@ export const adminRouter = router({
 				.from(invoicesSchema.invoices)
 				.orderBy(desc(invoicesSchema.invoices.createdAt))
 				.limit(30),
+			ctx.db
+				.select({
+					id: settingsSchema.apiKeys.id,
+					userId: settingsSchema.apiKeys.userId,
+					name: settingsSchema.apiKeys.name,
+					keyPrefix: settingsSchema.apiKeys.keyPrefix,
+					createdAt: settingsSchema.apiKeys.createdAt,
+					lastUsedAt: settingsSchema.apiKeys.lastUsedAt,
+				})
+				.from(settingsSchema.apiKeys)
+				.orderBy(desc(settingsSchema.apiKeys.createdAt))
+				.limit(30),
 		]);
 
 		const allUserIds = [
 			...new Set([
 				...recentSessions.map((s) => s.userId),
-				...recentInvoices.map((i) => i.userId).filter(Boolean) as string[],
+				...(recentInvoices.map((i) => i.userId).filter(Boolean) as string[]),
+				...recentApiKeys.map((k) => k.userId),
 			]),
 		];
 
@@ -124,10 +138,15 @@ export const adminRouter = router({
 		const signIns = recentSessions.map((s) => ({
 			id: `session-${s.id}`,
 			type: "sign_in" as const,
+			eventType: "Sign in",
+			action: "Session created",
+			severity: "low" as const,
+			sourceIp: s.ipAddress ?? "Unknown",
+			destinationIp: "Dashboard",
 			userId: s.userId,
 			userName: userMap.get(s.userId)?.name ?? "Unknown",
 			userEmail: userMap.get(s.userId)?.email ?? "",
-			detail: s.ipAddress ? `from ${s.ipAddress}` : "",
+			detail: s.ipAddress ? `from ${s.ipAddress}` : "new session",
 			createdAt: s.createdAt,
 		}));
 
@@ -136,14 +155,36 @@ export const adminRouter = router({
 			.map((i) => ({
 				id: `invoice-${i.id}`,
 				type: "payment" as const,
+				eventType: "Payment",
+				action: "Invoice paid",
+				severity: "medium" as const,
+				sourceIp: "Stripe",
+				destinationIp: "Billing webhook",
 				userId: i.userId ?? "",
-				userName: i.userId ? (userMap.get(i.userId)?.name ?? "Unknown") : "Unknown",
+				userName: i.userId
+					? (userMap.get(i.userId)?.name ?? "Unknown")
+					: "Unknown",
 				userEmail: i.userId ? (userMap.get(i.userId)?.email ?? "") : "",
 				detail: `$${(i.amountTotal / 100).toFixed(2)}`,
 				createdAt: i.createdAt,
 			}));
 
-		return [...signIns, ...payments]
+		const apiKeys = recentApiKeys.map((k) => ({
+			id: `api-key-${k.id}`,
+			type: "api_key_created" as const,
+			eventType: "API key",
+			action: `Created ${k.name}`,
+			severity: "medium" as const,
+			sourceIp: "Dashboard",
+			destinationIp: "API access",
+			userId: k.userId,
+			userName: userMap.get(k.userId)?.name ?? "Unknown",
+			userEmail: userMap.get(k.userId)?.email ?? "",
+			detail: `${k.keyPrefix}...`,
+			createdAt: k.createdAt,
+		}));
+
+		return [...signIns, ...payments, ...apiKeys]
 			.sort((a, b) => {
 				const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
 				const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;

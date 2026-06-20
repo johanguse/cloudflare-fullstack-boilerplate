@@ -26,5 +26,11 @@ export function renderInvoiceEmail(data: InvoiceEmailData): string {
 <p style="margin:16px 0 0;"><a href="${escapeHtml(data.invoiceUrl)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 18px;border-radius:6px;font-weight:600;">${t.invoice.cta}</a></p>
 ${download}
 ${nfse}`;
-	return wrapEmailBody(data.appName, t.invoice.title(escapeHtml(data.invoiceNumber)), inner, undefined, lang);
+	return wrapEmailBody(
+		data.appName,
+		t.invoice.title(escapeHtml(data.invoiceNumber)),
+		inner,
+		undefined,
+		lang,
+	);
 }

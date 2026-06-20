@@ -27,5 +27,11 @@ export function renderNfseIssuedEmail(data: NfseIssuedEmailData): string {
 ${num}
 ${pdf}
 ${xml}`;
-	return wrapEmailBody(data.appName, t.nfseIssued.title, inner, undefined, lang);
+	return wrapEmailBody(
+		data.appName,
+		t.nfseIssued.title,
+		inner,
+		undefined,
+		lang,
+	);
 }

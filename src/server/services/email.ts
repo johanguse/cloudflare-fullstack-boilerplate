@@ -1,5 +1,5 @@
-import { renderInvoiceEmail } from "../emails/invoice";
 import { getEmailT } from "../emails/i18n";
+import { renderInvoiceEmail } from "../emails/invoice";
 import { renderLowBalanceAlertEmail } from "../emails/low-balance-alert";
 import { renderNfseIssuedEmail } from "../emails/nfse-issued";
 import { renderPaymentReceiptEmail } from "../emails/payment-receipt";

@@ -28,7 +28,6 @@ import {
 	Moon,
 	Settings2,
 	Sun,
-	User,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -115,12 +114,6 @@ export function UserMenu() {
 				<DropdownMenuSeparator />
 
 				<DropdownMenuItem asChild>
-					<Link to="/dashboard/profile">
-						<User className="size-4" />
-						{t("userMenu.profile", "Profile")}
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
 					<Link to="/dashboard/settings">
 						<Settings2 className="size-4" />
 						{t("userMenu.settings", "Settings")}
@@ -149,10 +142,7 @@ export function UserMenu() {
 					</DropdownMenuSubTrigger>
 					<DropdownMenuSubContent>
 						{THEMES.map(({ value, label, Icon }) => (
-							<DropdownMenuItem
-								key={value}
-								onClick={() => setTheme(value)}
-							>
+							<DropdownMenuItem key={value} onClick={() => setTheme(value)}>
 								<Icon className="size-4" />
 								{t(`userMenu.theme.${value}`, label)}
 								{theme === value && <Check className="ml-auto size-3.5" />}

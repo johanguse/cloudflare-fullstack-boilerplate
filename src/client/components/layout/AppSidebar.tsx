@@ -14,8 +14,6 @@ import { trpc } from "@client/lib/trpc-client";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
 	ActivitySquare,
-	ChevronRight,
-	CircleUser,
 	CreditCard,
 	KeyRound,
 	LayoutDashboard,
@@ -26,6 +24,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SidebarPlanCard } from "./SidebarPlanCard";
+import { TeamSwitcher } from "./TeamSwitcher";
 import { UserMenu } from "./UserMenu";
 
 export function AppSidebar() {
@@ -41,25 +40,8 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar collapsible="icon">
-			{/* Brand */}
 			<SidebarHeader>
-				<SidebarMenu>
-					<SidebarMenuItem>
-						<SidebarMenuButton size="lg" asChild tooltip="My SaaS">
-							<Link to="/dashboard">
-								<div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground text-sm">
-									S
-								</div>
-								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-semibold">My SaaS</span>
-									<span className="truncate text-muted-foreground text-xs">
-										Dashboard
-									</span>
-								</div>
-							</Link>
-						</SidebarMenuButton>
-					</SidebarMenuItem>
-				</SidebarMenu>
+				<TeamSwitcher />
 			</SidebarHeader>
 
 			<SidebarContent>
@@ -79,20 +61,13 @@ export function AppSidebar() {
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
+					</SidebarMenu>
+				</SidebarGroup>
 
-						<SidebarMenuItem>
-							<SidebarMenuButton
-								asChild
-								isActive={isPrefixed("/dashboard/invoices")}
-								tooltip={t("nav.invoices", "Invoices")}
-							>
-								<Link to="/dashboard/invoices">
-									<ScrollText />
-									<span>{t("nav.invoices", "Invoices")}</span>
-								</Link>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-
+				{/* Account */}
+				<SidebarGroup>
+					<SidebarGroupLabel>{t("nav.account", "Account")}</SidebarGroupLabel>
+					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton
 								asChild
@@ -105,22 +80,16 @@ export function AppSidebar() {
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
-					</SidebarMenu>
-				</SidebarGroup>
 
-				{/* Account */}
-				<SidebarGroup>
-					<SidebarGroupLabel>{t("nav.account", "Account")}</SidebarGroupLabel>
-					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton
 								asChild
-								isActive={isExact("/dashboard/profile")}
-								tooltip={t("nav.profile", "Profile")}
+								isActive={isPrefixed("/dashboard/invoices")}
+								tooltip={t("nav.invoices", "Invoices")}
 							>
-								<Link to="/dashboard/profile">
-									<CircleUser />
-									<span>{t("nav.profile", "Profile")}</span>
+								<Link to="/dashboard/invoices">
+									<ScrollText />
+									<span>{t("nav.invoices", "Invoices")}</span>
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
@@ -147,7 +116,6 @@ export function AppSidebar() {
 								<Link to="/dashboard/settings">
 									<Settings2 />
 									<span>{t("nav.settings", "Settings")}</span>
-									<ChevronRight className="ml-auto size-3.5 text-muted-foreground/60" />
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>

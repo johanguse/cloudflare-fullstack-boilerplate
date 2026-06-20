@@ -121,7 +121,11 @@ export async function deductCredits(
 		) {
 			const [prefs, u, locale] = await Promise.all([
 				getNotificationPrefs(db, userId),
-				db.select({ email: userSchema.user.email }).from(userSchema.user).where(eq(userSchema.user.id, userId)).get(),
+				db
+					.select({ email: userSchema.user.email })
+					.from(userSchema.user)
+					.where(eq(userSchema.user.id, userId))
+					.get(),
 				getUserLocale(db, userId),
 			]);
 			if (prefs.notifyLowBalance && u?.email) {

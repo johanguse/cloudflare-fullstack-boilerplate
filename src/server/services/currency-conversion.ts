@@ -7,15 +7,32 @@ import type Stripe from "stripe";
 
 export const BACEN_CURRENCY_CODES: Record<string, string> = {
 	// Major
-	usd: "220", eur: "978", gbp: "540", chf: "510", cad: "165", aud: "150", jpy: "470",
+	usd: "220",
+	eur: "978",
+	gbp: "540",
+	chf: "510",
+	cad: "165",
+	aud: "150",
+	jpy: "470",
 	// Asian
-	cny: "795", krw: "425", inr: "356", sgd: "702", hkd: "344",
+	cny: "795",
+	krw: "425",
+	inr: "356",
+	sgd: "702",
+	hkd: "344",
 	// Latin American
-	ars: "706", mxn: "741", clp: "715", cop: "718", pen: "604",
+	ars: "706",
+	mxn: "741",
+	clp: "715",
+	cop: "718",
+	pen: "604",
 	// European (non-Euro)
-	dkk: "208", nok: "578", sek: "752",
+	dkk: "208",
+	nok: "578",
+	sek: "752",
 	// Other
-	zar: "785", nzd: "554",
+	zar: "785",
+	nzd: "554",
 };
 
 // ---------------------------------------------------------------------------
@@ -50,8 +67,8 @@ async function getPtaxSellRate(currency: string): Promise<number | null> {
 
 		try {
 			const url =
-				`https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/` +
-				`CotacaoMoedaDia(moeda=@moeda,dataCotacao=@data)` +
+				"https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/" +
+				"CotacaoMoedaDia(moeda=@moeda,dataCotacao=@data)" +
 				`?@moeda='${currency.toUpperCase()}'&@data='${formatDateForPtax(date)}'&$format=json`;
 
 			const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -143,5 +160,10 @@ export async function resolveForeignCurrencyAmount(params: {
 		// fall through
 	}
 
-	return { foreignCurrencyCode: bacenCode, foreignCurrencyAmount: null, customerCountryIso2, source: "ptax" };
+	return {
+		foreignCurrencyCode: bacenCode,
+		foreignCurrencyAmount: null,
+		customerCountryIso2,
+		source: "ptax",
+	};
 }

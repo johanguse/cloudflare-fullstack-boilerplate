@@ -1,4 +1,4 @@
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import * as authSchema from "../db/schema/auth";
 import type { tRPCContext } from "./types";

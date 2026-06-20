@@ -144,21 +144,30 @@ export class FiscalNacionalService {
 
 		if (input.customerEmail) payload.customer_email = input.customerEmail;
 		if (input.customerCountry) payload.customer_country = input.customerCountry;
-		if (input.customerCountryIso2) payload.customer_country_iso2 = input.customerCountryIso2;
-		if (input.customerDocument) payload.customer_document = input.customerDocument.replace(/\D/g, "");
+		if (input.customerCountryIso2)
+			payload.customer_country_iso2 = input.customerCountryIso2;
+		if (input.customerDocument)
+			payload.customer_document = input.customerDocument.replace(/\D/g, "");
 		if (input.customerNif) payload.customer_nif = input.customerNif;
 		if (input.customerAddress) payload.customer_address = input.customerAddress;
 		if (input.customerNumber) payload.customer_number = input.customerNumber;
-		if (input.customerNeighborhood) payload.customer_neighborhood = input.customerNeighborhood;
-		if (input.customerPostalCode) payload.customer_postal_code = input.customerPostalCode;
+		if (input.customerNeighborhood)
+			payload.customer_neighborhood = input.customerNeighborhood;
+		if (input.customerPostalCode)
+			payload.customer_postal_code = input.customerPostalCode;
 		if (input.customerState) payload.customer_state = input.customerState;
-		if (input.customerCityName) payload.customer_city_name = input.customerCityName;
-		if (input.customerCityCode) payload.customer_city_code = input.customerCityCode;
-		if (input.serviceDescription) payload.service_description = input.serviceDescription;
+		if (input.customerCityName)
+			payload.customer_city_name = input.customerCityName;
+		if (input.customerCityCode)
+			payload.customer_city_code = input.customerCityCode;
+		if (input.serviceDescription)
+			payload.service_description = input.serviceDescription;
 		if (input.productName) payload.product_name = input.productName;
 		if (input.currencyCode) payload.currency_code = input.currencyCode;
-		if (input.foreignCurrencyAmount != null) payload.foreign_currency_amount = input.foreignCurrencyAmount;
-		if (input.externalReference) payload.external_reference = input.externalReference;
+		if (input.foreignCurrencyAmount != null)
+			payload.foreign_currency_amount = input.foreignCurrencyAmount;
+		if (input.externalReference)
+			payload.external_reference = input.externalReference;
 
 		const data = await this.request<FnResponse>("/api/v1/external/nfse", {
 			method: "POST",
@@ -209,7 +218,10 @@ export class FiscalNacionalService {
 		};
 	}
 
-	async cancelNfse(reference: string, reason: string): Promise<NfseCancelResult> {
+	async cancelNfse(
+		reference: string,
+		reason: string,
+	): Promise<NfseCancelResult> {
 		type FnCancelResponse = {
 			id: string;
 			reference: string;

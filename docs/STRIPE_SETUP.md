@@ -8,14 +8,19 @@ Use [Stripe Dashboard](https://dashboard.stripe.com). For staging, stay in **Tes
 
 ## 2. Products and prices
 
-1. Create one **Product** per plan (e.g. Starter, Professional, Business, Agency).
-2. For each product, create **recurring prices** (monthly and optional annual).
+1. Create one **Product** per paid plan (Starter, Professional, and Business).
+2. For each product, create **recurring prices** for monthly and annual billing.
 3. Copy each **Price ID** (`price_...`) into `wrangler.jsonc` under `vars`:
 
-   - `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PROFESSIONAL`, …
-   - `STRIPE_PRICE_*_ANNUAL` if you offer yearly billing.
+   - `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PROFESSIONAL`, `STRIPE_PRICE_BUSINESS`
+   - `STRIPE_PRICE_STARTER_ANNUAL`, `STRIPE_PRICE_PROFESSIONAL_ANNUAL`, `STRIPE_PRICE_BUSINESS_ANNUAL`
 
-4. Optionally set `STRIPE_PRODUCT_*` to Stripe **Product IDs** (`prod_...`) if your code references them.
+4. Add the same client-facing price IDs to `.env` with the `VITE_` prefix:
+
+   - `VITE_STRIPE_PRICE_STARTER`, `VITE_STRIPE_PRICE_PROFESSIONAL`, `VITE_STRIPE_PRICE_BUSINESS`
+   - `VITE_STRIPE_PRICE_STARTER_ANNUAL`, `VITE_STRIPE_PRICE_PROFESSIONAL_ANNUAL`, `VITE_STRIPE_PRICE_BUSINESS_ANNUAL`
+
+5. Optionally set `STRIPE_PRODUCT_*` to Stripe **Product IDs** (`prod_...`) if your code references them.
 
 The app maps subscriptions to internal plan IDs using these env vars (see billing schema `plans`).
 

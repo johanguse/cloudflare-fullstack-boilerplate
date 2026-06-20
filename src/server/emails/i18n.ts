@@ -41,11 +41,13 @@ const translations = {
 			title: "Reset your password",
 			body: "We received a request to reset your password.",
 			cta: "Reset password",
-			footer: "This link expires soon. If you did not ask for a reset, ignore this email.",
+			footer:
+				"This link expires soon. If you did not ask for a reset, ignore this email.",
 		},
 		otp: {
 			subject: (appName: string) => `Your sign-in code — ${appName}`,
-			body: (kind: string, appName: string) => `Your ${kind} code for ${appName}:`,
+			body: (kind: string, appName: string) =>
+				`Your ${kind} code for ${appName}:`,
 			footer: "Expires in 10 minutes.",
 		},
 		paymentReceipt: {
@@ -57,9 +59,11 @@ const translations = {
 			cta: "View billing",
 		},
 		invoice: {
-			subject: (number: string, appName: string) => `Invoice ${number} — ${appName}`,
+			subject: (number: string, appName: string) =>
+				`Invoice ${number} — ${appName}`,
 			title: (number: string) => `Invoice ${number}`,
-			body: (number: string) => `Invoice <strong>${number}</strong> is available.`,
+			body: (number: string) =>
+				`Invoice <strong>${number}</strong> is available.`,
 			total: "Total",
 			cta: "View invoice",
 			download: "Download invoice",
@@ -115,7 +119,8 @@ const translations = {
 			title: "Redefinir sua senha",
 			body: "Recebemos uma solicitação para redefinir sua senha.",
 			cta: "Redefinir senha",
-			footer: "Este link expira em breve. Se você não solicitou a redefinição, ignore este e-mail.",
+			footer:
+				"Este link expira em breve. Se você não solicitou a redefinição, ignore este e-mail.",
 		},
 		otp: {
 			subject: (appName: string) => `Seu código de acesso — ${appName}`,
@@ -132,9 +137,11 @@ const translations = {
 			cta: "Ver cobrança",
 		},
 		invoice: {
-			subject: (number: string, appName: string) => `Fatura ${number} — ${appName}`,
+			subject: (number: string, appName: string) =>
+				`Fatura ${number} — ${appName}`,
 			title: (number: string) => `Fatura ${number}`,
-			body: (number: string) => `A fatura <strong>${number}</strong> está disponível.`,
+			body: (number: string) =>
+				`A fatura <strong>${number}</strong> está disponível.`,
 			total: "Total",
 			cta: "Ver fatura",
 			download: "Baixar fatura",
@@ -191,7 +198,8 @@ const translations = {
 			title: "Restablecer tu contraseña",
 			body: "Recibimos una solicitud para restablecer tu contraseña.",
 			cta: "Restablecer contraseña",
-			footer: "Este enlace expira pronto. Si no solicitaste un restablecimiento, ignora este correo.",
+			footer:
+				"Este enlace expira pronto. Si no solicitaste un restablecimiento, ignora este correo.",
 		},
 		otp: {
 			subject: (appName: string) => `Tu código de acceso — ${appName}`,
@@ -208,9 +216,11 @@ const translations = {
 			cta: "Ver facturación",
 		},
 		invoice: {
-			subject: (number: string, appName: string) => `Factura ${number} — ${appName}`,
+			subject: (number: string, appName: string) =>
+				`Factura ${number} — ${appName}`,
 			title: (number: string) => `Factura ${number}`,
-			body: (number: string) => `La factura <strong>${number}</strong> está disponible.`,
+			body: (number: string) =>
+				`La factura <strong>${number}</strong> está disponible.`,
 			total: "Total",
 			cta: "Ver factura",
 			download: "Descargar factura",

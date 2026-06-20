@@ -22,7 +22,7 @@ import {
 	Loader2,
 	Plus,
 	Receipt,
-	Sparkles,
+	Settings2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -73,7 +73,7 @@ function DashboardPage() {
 		(apiKeysQuery.isFetching && !apiKeysQuery.isPending);
 
 	return (
-		<div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+		<div className="flex w-full flex-col gap-6">
 			<div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
 				<section className="rounded-lg border bg-card p-5 sm:p-6">
 					<div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
@@ -352,13 +352,13 @@ function DashboardPage() {
 							href="/dashboard/api-keys"
 						/>
 						<QuickAction
-							icon={Sparkles}
-							label={t("dashboard.actions.company", "Company settings")}
+							icon={Settings2}
+							label={t("dashboard.actions.settings", "Account settings")}
 							description={t(
-								"dashboard.actions.companyDescription",
-								"Fiscal and NFSe setup",
+								"dashboard.actions.settingsDescription",
+								"Profile, security, and plan",
 							)}
-							href="/dashboard/settings/company"
+							href="/dashboard/settings"
 						/>
 					</CardContent>
 				</Card>

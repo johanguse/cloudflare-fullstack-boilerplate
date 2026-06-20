@@ -1,11 +1,11 @@
 import { Badge } from "@client/components/ui/badge";
 import { Button } from "@client/components/ui/button";
-import { Skeleton } from "@client/components/ui/skeleton";
 import {
 	SidebarMenu,
 	SidebarMenuItem,
 	useSidebar,
 } from "@client/components/ui/sidebar";
+import { Skeleton } from "@client/components/ui/skeleton";
 import { trpc } from "@client/lib/trpc-client";
 import { cn } from "@client/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -14,9 +14,20 @@ import { useTranslation } from "react-i18next";
 
 const FREE_CREDIT_MAX = 100;
 
-function MiniProgress({ value, className }: { value: number; className?: string }) {
+function MiniProgress({
+	value,
+	className,
+}: {
+	value: number;
+	className?: string;
+}) {
 	return (
-		<div className={cn("relative h-1.5 w-full overflow-hidden rounded-full bg-muted", className)}>
+		<div
+			className={cn(
+				"relative h-1.5 w-full overflow-hidden rounded-full bg-muted",
+				className,
+			)}
+		>
 			<div
 				className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all"
 				style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }}
@@ -134,7 +145,7 @@ export function SidebarPlanCard() {
 				</div>
 				<Badge
 					variant={cancelAtEnd ? "destructive" : "secondary"}
-					className="h-5 rounded-full px-2 text-[10px] font-semibold uppercase tracking-wider"
+					className="h-5 rounded-full px-2 font-semibold text-[10px] uppercase tracking-wider"
 				>
 					{cancelAtEnd ? t("sidebar.plan.canceling", "Canceling") : "Pro"}
 				</Badge>
@@ -154,7 +165,7 @@ export function SidebarPlanCard() {
 			</div>
 
 			{renewDate && (
-				<div className="flex items-center justify-between border-t pt-2 text-xs text-muted-foreground">
+				<div className="flex items-center justify-between border-t pt-2 text-muted-foreground text-xs">
 					<span className="flex items-center gap-1.5">
 						<Calendar className="size-3" />
 						{cancelAtEnd

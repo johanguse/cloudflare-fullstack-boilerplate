@@ -13,7 +13,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 			<SidebarInset className="flex h-svh flex-col overflow-hidden bg-background">
 				<AppHeader />
 				<main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-					{children}
+					<div className="mx-auto w-full max-w-7xl">{children}</div>
 				</main>
 			</SidebarInset>
 		</SidebarProvider>

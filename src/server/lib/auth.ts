@@ -92,7 +92,13 @@ export const createAuth = (
 							const { sendWelcomeEmail } = await import("../services/email");
 							// locale defaults to "en" for new users; they can update it in settings
 							const locale = (created as { locale?: string }).locale ?? "en";
-							await sendWelcomeEmail(env, config, created.email, created.name, locale);
+							await sendWelcomeEmail(
+								env,
+								config,
+								created.email,
+								created.name,
+								locale,
+							);
 						} catch (e) {
 							console.error("[auth] welcome email failed:", e);
 						}

@@ -42,7 +42,9 @@ export const userRouter = router({
 	}),
 
 	updateLocale: protectedProcedure
-		.input(z.object({ locale: z.enum(SUPPORTED_LOCALES as [string, ...string[]]) }))
+		.input(
+			z.object({ locale: z.enum(SUPPORTED_LOCALES as [string, ...string[]]) }),
+		)
 		.mutation(async ({ ctx, input }) => {
 			await ctx.db
 				.update(schema.user)

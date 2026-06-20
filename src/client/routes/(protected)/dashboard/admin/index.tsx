@@ -31,7 +31,7 @@ function StatCard({
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="text-sm font-medium text-muted-foreground">
+				<CardTitle className="font-medium text-muted-foreground text-sm">
 					{title}
 				</CardTitle>
 				<Icon className="size-4 text-muted-foreground" />
@@ -42,9 +42,7 @@ function StatCard({
 				) : (
 					<p className="font-bold text-2xl tabular-nums">{value}</p>
 				)}
-				{sub && (
-					<p className="mt-1 text-muted-foreground text-xs">{sub}</p>
-				)}
+				{sub && <p className="mt-1 text-muted-foreground text-xs">{sub}</p>}
 			</CardContent>
 		</Card>
 	);
@@ -62,13 +60,16 @@ function AdminReportsPage() {
 		}).format(n / 100);
 
 	return (
-		<div className="mx-auto w-full max-w-5xl space-y-6">
+		<div className="w-full space-y-6">
 			<div>
 				<h1 className="font-semibold text-2xl tracking-tight">
 					{t("admin.reports.title", "Reports")}
 				</h1>
 				<p className="text-muted-foreground text-sm">
-					{t("admin.reports.subtitle", "Platform-wide statistics and revenue overview.")}
+					{t(
+						"admin.reports.subtitle",
+						"Platform-wide statistics and revenue overview.",
+					)}
 				</p>
 			</div>
 			<Separator />

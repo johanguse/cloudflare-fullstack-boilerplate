@@ -24,7 +24,14 @@ export const nfseRecords = sqliteTable("nfse_records", {
 
 	// Status: pending → processing → issued | error | cancelled | invoice_only
 	status: text("status", {
-		enum: ["pending", "processing", "issued", "error", "cancelled", "invoice_only"],
+		enum: [
+			"pending",
+			"processing",
+			"issued",
+			"error",
+			"cancelled",
+			"invoice_only",
+		],
 	})
 		.notNull()
 		.default("pending"),

@@ -181,7 +181,7 @@
 		"noCheckoutUrl": "No se devolvió URL de pago",
 		"priceNotConfigured": "ID de precio de Stripe no configurado. Establece VITE_STRIPE_PRICE_* en .env.",
 		"failedToStartCheckout": "Error al iniciar el pago",
-		"stripeNotConfigured": "Stripe no está configurado. Establece VITE_STRIPE_PRICE_STARTER, VITE_STRIPE_PRICE_PROFESSIONAL, VITE_STRIPE_PRICE_BUSINESS y VITE_STRIPE_PRICE_AGENCY en tu .env para habilitar los planes de pago.",
+		"stripeNotConfigured": "Stripe no está configurado. Establece VITE_STRIPE_PRICE_STARTER, VITE_STRIPE_PRICE_PROFESSIONAL y VITE_STRIPE_PRICE_BUSINESS en tu .env para habilitar los planes de pago.",
 		"notConfigured": "No configurado"
 	},
 	"history": {

@@ -80,6 +80,16 @@ VALUES
   ('seed-user-biz-0-0000-0000-000000000004', 1, 1, 1, 1, 1, strftime('%s', 'now'), strftime('%s', 'now')),
   ('seed-user-agc-0-0000-0000-000000000005', 1, 1, 1, 1, 1, strftime('%s', 'now'), strftime('%s', 'now'));
 
+-- API keys (prefix/hash only; secrets are never stored)
+INSERT OR IGNORE INTO api_keys
+  (id, user_id, name, key_prefix, key_hash, created_at, last_used_at)
+VALUES
+  ('seed-key-admin-prod-0000000000001', 'seed-user-admin-0000-0000-000000000001', 'Production Backend', 'cfbp_live_admin_', '1111111111111111111111111111111111111111111111111111111111111111', strftime('%s', 'now', '-9 days'), strftime('%s', 'now', '-2 hours')),
+  ('seed-key-admin-ci-00000000000002', 'seed-user-admin-0000-0000-000000000001', 'CI Deployments',      'cfbp_live_ci_000', '2222222222222222222222222222222222222222222222222222222222222222', strftime('%s', 'now', '-6 days'), strftime('%s', 'now', '-1 day')),
+  ('seed-key-user-web-00000000000003', 'seed-user-basic-0000-0000-000000000002', 'Website Widget',      'cfbp_live_web_00', '3333333333333333333333333333333333333333333333333333333333333333', strftime('%s', 'now', '-5 days'), NULL),
+  ('seed-key-pro-sync-00000000000004', 'seed-user-pro-00-0000-0000-000000000003', 'Content Sync',       'cfbp_live_sync_0', '4444444444444444444444444444444444444444444444444444444444444444', strftime('%s', 'now', '-4 days'), strftime('%s', 'now', '-6 hours')),
+  ('seed-key-biz-api-00000000000005', 'seed-user-biz-0-0000-0000-000000000004', 'Business API',         'cfbp_live_biz_00', '5555555555555555555555555555555555555555555555555555555555555555', strftime('%s', 'now', '-3 days'), strftime('%s', 'now', '-30 minutes'));
+
 -- Credit packages
 INSERT OR IGNORE INTO credit_packages (id, name, credits, price_in_cents, is_active, display_order, created_at)
 VALUES
@@ -99,11 +109,21 @@ try {
 	console.log("✓ Staging database seeded.");
 	console.log("");
 	console.log("Seed accounts:");
-	console.log("  admin@example.com    / Admin1234!    — admin, Professional, 600 credits");
-	console.log("  user@example.com     / User1234!     — user,  Free,          50 credits");
-	console.log("  pro@example.com      / Pro1234!      — user,  Starter,      200 credits");
-	console.log("  business@example.com / Business1234! — user,  Business,    1500 credits");
-	console.log("  agency@example.com   / Agency1234!   — user,  Agency,      4000 credits");
+	console.log(
+		"  admin@example.com    / Admin1234!    — admin, Professional, 600 credits",
+	);
+	console.log(
+		"  user@example.com     / User1234!     — user,  Free,          50 credits",
+	);
+	console.log(
+		"  pro@example.com      / Pro1234!      — user,  Starter,      200 credits",
+	);
+	console.log(
+		"  business@example.com / Business1234! — user,  Business,    1500 credits",
+	);
+	console.log(
+		"  agency@example.com   / Agency1234!   — user,  Agency,      4000 credits",
+	);
 } finally {
 	await $`rm -f ${tmpFile}`;
 }
