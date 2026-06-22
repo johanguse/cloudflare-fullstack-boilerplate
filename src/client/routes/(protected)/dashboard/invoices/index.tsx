@@ -27,6 +27,7 @@ import {
 	TableRow,
 } from "@client/components/ui/table";
 import { trpc } from "@client/lib/trpc-client";
+import { keepPreviousData } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	ChevronLeft,
@@ -340,11 +341,14 @@ function InvoicesPage() {
 		overdue: t("invoices.status.overdue", "Overdue"),
 	};
 
-	const invoicesQuery = trpc.invoices.list.useQuery({
-		limit: PAGE_SIZE,
-		offset: page * PAGE_SIZE,
-		status: statusFilter === "all" ? undefined : statusFilter,
-	});
+	const invoicesQuery = trpc.invoices.list.useQuery(
+		{
+			limit: PAGE_SIZE,
+			offset: page * PAGE_SIZE,
+			status: statusFilter === "all" ? undefined : statusFilter,
+		},
+		{ placeholderData: keepPreviousData },
+	);
 
 	const downloadMutation = trpc.invoices.downloadPdf.useMutation({
 		onSuccess: (data) => {

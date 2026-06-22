@@ -110,11 +110,16 @@ function SettingsPage() {
 	const [passwordOpen, setPasswordOpen] = useState(false);
 	const [isChangingPassword, setIsChangingPassword] = useState(false);
 
+	const utils = trpc.useUtils();
+	const { refetch: refetchSession } = authClient.useSession();
 	const profileQuery = trpc.user.getProfile.useQuery();
 	const updateMutation = trpc.user.updateProfile.useMutation({
 		onSuccess: () => {
 			toast.success(t("profile.updated", "Profile updated"));
-			profileQuery.refetch();
+			utils.user.getProfile.invalidate();
+			// Better Auth holds the session (and the name shown in the dashboard
+			// greeting) separately from tRPC — refetch it so the change is live.
+			refetchSession();
 		},
 		onError: (err) => toast.error(err.message),
 	});

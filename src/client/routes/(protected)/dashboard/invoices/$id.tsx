@@ -94,18 +94,29 @@ const NFSE_STATUS_ICONS: Record<
 
 function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 	const { t } = useTranslation();
-	const nfseQuery = trpc.nfse.getStatus.useQuery({ invoiceId });
+	const utils = trpc.useUtils();
+	const nfseQuery = trpc.nfse.getStatus.useQuery(
+		{ invoiceId },
+		{
+			// Poll while the background job is in flight so the UI reflects
+			// completion without a manual reload.
+			refetchInterval: (query) =>
+				["pending", "processing"].includes(query.state.data?.status ?? "")
+					? 4000
+					: false,
+		},
+	);
 	const reEmitMutation = trpc.nfse.reEmit.useMutation({
 		onSuccess: () => {
 			toast.success(t("invoiceDetail.nfse.reEmitQueued", "Re-emission queued"));
-			nfseQuery.refetch();
+			utils.nfse.getStatus.invalidate({ invoiceId });
 		},
 		onError: (e) => toast.error(e.message),
 	});
 	const cancelMutation = trpc.nfse.cancel.useMutation({
 		onSuccess: () => {
 			toast.success(t("invoiceDetail.nfse.cancelled", "NFSe cancelled"));
-			nfseQuery.refetch();
+			utils.nfse.getStatus.invalidate({ invoiceId });
 		},
 		onError: (e) => toast.error(e.message),
 	});
@@ -257,6 +268,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 function InvoiceDetailPage() {
 	const { t } = useTranslation();
 	const { id } = Route.useParams();
+	const utils = trpc.useUtils();
 
 	const invoiceQuery = trpc.invoices.getById.useQuery({ id });
 
@@ -278,7 +290,8 @@ function InvoiceDetailPage() {
 	const issueMutation = trpc.invoices.issue.useMutation({
 		onSuccess: () => {
 			toast.success(t("invoiceDetail.invoiceIssued", "Invoice issued"));
-			invoiceQuery.refetch();
+			utils.invoices.getById.invalidate({ id });
+			utils.invoices.list.invalidate();
 		},
 		onError: (e) => toast.error(e.message),
 	});
@@ -286,7 +299,8 @@ function InvoiceDetailPage() {
 	const cancelMutation = trpc.invoices.cancel.useMutation({
 		onSuccess: () => {
 			toast.success(t("invoiceDetail.invoiceCancelled", "Invoice cancelled"));
-			invoiceQuery.refetch();
+			utils.invoices.getById.invalidate({ id });
+			utils.invoices.list.invalidate();
 		},
 		onError: (e) => toast.error(e.message),
 	});

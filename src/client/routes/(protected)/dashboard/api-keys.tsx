@@ -84,23 +84,42 @@ interface ApiKeyRow {
 
 function ApiKeysPage() {
 	const { t } = useTranslation();
+	const utils = trpc.useUtils();
 	const listQuery = trpc.apiKeys.list.useQuery();
 	const createMutation = trpc.apiKeys.create.useMutation({
 		onSuccess: (data) => {
 			setCreatedKey(data.apiKey);
 			setCreateOpen(false);
 			setKeyName("");
-			listQuery.refetch();
+			utils.apiKeys.list.invalidate();
 			toast.success(t("apiKeys.create.success", "API key created"));
 		},
 		onError: (e) => toast.error(e.message),
 	});
 	const revokeMutation = trpc.apiKeys.revoke.useMutation({
+		// Optimistically drop the key from the list so the row disappears
+		// instantly, then reconcile with the server in onSettled.
+		onMutate: async ({ id }) => {
+			await utils.apiKeys.list.cancel();
+			const previous = utils.apiKeys.list.getData();
+			utils.apiKeys.list.setData(undefined, (old) =>
+				old?.filter((key) => key.id !== id),
+			);
+			return { previous };
+		},
 		onSuccess: () => {
-			listQuery.refetch();
 			toast.success(t("apiKeys.revoked", "API key revoked"));
 		},
-		onError: (e) => toast.error(e.message),
+		onError: (e, _vars, context) => {
+			// Roll back to the snapshot captured in onMutate.
+			if (context?.previous) {
+				utils.apiKeys.list.setData(undefined, context.previous);
+			}
+			toast.error(e.message);
+		},
+		onSettled: () => {
+			utils.apiKeys.list.invalidate();
+		},
 	});
 
 	const [createOpen, setCreateOpen] = useState(false);
