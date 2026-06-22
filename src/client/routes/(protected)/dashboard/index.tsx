@@ -75,7 +75,7 @@ function DashboardPage() {
 	return (
 		<div className="flex w-full flex-col gap-6">
 			<div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-				<section className="rounded-lg border bg-card p-5 sm:p-6">
+				<section className="rounded-xl border bg-card p-5 sm:p-6">
 					<div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
 						<div className="max-w-2xl">
 							<Badge variant="secondary" className="mb-3 rounded-md">
@@ -87,10 +87,10 @@ function DashboardPage() {
 									{t("dashboard.refreshing", "Refreshing")}
 								</span>
 							) : null}
-							<h1 className="font-semibold text-2xl tracking-tight sm:text-3xl">
+							<h1 className="text-balance font-semibold text-2xl tracking-tight sm:text-3xl">
 								{t("dashboard.greeting", "Hello, {{name}}", { name: userName })}
 							</h1>
-							<p className="mt-2 text-muted-foreground text-sm leading-6">
+							<p className="mt-2 text-pretty text-muted-foreground text-sm leading-6">
 								{t(
 									"dashboard.subtitle",
 									"Monitor billing, invoices, and API access from one focused workspace.",
@@ -385,7 +385,7 @@ function StatCard({
 	return (
 		<Link
 			to={href}
-			className="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
+			className="group block rounded-xl outline-none transition-[scale] focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
 		>
 			<Card className="h-full transition-colors group-hover:bg-muted/40">
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -428,7 +428,7 @@ function QuickAction({
 	return (
 		<Link
 			to={href}
-			className="flex min-h-14 items-center gap-3 rounded-md border bg-background px-3 py-2 text-sm outline-none transition-colors hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
+			className="flex min-h-14 items-center gap-3 rounded-lg border bg-background px-3 py-2 text-sm outline-none transition-[color,background-color,scale] hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
 		>
 			<span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
 				<Icon className="size-4" />
