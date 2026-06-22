@@ -1,7 +1,18 @@
 import path from "node:path";
-import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
+import { cloudflareTest } from "@cloudflare/vitest-pool-workers";
+import { defineConfig } from "vitest/config";
 
-export default defineWorkersConfig({
+export default defineConfig({
+	plugins: [
+		cloudflareTest({
+			main: "./test/fixtures/minimal-worker.ts",
+			miniflare: {
+				compatibilityDate: "2026-03-10",
+				compatibilityFlags: ["nodejs_compat"],
+				bindings: { ENVIRONMENT: "test" },
+			},
+		}),
+	],
 	resolve: {
 		alias: {
 			"@client": path.resolve(__dirname, "./src/client/"),
@@ -11,16 +22,6 @@ export default defineWorkersConfig({
 	},
 	test: {
 		globals: true,
-		poolOptions: {
-			workers: {
-				main: "./test/fixtures/minimal-worker.ts",
-				miniflare: {
-					compatibilityDate: "2026-03-10",
-					compatibilityFlags: ["nodejs_compat"],
-					bindings: { ENVIRONMENT: "test" },
-				},
-			},
-		},
 		include: ["test/**/*.spec.ts", "test/**/*.test.ts"],
 		exclude: ["node_modules", "dist"],
 		testTimeout: 15_000,
