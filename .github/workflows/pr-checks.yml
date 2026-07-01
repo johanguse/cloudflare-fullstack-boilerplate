@@ -30,7 +30,7 @@ jobs:
 
       - name: Type check
         if: matrix.check == 'typescript'
-        run: bun run type-check
+        run: bunx tsc -b
 
       - name: Lint & format
         if: matrix.check == 'lint'
@@ -67,11 +67,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Apply migrations
-        run: bun db:migrate
+        run: bun db:migrate:local
       - name: Seed database
         run: bun db:seed:local
       - name: Run tests
-        run: bun test:run
+        run: bun run test
 
   security:
     name: Security Scan
