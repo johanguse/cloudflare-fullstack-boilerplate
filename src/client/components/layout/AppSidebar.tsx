@@ -44,7 +44,7 @@ export function AppSidebar() {
 				<TeamSwitcher />
 			</SidebarHeader>
 
-			<SidebarContent>
+			<SidebarContent data-tour="sidebar-nav">
 				{/* Main */}
 				<SidebarGroup>
 					<SidebarGroupLabel>{t("nav.main", "Main")}</SidebarGroupLabel>

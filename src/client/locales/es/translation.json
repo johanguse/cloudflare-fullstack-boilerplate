@@ -444,7 +444,8 @@
 		"lightMode": "Modo claro",
 		"darkMode": "Modo oscuro",
 		"language": "Idioma",
-		"signOut": "Cerrar sesión"
+		"signOut": "Cerrar sesión",
+		"productTour": "Recorrido del producto"
 	},
 	"header": {
 		"dashboard": "Panel",
@@ -485,5 +486,41 @@
 				"payment": "pago"
 			}
 		}
+	},
+	"tour": {
+		"welcome": {
+			"title": "Te damos la bienvenida 👋",
+			"content": "Haz un recorrido rápido de 60 segundos para conocer dónde está todo. Puedes reiniciarlo cuando quieras desde el menú de tu cuenta."
+		},
+		"navigation": {
+			"title": "Navegación",
+			"content": "Cambia entre facturación, facturas, claves de API y ajustes desde la barra lateral. Se contrae en iconos cuando necesitas más espacio."
+		},
+		"plan": {
+			"title": "Tu plan de un vistazo",
+			"content": "Consulta aquí tu plan actual, el estado de la suscripción y los créditos restantes. Mejora tu plan o gestiona la facturación con un clic."
+		},
+		"stats": {
+			"title": "Métricas de la cuenta",
+			"content": "Un resumen de facturas, pagos y claves de API. Cada tarjeta enlaza directamente con la vista completa."
+		},
+		"quickActions": {
+			"title": "Acciones rápidas",
+			"content": "Atajos a las tareas más frecuentes: revisar facturas, gestionar la facturación y crear claves de API."
+		},
+		"createInvoice": {
+			"title": "Crea tu primera factura",
+			"content": "¿Listo para facturar a un cliente? Empieza una factura nueva aquí cuando lo necesites."
+		},
+		"account": {
+			"title": "Cuenta y preferencias",
+			"content": "Cambia el tema o el idioma, abre los ajustes y reinicia este recorrido desde el menú de tu cuenta. ¡Todo listo!"
+		},
+		"progress": "Paso {{current}} de {{total}}",
+		"close": "Cerrar recorrido",
+		"skip": "Omitir",
+		"back": "Atrás",
+		"next": "Siguiente",
+		"finish": "Finalizar"
 	}
 }

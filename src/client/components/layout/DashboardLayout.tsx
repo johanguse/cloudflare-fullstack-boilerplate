@@ -1,3 +1,4 @@
+import { OnboardingTour } from "@client/components/onboarding/OnboardingTour";
 import { SidebarInset, SidebarProvider } from "@client/components/ui/sidebar";
 import { AppHeader } from "./AppHeader";
 import { AppSidebar } from "./AppSidebar";
@@ -9,6 +10,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
 	return (
 		<SidebarProvider>
+			<OnboardingTour />
 			<AppSidebar />
 			<SidebarInset className="flex h-svh flex-col overflow-hidden bg-background">
 				<AppHeader />

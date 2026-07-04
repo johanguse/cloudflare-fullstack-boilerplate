@@ -444,7 +444,8 @@
 		"lightMode": "Modo claro",
 		"darkMode": "Modo escuro",
 		"language": "Idioma",
-		"signOut": "Sair"
+		"signOut": "Sair",
+		"productTour": "Tour do produto"
 	},
 	"header": {
 		"dashboard": "Painel",
@@ -485,5 +486,41 @@
 				"payment": "pagamento"
 			}
 		}
+	},
+	"tour": {
+		"welcome": {
+			"title": "Bem-vindo(a) a bordo 👋",
+			"content": "Faça um tour rápido de 60 segundos para conhecer onde tudo fica. Você pode reiniciá-lo a qualquer momento no menu da sua conta."
+		},
+		"navigation": {
+			"title": "Navegação",
+			"content": "Alterne entre cobrança, faturas, chaves de API e configurações pela barra lateral. Ela recolhe em ícones quando você precisa de mais espaço."
+		},
+		"plan": {
+			"title": "Seu plano em resumo",
+			"content": "Acompanhe seu plano atual, status da assinatura e créditos restantes aqui. Faça upgrade ou gerencie a cobrança em um clique."
+		},
+		"stats": {
+			"title": "Métricas da conta",
+			"content": "Um resumo de faturas, pagamentos e chaves de API. Cada cartão leva direto à visão completa."
+		},
+		"quickActions": {
+			"title": "Ações rápidas",
+			"content": "Atalhos para as tarefas mais comuns — revisar faturas, gerenciar cobrança e criar chaves de API."
+		},
+		"createInvoice": {
+			"title": "Crie sua primeira fatura",
+			"content": "Pronto para cobrar um cliente? Comece uma nova fatura aqui quando precisar."
+		},
+		"account": {
+			"title": "Conta e preferências",
+			"content": "Troque o tema ou idioma, abra as configurações e reinicie este tour pelo menu da conta. Tudo pronto!"
+		},
+		"progress": "Passo {{current}} de {{total}}",
+		"close": "Fechar tour",
+		"skip": "Pular",
+		"back": "Voltar",
+		"next": "Próximo",
+		"finish": "Concluir"
 	}
 }

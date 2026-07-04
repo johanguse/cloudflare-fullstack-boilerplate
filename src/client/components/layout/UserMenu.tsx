@@ -1,4 +1,5 @@
 import { useTheme } from "@client/components/layout/ThemeProvider";
+import { startOnboardingTour } from "@client/components/onboarding/use-onboarding-tour";
 import {
 	Avatar,
 	AvatarFallback,
@@ -27,6 +28,7 @@ import {
 	Monitor,
 	Moon,
 	Settings2,
+	Sparkles,
 	Sun,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -66,6 +68,12 @@ export function UserMenu() {
 		navigate({ to: "/login" });
 	};
 
+	const handleStartTour = () => {
+		// Ensure the dashboard-specific tour targets are on screen before starting.
+		navigate({ to: "/dashboard" });
+		startOnboardingTour();
+	};
+
 	const currentLang = i18n.language;
 
 	return (
@@ -73,6 +81,7 @@ export function UserMenu() {
 			<DropdownMenuTrigger asChild>
 				<SidebarMenuButton
 					size="lg"
+					data-tour="user-menu"
 					className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 				>
 					<Avatar className="size-8 shrink-0 rounded-lg">
@@ -124,6 +133,11 @@ export function UserMenu() {
 						<CreditCard className="size-4" />
 						{t("userMenu.billing", "Billing")}
 					</Link>
+				</DropdownMenuItem>
+
+				<DropdownMenuItem onClick={handleStartTour}>
+					<Sparkles className="size-4" />
+					{t("userMenu.productTour", "Product tour")}
 				</DropdownMenuItem>
 
 				<DropdownMenuSeparator />

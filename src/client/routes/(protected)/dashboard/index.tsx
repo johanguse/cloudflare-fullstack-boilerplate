@@ -104,7 +104,7 @@ function DashboardPage() {
 									{t("dashboard.createApiKey", "New API key")}
 								</Link>
 							</Button>
-							<Button asChild size="sm">
+							<Button asChild size="sm" data-tour="create-invoice">
 								<Link to="/dashboard/invoices">
 									<Plus className="mr-2 size-4" />
 									{t("dashboard.createInvoice", "New invoice")}
@@ -114,7 +114,7 @@ function DashboardPage() {
 					</div>
 				</section>
 
-				<Card>
+				<Card data-tour="plan-card">
 					<CardHeader className="pb-3">
 						<CardTitle className="text-base">
 							{t("dashboard.planSnapshot", "Plan snapshot")}
@@ -196,7 +196,10 @@ function DashboardPage() {
 				</div>
 			) : null}
 
-			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+			<div
+				className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+				data-tour="stats"
+			>
 				<StatCard
 					title={t("dashboard.stats.invoices", "Total invoices")}
 					value={String(invoiceCount)}
@@ -314,7 +317,7 @@ function DashboardPage() {
 					</CardContent>
 				</Card>
 
-				<Card>
+				<Card data-tour="quick-actions">
 					<CardHeader className="pb-3">
 						<CardTitle className="text-base">
 							{t("dashboard.quickActions", "Quick actions")}
