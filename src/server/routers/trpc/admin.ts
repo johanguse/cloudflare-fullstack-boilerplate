@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import * as authSchema from "../../db/schema/auth";
@@ -196,6 +197,31 @@ export const adminRouter = router({
 	updateUserRole: adminProcedure
 		.input(z.object({ userId: z.string(), role: z.enum(["user", "admin"]) }))
 		.mutation(async ({ ctx, input }) => {
+			// Don't allow demoting the last remaining admin — that would lock
+			// everyone out of the admin surface.
+			if (input.role === "user") {
+				const target = await ctx.db
+					.select({ role: authSchema.user.role })
+					.from(authSchema.user)
+					.where(eq(authSchema.user.id, input.userId))
+					.get();
+
+				if (target?.role === "admin") {
+					const adminCount = await ctx.db
+						.select({ count: count() })
+						.from(authSchema.user)
+						.where(eq(authSchema.user.role, "admin"))
+						.get();
+
+					if ((adminCount?.count ?? 0) <= 1) {
+						throw new TRPCError({
+							code: "BAD_REQUEST",
+							message: "Cannot demote the last remaining admin",
+						});
+					}
+				}
+			}
+
 			await ctx.db
 				.update(authSchema.user)
 				.set({ role: input.role, updatedAt: new Date() })

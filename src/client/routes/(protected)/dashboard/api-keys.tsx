@@ -25,6 +25,7 @@ import {
 } from "@client/components/ui/dropdown-menu";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
+import { Pagination } from "@client/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -32,7 +33,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@client/components/ui/select";
-import { Switch } from "@client/components/ui/switch";
 import {
 	Table,
 	TableBody,
@@ -44,17 +44,7 @@ import {
 import { trpc } from "@client/lib/trpc-client";
 import { cn } from "@client/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-	ArrowDown,
-	ChevronLeft,
-	ChevronRight,
-	ChevronsUpDown,
-	Copy,
-	Key,
-	Plus,
-	Settings2,
-	Trash2,
-} from "lucide-react";
+import { Copy, Key, Plus, Settings2, Trash2 } from "lucide-react";
 import type * as React from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -126,8 +116,6 @@ function ApiKeysPage() {
 	const [keyName, setKeyName] = useState("");
 	const [createdKey, setCreatedKey] = useState<string | null>(null);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-	const [pausedIds, setPausedIds] = useState<Set<string>>(new Set());
-	const [pauseAll, setPauseAll] = useState(false);
 	const [visibleColumns, setVisibleColumns] = useState<Set<ApiKeyColumn>>(
 		() => new Set(COLUMNS),
 	);
@@ -174,15 +162,6 @@ function ApiKeysPage() {
 		});
 	};
 
-	const togglePaused = (id: string) => {
-		setPausedIds((current) => {
-			const next = new Set(current);
-			if (next.has(id)) next.delete(id);
-			else next.add(id);
-			return next;
-		});
-	};
-
 	return (
 		<>
 			<div className="w-full space-y-6">
@@ -204,16 +183,6 @@ function ApiKeysPage() {
 							{t("apiKeys.cardTitle", "API Integrations")}
 						</CardTitle>
 						<div className="flex flex-wrap items-center gap-2.5">
-							<div className="flex items-center gap-2">
-								<Label htmlFor="pause-all-api-keys" className="text-sm">
-									{t("apiKeys.pauseAll", "Pause all")}
-								</Label>
-								<Switch
-									id="pause-all-api-keys"
-									checked={pauseAll}
-									onCheckedChange={setPauseAll}
-								/>
-							</div>
 							<Button
 								type="button"
 								size="sm"
@@ -263,13 +232,10 @@ function ApiKeysPage() {
 								rows={pageRows}
 								selectedIds={selectedIds}
 								allPageSelected={allPageSelected}
-								pauseAll={pauseAll}
-								pausedIds={pausedIds}
 								visibleColumns={visibleColumns}
 								revokePending={revokeMutation.isPending}
 								onTogglePageSelected={togglePageSelected}
 								onToggleSelected={toggleSelected}
-								onTogglePaused={togglePaused}
 								onRevoke={(id) => revokeMutation.mutate({ id })}
 							/>
 						)}
@@ -309,48 +275,11 @@ function ApiKeysPage() {
 												rows.length,
 											)} of ${rows.length}`}
 								</div>
-								<div className="flex items-center gap-1">
-									<Button
-										type="button"
-										variant="ghost"
-										size="icon"
-										className="size-7"
-										disabled={page === 0}
-										onClick={() => setPage((p) => Math.max(0, p - 1))}
-									>
-										<span className="sr-only">
-											{t("common.previousPage", "Go to previous page")}
-										</span>
-										<ChevronLeft className="size-4" />
-									</Button>
-									{Array.from({ length: pageCount }).map((_, i) => (
-										<Button
-											key={i}
-											type="button"
-											variant={page === i ? "secondary" : "ghost"}
-											size="icon"
-											className="size-7"
-											onClick={() => setPage(i)}
-										>
-											{i + 1}
-										</Button>
-									))}
-									<Button
-										type="button"
-										variant="ghost"
-										size="icon"
-										className="size-7"
-										disabled={page >= pageCount - 1}
-										onClick={() =>
-											setPage((p) => Math.min(pageCount - 1, p + 1))
-										}
-									>
-										<span className="sr-only">
-											{t("common.nextPage", "Go to next page")}
-										</span>
-										<ChevronRight className="size-4" />
-									</Button>
-								</div>
+								<Pagination
+									page={page}
+									pageCount={pageCount}
+									onPageChange={setPage}
+								/>
 							</div>
 						</div>
 					</CardFooter>
@@ -378,25 +307,19 @@ function ApiKeysTable({
 	rows,
 	selectedIds,
 	allPageSelected,
-	pauseAll,
-	pausedIds,
 	visibleColumns,
 	revokePending,
 	onTogglePageSelected,
 	onToggleSelected,
-	onTogglePaused,
 	onRevoke,
 }: {
 	rows: ApiKeyRow[];
 	selectedIds: Set<string>;
 	allPageSelected: boolean;
-	pauseAll: boolean;
-	pausedIds: Set<string>;
 	visibleColumns: Set<ApiKeyColumn>;
 	revokePending: boolean;
 	onTogglePageSelected: () => void;
 	onToggleSelected: (id: string) => void;
-	onTogglePaused: (id: string) => void;
 	onRevoke: (id: string) => void;
 }) {
 	const { t } = useTranslation();
@@ -413,7 +336,7 @@ function ApiKeysTable({
 						/>
 					</TableHead>
 					{visibleColumns.has("integration") && (
-						<DataGridHead className="w-[220px]" sorted>
+						<DataGridHead className="w-[220px]">
 							{t("apiKeys.headers.integration", "Integration")}
 						</DataGridHead>
 					)}
@@ -442,7 +365,6 @@ function ApiKeysTable({
 			</TableHeader>
 			<TableBody>
 				{rows.map((row) => {
-					const paused = pauseAll || pausedIds.has(row.id);
 					return (
 						<TableRow
 							key={row.id}
@@ -470,10 +392,12 @@ function ApiKeysTable({
 											variant="ghost"
 											size="icon"
 											className="size-8 text-muted-foreground"
+											aria-label={t(
+												"apiKeys.copy.copyPrefix",
+												"Copy key prefix",
+											)}
 											onClick={() => {
-												void navigator.clipboard.writeText(
-													`${row.keyPrefix}...`,
-												);
+												void navigator.clipboard.writeText(row.keyPrefix);
 												toast.success(t("apiKeys.copy.copied", "Copied"));
 											}}
 										>
@@ -494,18 +418,9 @@ function ApiKeysTable({
 							)}
 							{visibleColumns.has("status") && (
 								<TableCell className="border-r px-4 py-3">
-									<div className="flex items-center gap-2">
-										<Switch
-											checked={!paused}
-											disabled={pauseAll}
-											onCheckedChange={() => onTogglePaused(row.id)}
-										/>
-										<Badge variant={paused ? "secondary" : "outline"}>
-											{paused
-												? t("apiKeys.status.paused", "Paused")
-												: t("apiKeys.status.active", "Active")}
-										</Badge>
-									</div>
+									<Badge variant="outline">
+										{t("apiKeys.status.active", "Active")}
+									</Badge>
 								</TableCell>
 							)}
 							<TableCell className="border-r px-4 py-3 text-right">
@@ -532,34 +447,20 @@ function ApiKeysTable({
 function DataGridHead({
 	children,
 	className,
-	sorted = false,
 }: {
 	children: React.ReactNode;
 	className?: string;
-	sorted?: boolean;
 }) {
+	// Sorting isn't implemented, so render a plain, non-interactive header label
+	// rather than a button that looks clickable but does nothing.
 	return (
 		<TableHead
 			className={cn(
-				"h-10 border-r px-4 font-normal text-accent-foreground",
+				"h-10 border-r px-4 font-normal text-secondary-foreground",
 				className,
 			)}
 		>
-			<div className="-ml-2 flex h-full items-center">
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					className="h-7 px-2 font-normal text-secondary-foreground hover:text-foreground"
-				>
-					{children}
-					{sorted ? (
-						<ArrowDown className="ml-1 size-3" />
-					) : (
-						<ChevronsUpDown className="ml-1 size-3" />
-					)}
-				</Button>
-			</div>
+			<div className="flex h-full items-center">{children}</div>
 		</TableHead>
 	);
 }

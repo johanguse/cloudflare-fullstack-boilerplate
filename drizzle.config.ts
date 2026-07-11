@@ -8,16 +8,23 @@ const isStaging = environment === "staging";
 function getDatabaseId() {
 	if (isStaging) {
 		const id = process.env.CLOUDFLARE_DATABASE_ID_STAGING;
-		if (!id) throw new Error("CLOUDFLARE_DATABASE_ID_STAGING is required for staging");
+		if (!id)
+			throw new Error("CLOUDFLARE_DATABASE_ID_STAGING is required for staging");
 		return id;
 	}
 	if (isProd) {
 		const id = process.env.CLOUDFLARE_DATABASE_ID_PRODUCTION;
-		if (!id) throw new Error("CLOUDFLARE_DATABASE_ID_PRODUCTION is required for production");
+		if (!id)
+			throw new Error(
+				"CLOUDFLARE_DATABASE_ID_PRODUCTION is required for production",
+			);
 		return id;
 	}
 	const id = process.env.CLOUDFLARE_DATABASE_ID_LOCAL;
-	if (!id) throw new Error("CLOUDFLARE_DATABASE_ID_LOCAL is required for local development");
+	if (!id)
+		throw new Error(
+			"CLOUDFLARE_DATABASE_ID_LOCAL is required for local development",
+		);
 	return id;
 }
 

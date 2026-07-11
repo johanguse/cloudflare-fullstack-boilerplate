@@ -1,3 +1,4 @@
+import { AuthErrorAlert } from "@client/components/auth/AuthErrorAlert";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -100,22 +101,28 @@ function RegisterPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
+	const reportError = (message: string) => {
+		setErrorMessage(message);
+		toast.error(message);
+	};
 
 	const handleRegister = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (password.length < 8) {
-			toast.error(
+		setErrorMessage(null);
+		if (password.length < 10) {
+			reportError(
 				t(
 					"auth.register.passwordTooShort",
-					"Password must be at least 8 characters",
+					"Password must be at least 10 characters",
 				),
 			);
 			return;
 		}
 		if (!turnstileToken) {
-			toast.error(
+			reportError(
 				t(
 					"auth.register.completeVerification",
 					"Please complete the verification",
@@ -124,14 +131,17 @@ function RegisterPage() {
 			return;
 		}
 		startTransition(async () => {
-			const { error } = await authClient.signUp.email({
-				name,
-				email,
-				password,
-				callbackURL: "/verify-email",
-			});
+			const { error } = await authClient.signUp.email(
+				{
+					name,
+					email,
+					password,
+					callbackURL: "/verify-email",
+				},
+				{ headers: { "x-captcha-response": turnstileToken } },
+			);
 			if (error) {
-				toast.error(
+				reportError(
 					error.message ??
 						t(
 							"auth.register.passwordTooShort",
@@ -192,6 +202,7 @@ function RegisterPage() {
 					</CardHeader>
 
 					<CardContent className="space-y-4">
+						<AuthErrorAlert message={errorMessage} />
 						<div className="grid grid-cols-2 gap-3">
 							<Button
 								variant="outline"
@@ -278,7 +289,7 @@ function RegisterPage() {
 									onChange={(e) => setPassword(e.target.value)}
 									required
 									autoComplete="new-password"
-									minLength={8}
+									minLength={10}
 								/>
 								<PasswordStrengthBar password={password} />
 							</div>
@@ -286,6 +297,15 @@ function RegisterPage() {
 								ref={turnstileRef}
 								onVerify={setTurnstileToken}
 								onExpire={() => setTurnstileToken(null)}
+								onError={() => {
+									setTurnstileToken(null);
+									reportError(
+										t(
+											"auth.verificationFailed",
+											"Verification failed. Please try again.",
+										),
+									);
+								}}
 							/>
 							<Button
 								type="submit"

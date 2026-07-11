@@ -2,6 +2,7 @@ import { and, count, desc, eq, gte, lte } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import type { DBInstance } from "../db";
 import * as invoiceSchema from "../db/schema/invoices";
+import { isDuplicateNumberError } from "../lib/invoice-utils";
 
 // ---------------------------------------------------------------------------
 // Invoice number generation: YYYY-NNNN (sequential per year)
@@ -30,6 +31,27 @@ export async function generateInvoiceNumber(db: DBInstance): Promise<string> {
 
 	const seq = (result?.total ?? 0) + 1;
 	return `${prefix}${String(seq).padStart(4, "0")}`;
+}
+
+// Invoice numbers are derived from a COUNT, so two concurrent creations can pick
+// the same number and collide on the unique index. Retry with a freshly computed
+// number (the committed row bumps the count) a few times before giving up.
+async function withInvoiceNumberRetry<T>(
+	create: (invoiceNumber: string) => Promise<T>,
+	generateNumber: () => Promise<string>,
+): Promise<T> {
+	const MAX_ATTEMPTS = 5;
+	let lastError: unknown;
+	for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+		const invoiceNumber = await generateNumber();
+		try {
+			return await create(invoiceNumber);
+		} catch (err) {
+			lastError = err;
+			if (!isDuplicateNumberError(err)) throw err;
+		}
+	}
+	throw lastError;
 }
 
 // ---------------------------------------------------------------------------
@@ -70,44 +92,47 @@ export async function createInvoiceFromStripe(
 
 	if (existing) return existing;
 
-	const number = await generateInvoiceNumber(db);
 	const now = new Date();
 	const id = nanoid();
 
-	await db.transaction(async (tx) => {
-		await tx.insert(invoiceSchema.invoices).values({
-			id,
-			userId: input.userId,
-			number,
-			stripeInvoiceId: input.stripeInvoiceId,
-			status: input.paidAt ? "paid" : "issued",
-			currency: input.currency.toUpperCase(),
-			amountSubtotal: input.amountSubtotal,
-			amountTax: input.amountTax,
-			amountTotal: input.amountTotal,
-			description: input.description,
-			customerName: input.customerName,
-			customerEmail: input.customerEmail,
-			foreignCurrencyCode: input.foreignCurrencyCode ?? null,
-			foreignCurrencyAmount: input.foreignCurrencyAmount ?? null,
-			customerCountryIso2: input.customerCountryIso2 ?? null,
-			issuedAt: now,
-			paidAt: input.paidAt,
-		});
+	await withInvoiceNumberRetry(
+		(number) =>
+			db.transaction(async (tx) => {
+				await tx.insert(invoiceSchema.invoices).values({
+					id,
+					userId: input.userId,
+					number,
+					stripeInvoiceId: input.stripeInvoiceId,
+					status: input.paidAt ? "paid" : "issued",
+					currency: input.currency.toUpperCase(),
+					amountSubtotal: input.amountSubtotal,
+					amountTax: input.amountTax,
+					amountTotal: input.amountTotal,
+					description: input.description,
+					customerName: input.customerName,
+					customerEmail: input.customerEmail,
+					foreignCurrencyCode: input.foreignCurrencyCode ?? null,
+					foreignCurrencyAmount: input.foreignCurrencyAmount ?? null,
+					customerCountryIso2: input.customerCountryIso2 ?? null,
+					issuedAt: now,
+					paidAt: input.paidAt,
+				});
 
-		if (input.lines.length > 0) {
-			await tx.insert(invoiceSchema.invoiceItems).values(
-				input.lines.map((line) => ({
-					id: nanoid(),
-					invoiceId: id,
-					description: line.description,
-					quantity: line.quantity,
-					unitAmount: line.unitAmount,
-					total: line.total,
-				})),
-			);
-		}
-	});
+				if (input.lines.length > 0) {
+					await tx.insert(invoiceSchema.invoiceItems).values(
+						input.lines.map((line) => ({
+							id: nanoid(),
+							invoiceId: id,
+							description: line.description,
+							quantity: line.quantity,
+							unitAmount: line.unitAmount,
+							total: line.total,
+						})),
+					);
+				}
+			}),
+		() => generateInvoiceNumber(db),
+	);
 
 	const created = await db
 		.select()
@@ -142,7 +167,6 @@ export async function createManualInvoice(
 	db: DBInstance,
 	input: ManualInvoiceInput,
 ): Promise<invoiceSchema.Invoice> {
-	const number = await generateInvoiceNumber(db);
 	const id = nanoid();
 
 	const subtotal = input.items.reduce(
@@ -150,34 +174,38 @@ export async function createManualInvoice(
 		0,
 	);
 
-	await db.transaction(async (tx) => {
-		await tx.insert(invoiceSchema.invoices).values({
-			id,
-			userId: input.userId,
-			number,
-			status: "draft",
-			currency: (input.currency ?? "BRL").toUpperCase(),
-			amountSubtotal: subtotal,
-			amountTax: 0,
-			amountTotal: subtotal,
-			description: input.description,
-			customerName: input.customerName,
-			customerEmail: input.customerEmail,
-			customerDocument: input.customerDocument,
-			dueDate: input.dueDate,
-		});
+	await withInvoiceNumberRetry(
+		(number) =>
+			db.transaction(async (tx) => {
+				await tx.insert(invoiceSchema.invoices).values({
+					id,
+					userId: input.userId,
+					number,
+					status: "draft",
+					currency: (input.currency ?? "BRL").toUpperCase(),
+					amountSubtotal: subtotal,
+					amountTax: 0,
+					amountTotal: subtotal,
+					description: input.description,
+					customerName: input.customerName,
+					customerEmail: input.customerEmail,
+					customerDocument: input.customerDocument,
+					dueDate: input.dueDate,
+				});
 
-		await tx.insert(invoiceSchema.invoiceItems).values(
-			input.items.map((item) => ({
-				id: nanoid(),
-				invoiceId: id,
-				description: item.description,
-				quantity: item.quantity,
-				unitAmount: item.unitAmount,
-				total: item.quantity * item.unitAmount,
-			})),
-		);
-	});
+				await tx.insert(invoiceSchema.invoiceItems).values(
+					input.items.map((item) => ({
+						id: nanoid(),
+						invoiceId: id,
+						description: item.description,
+						quantity: item.quantity,
+						unitAmount: item.unitAmount,
+						total: item.quantity * item.unitAmount,
+					})),
+				);
+			}),
+		() => generateInvoiceNumber(db),
+	);
 
 	const created = await db
 		.select()
@@ -195,6 +223,19 @@ export async function createManualInvoice(
 // HTML receipt that browsers can print-to-PDF, and store a text summary in R2.
 // ---------------------------------------------------------------------------
 
+// Escape untrusted values before interpolating into the invoice HTML. Customer
+// name/email/document and line-item descriptions are user-controlled, and this
+// document is served with Content-Type: text/html, so unescaped values would be
+// a stored-XSS vector.
+function escapeHtml(value: unknown): string {
+	return String(value ?? "")
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+}
+
 export function generateInvoiceHtml(
 	invoice: invoiceSchema.Invoice,
 	items: invoiceSchema.InvoiceItem[],
@@ -210,7 +251,7 @@ export function generateInvoiceHtml(
 		.map(
 			(item) => `
 		<tr>
-			<td style="padding:8px 0;border-bottom:1px solid #e5e7eb;">${item.description}</td>
+			<td style="padding:8px 0;border-bottom:1px solid #e5e7eb;">${escapeHtml(item.description)}</td>
 			<td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:center;">${item.quantity}</td>
 			<td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:right;">${fmt(item.unitAmount, currency)}</td>
 			<td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:right;">${fmt(item.total, currency)}</td>
@@ -222,7 +263,7 @@ export function generateInvoiceHtml(
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<title>Invoice ${invoice.number}</title>
+<title>Invoice ${escapeHtml(invoice.number)}</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: system-ui, sans-serif; color: #111; margin: 0; padding: 32px; }
@@ -240,17 +281,17 @@ export function generateInvoiceHtml(
 <body>
 <h1>Invoice</h1>
 <div class="meta">
-  <strong>#${invoice.number}</strong> &nbsp;·&nbsp;
+  <strong>#${escapeHtml(invoice.number)}</strong> &nbsp;·&nbsp;
   ${invoice.issuedAt ? new Date(invoice.issuedAt).toLocaleDateString("pt-BR") : "—"} &nbsp;·&nbsp;
-  Status: <strong>${invoice.status.toUpperCase()}</strong>
+  Status: <strong>${escapeHtml(invoice.status.toUpperCase())}</strong>
 </div>
 ${
 	(invoice.customerName ?? invoice.customerEmail)
 		? `<div style="margin-bottom:24px;">
   <div><strong>Bill to</strong></div>
-  <div>${invoice.customerName ?? ""}</div>
-  <div style="color:#6b7280;">${invoice.customerEmail ?? ""}</div>
-  ${invoice.customerDocument ? `<div style="color:#6b7280;">${invoice.customerDocument}</div>` : ""}
+  <div>${escapeHtml(invoice.customerName ?? "")}</div>
+  <div style="color:#6b7280;">${escapeHtml(invoice.customerEmail ?? "")}</div>
+  ${invoice.customerDocument ? `<div style="color:#6b7280;">${escapeHtml(invoice.customerDocument)}</div>` : ""}
 </div>`
 		: ""
 }
@@ -338,6 +379,17 @@ export async function listInvoices(
 // CSV export
 // ---------------------------------------------------------------------------
 
+// Neutralize spreadsheet formula injection: a cell beginning with = + - @ or a
+// control char is treated as a formula by Excel/Sheets. Prefix with a single
+// quote so it is always rendered as text.
+function csvCell(value: unknown): string {
+	let str = String(value ?? "");
+	if (/^[=+\-@\t\r]/.test(str)) {
+		str = `'${str}`;
+	}
+	return `"${str.replace(/"/g, '""')}"`;
+}
+
 export function invoicesToCsv(rows: invoiceSchema.Invoice[]): string {
 	const header = "Number,Status,Customer,Amount,Currency,IssuedAt,PaidAt\n";
 	const body = rows
@@ -351,7 +403,7 @@ export function invoicesToCsv(rows: invoiceSchema.Invoice[]): string {
 				r.issuedAt ? new Date(r.issuedAt).toISOString() : "",
 				r.paidAt ? new Date(r.paidAt).toISOString() : "",
 			]
-				.map((v) => `"${String(v).replace(/"/g, '""')}"`)
+				.map(csvCell)
 				.join(","),
 		)
 		.join("\n");

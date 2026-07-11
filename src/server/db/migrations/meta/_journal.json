@@ -29,6 +29,13 @@
       "when": 1781802872343,
       "tag": "0003_glossy_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1783793562249,
+      "tag": "0004_safe_leper_queen",
+      "breakpoints": true
     }
   ]
 }

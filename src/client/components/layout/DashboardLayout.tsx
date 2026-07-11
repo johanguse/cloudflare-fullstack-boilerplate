@@ -10,11 +10,21 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
 	return (
 		<SidebarProvider>
+			<a
+				href="#main-content"
+				className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow focus:ring-2 focus:ring-ring"
+			>
+				Skip to content
+			</a>
 			<OnboardingTour />
 			<AppSidebar />
 			<SidebarInset className="flex h-svh flex-col overflow-hidden bg-background">
 				<AppHeader />
-				<main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+				<main
+					id="main-content"
+					tabIndex={-1}
+					className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8"
+				>
 					<div className="mx-auto w-full max-w-7xl">{children}</div>
 				</main>
 			</SidebarInset>

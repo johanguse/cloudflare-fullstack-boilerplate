@@ -1,3 +1,4 @@
+import { AuthErrorAlert } from "@client/components/auth/AuthErrorAlert";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -31,13 +32,19 @@ function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
+	const reportError = (message: string) => {
+		setErrorMessage(message);
+		toast.error(message);
+	};
 
 	const handleEmailLogin = (e: React.FormEvent) => {
 		e.preventDefault();
+		setErrorMessage(null);
 		if (!turnstileToken) {
-			toast.error(
+			reportError(
 				t(
 					"auth.login.completeVerification",
 					"Please complete the verification",
@@ -46,13 +53,16 @@ function LoginPage() {
 			return;
 		}
 		startTransition(async () => {
-			const { error } = await authClient.signIn.email({
-				email,
-				password,
-				callbackURL: "/dashboard",
-			});
+			const { error } = await authClient.signIn.email(
+				{
+					email,
+					password,
+					callbackURL: "/dashboard",
+				},
+				{ headers: { "x-captcha-response": turnstileToken } },
+			);
 			if (error) {
-				toast.error(
+				reportError(
 					error.message ?? t("auth.login.signInFailed", "Sign in failed"),
 				);
 				turnstileRef.current?.reset();
@@ -100,6 +110,7 @@ function LoginPage() {
 					</CardHeader>
 
 					<CardContent className="space-y-4">
+						<AuthErrorAlert message={errorMessage} />
 						{/* OAuth Buttons */}
 						<div className="grid grid-cols-2 gap-3">
 							<Button
@@ -188,6 +199,15 @@ function LoginPage() {
 								ref={turnstileRef}
 								onVerify={setTurnstileToken}
 								onExpire={() => setTurnstileToken(null)}
+								onError={() => {
+									setTurnstileToken(null);
+									reportError(
+										t(
+											"auth.verificationFailed",
+											"Verification failed. Please try again.",
+										),
+									);
+								}}
 							/>
 							<Button
 								type="submit"

@@ -3,9 +3,7 @@
 	"name": "cf-boilerplate",
 	"main": "./src/server/index.ts",
 	"compatibility_date": "2026-05-09",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
+	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": true,
 	"placement": {
 		"mode": "smart"
@@ -17,9 +15,7 @@
 	// Cron Triggers
 	"triggers": {
 		// Daily at 6 AM UTC — cleanup expired sessions, stale records
-		"crons": [
-			"0 6 * * *"
-		]
+		"crons": ["0 6 * * *"]
 	},
 	// Serve React SPA from Workers Assets
 	"assets": {
@@ -148,9 +144,7 @@
 		"staging": {
 			"name": "cf-boilerplate-staging",
 			"main": "./dist/staging/index.js",
-			"compatibility_flags": [
-				"nodejs_compat"
-			],
+			"compatibility_flags": ["nodejs_compat"],
 			"minify": true,
 			"assets": {
 				"binding": "ASSETS",
@@ -159,9 +153,7 @@
 				"not_found_handling": "single-page-application"
 			},
 			"triggers": {
-				"crons": [
-					"0 6 * * *"
-				]
+				"crons": ["0 6 * * *"]
 			},
 			"routes": [
 				{
@@ -244,9 +236,7 @@
 		// --------------------------------
 		// Plain `wrangler dev` uses top-level config + .dev.vars overrides.
 		"local": {
-			"compatibility_flags": [
-				"nodejs_compat"
-			],
+			"compatibility_flags": ["nodejs_compat"],
 			"d1_databases": [
 				{
 					"binding": "DB",

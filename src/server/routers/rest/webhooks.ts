@@ -47,6 +47,20 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 			return c.json({ error: message }, 400);
 		}
 
+		// Idempotency guard: Stripe delivers at-least-once and retries on any
+		// non-2xx, so record the event id before running side effects and skip
+		// anything we've already processed. INSERT ... ON CONFLICT DO NOTHING is
+		// atomic, so concurrent redeliveries cannot both proceed.
+		const inserted = await db
+			.insert(billingSchema.webhookEvents)
+			.values({ id: event.id, type: event.type })
+			.onConflictDoNothing()
+			.returning({ id: billingSchema.webhookEvents.id });
+
+		if (inserted.length === 0) {
+			return c.json({ received: true, duplicate: true });
+		}
+
 		const planPriceMap: Record<string, Array<string | undefined>> = {
 			starter: [c.env.STRIPE_PRICE_STARTER, c.env.STRIPE_PRICE_STARTER_ANNUAL],
 			professional: [
@@ -355,17 +369,27 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 								}
 
 								try {
-									await db.insert(nfseSchema.nfseRecords).values({
-										id: nfseRecordId,
-										invoiceId: invoice.id,
-										userId: sub.userId,
-										status: "pending",
-									});
+									// Only queue NFSe once per invoice — guards against
+									// duplicate fiscal documents if this block runs twice.
+									const existingNfse = await db
+										.select({ id: nfseSchema.nfseRecords.id })
+										.from(nfseSchema.nfseRecords)
+										.where(eq(nfseSchema.nfseRecords.invoiceId, invoice.id))
+										.get();
 
-									await c.env.NFSE_WORKFLOW.create({
-										id: nfseRecordId,
-										params: { invoiceId: invoice.id, nfseRecordId },
-									});
+									if (!existingNfse) {
+										await db.insert(nfseSchema.nfseRecords).values({
+											id: nfseRecordId,
+											invoiceId: invoice.id,
+											userId: sub.userId,
+											status: "pending",
+										});
+
+										await c.env.NFSE_WORKFLOW.create({
+											id: nfseRecordId,
+											params: { invoiceId: invoice.id, nfseRecordId },
+										});
+									}
 								} catch (err) {
 									console.error("[nfse] Failed to queue NFSe task:", err);
 								}

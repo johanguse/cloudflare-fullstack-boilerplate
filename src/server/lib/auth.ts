@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { emailOTP } from "better-auth/plugins";
+import { captcha, emailOTP } from "better-auth/plugins";
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "../db/schema/auth";
 import { sendOtpEmail } from "../services/email";
@@ -18,6 +18,25 @@ export const createAuth = (
 		? env.TRUSTED_ORIGINS.split(",")
 		: [];
 
+	// Server-side Turnstile verification. The client sends the token in the
+	// `x-captcha-response` header; the plugin rejects sign-in, sign-up, and
+	// password-reset requests with a missing or invalid token. Only enabled
+	// when the secret is configured so local dev without a secret still works.
+	const captchaPlugins = env.TURNSTILE_SECRET_KEY
+		? [
+				captcha({
+					provider: "cloudflare-turnstile",
+					secretKey: env.TURNSTILE_SECRET_KEY,
+					endpoints: [
+						"/sign-in/email",
+						"/sign-up/email",
+						"/forget-password",
+						"/reset-password",
+					],
+				}),
+			]
+		: [];
+
 	return betterAuth({
 		database: drizzleAdapter(db, {
 			provider: "sqlite",
@@ -29,7 +48,8 @@ export const createAuth = (
 		trustedOrigins,
 		emailAndPassword: {
 			enabled: true,
-			minPasswordLength: 8,
+			minPasswordLength: 10,
+			maxPasswordLength: 128,
 			requireEmailVerification: true,
 			async sendResetPassword({ user, url }) {
 				if (config.isDevelopment) {
@@ -107,6 +127,7 @@ export const createAuth = (
 			},
 		},
 		plugins: [
+			...captchaPlugins,
 			emailOTP({
 				expiresIn: 600,
 				async sendVerificationOTP({ email, otp, type }) {

@@ -1,6 +1,8 @@
+import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import * as authSchema from "../../db/schema/auth";
 import * as billingSchema from "../../db/schema/billing";
 import { protectedProcedure, router } from "../../lib/trpc";
 import { getBillingService } from "../../services/billing";
@@ -54,7 +56,36 @@ export const billingRouter = router({
 	createCheckoutSession: protectedProcedure
 		.input(z.object({ priceId: z.string().min(1) }))
 		.mutation(async ({ ctx, input }) => {
+			// Only allow prices we actually sell. Without this, a caller could pass
+			// any Stripe price id (hidden/test/discounted) and the webhook would
+			// happily activate a plan for it.
+			const priceEnv: Array<string | undefined> = [
+				ctx.env.STRIPE_PRICE_STARTER,
+				ctx.env.STRIPE_PRICE_STARTER_ANNUAL,
+				ctx.env.STRIPE_PRICE_PROFESSIONAL,
+				ctx.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL,
+				ctx.env.STRIPE_PRICE_BUSINESS,
+				ctx.env.STRIPE_PRICE_BUSINESS_ANNUAL,
+				ctx.env.STRIPE_PRICE_AGENCY,
+				ctx.env.STRIPE_PRICE_AGENCY_ANNUAL,
+			];
+			const allowedPriceIds = new Set(
+				priceEnv.filter((p): p is string => Boolean(p)),
+			);
+
+			if (!allowedPriceIds.has(input.priceId)) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Unknown plan price",
+				});
+			}
+
 			const billing = getBillingService(ctx.env.STRIPE_API_KEY);
+			const userRow = await ctx.db
+				.select({ email: authSchema.user.email, name: authSchema.user.name })
+				.from(authSchema.user)
+				.where(eq(authSchema.user.id, ctx.session.userId))
+				.get();
 
 			const sub = await ctx.db
 				.select()
@@ -64,30 +95,26 @@ export const billingRouter = router({
 
 			let customerId = sub?.stripeCustomerId;
 			if (!customerId) {
-				const userRow = await ctx.db
-					.select()
-					.from(billingSchema.subscriptions)
-					.where(eq(billingSchema.subscriptions.userId, ctx.session.userId))
-					.get();
+				const customer = await billing.createCustomer({
+					email: userRow?.email ?? "",
+					name: userRow?.name ?? "",
+					userId: ctx.session.userId,
+				});
+				customerId = customer.id;
 
-				if (!userRow) {
-					const customer = await billing.createCustomer({
-						email: "",
-						name: "",
-						userId: ctx.session.userId,
-					});
-					customerId = customer.id;
-
-					await ctx.db.insert(billingSchema.subscriptions).values({
+				// Upsert keyed on the now-unique user_id so concurrent calls and
+				// webhook writes cannot create duplicate subscription rows.
+				await ctx.db
+					.insert(billingSchema.subscriptions)
+					.values({
 						id: nanoid(),
 						userId: ctx.session.userId,
 						stripeCustomerId: customerId,
+					})
+					.onConflictDoUpdate({
+						target: billingSchema.subscriptions.userId,
+						set: { stripeCustomerId: customerId, updatedAt: new Date() },
 					});
-				}
-			}
-
-			if (!customerId) {
-				throw new Error("Failed to get or create Stripe customer");
 			}
 
 			const origin = ctx.env.APP_URL ?? "http://localhost:5173";

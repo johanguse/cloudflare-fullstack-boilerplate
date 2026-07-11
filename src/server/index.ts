@@ -63,7 +63,31 @@ app.use(
 	"*",
 	secureHeaders({
 		contentSecurityPolicy: {
-			reportUri: "/api/v1/csp-report",
+			defaultSrc: ["'self'"],
+			// Turnstile + PostHog inject their own scripts.
+			scriptSrc: [
+				"'self'",
+				"https://challenges.cloudflare.com",
+				"https://*.posthog.com",
+				"https://*.i.posthog.com",
+			],
+			// Tailwind/shadcn and the generated invoice HTML use inline styles.
+			styleSrc: ["'self'", "'unsafe-inline'"],
+			imgSrc: ["'self'", "data:", "https:"],
+			fontSrc: ["'self'", "data:"],
+			connectSrc: [
+				"'self'",
+				"https://*.posthog.com",
+				"https://*.i.posthog.com",
+				"https://*.ingest.sentry.io",
+				"https://*.sentry.io",
+				"https://challenges.cloudflare.com",
+			],
+			frameSrc: ["https://challenges.cloudflare.com"],
+			frameAncestors: ["'none'"],
+			baseUri: ["'self'"],
+			formAction: ["'self'"],
+			objectSrc: ["'none'"],
 		},
 	}),
 );
@@ -116,6 +140,7 @@ app.use("/trpc/*", async (c, next) => {
 			session: ctx.get("session"),
 			db: ctx.get("db"),
 			env: ctx.env,
+			headers: ctx.req.raw.headers,
 			geo: cf
 				? {
 						country: cf.country,

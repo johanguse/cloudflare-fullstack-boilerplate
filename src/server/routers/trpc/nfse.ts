@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
@@ -47,6 +48,36 @@ export const nfseRouter = router({
 				.get();
 
 			if (!invoice) throw new Error("Invoice not found");
+			if (invoice.status !== "paid") {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "NFSe can only be emitted for paid invoices",
+				});
+			}
+
+			// Don't queue a second fiscal document while one is already pending,
+			// processing, or successfully issued for this invoice.
+			const existing = await ctx.db
+				.select({
+					id: nfseSchema.nfseRecords.id,
+					status: nfseSchema.nfseRecords.status,
+				})
+				.from(nfseSchema.nfseRecords)
+				.where(eq(nfseSchema.nfseRecords.invoiceId, invoice.id))
+				.all();
+
+			const blocking = existing.find(
+				(r) =>
+					r.status === "pending" ||
+					r.status === "processing" ||
+					r.status === "issued",
+			);
+			if (blocking) {
+				throw new TRPCError({
+					code: "CONFLICT",
+					message: `NFSe already ${blocking.status} for this invoice`,
+				});
+			}
 
 			const nfseRecordId = nanoid();
 			await ctx.db.insert(nfseSchema.nfseRecords).values({

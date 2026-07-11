@@ -16,6 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@client/components/ui/table";
+import { formatDate } from "@client/lib/formatters";
 import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { CreditCard } from "lucide-react";
@@ -121,9 +122,7 @@ function BillingHistoryPage() {
 											</Badge>
 										</TableCell>
 										<TableCell className="text-muted-foreground text-xs">
-											{tx.createdAt
-												? new Date(tx.createdAt).toLocaleDateString()
-												: "—"}
+											{tx.createdAt ? formatDate(tx.createdAt) : "—"}
 										</TableCell>
 										<TableCell className="text-right">
 											<span

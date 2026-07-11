@@ -17,6 +17,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@client/components/ui/table";
+import { formatDate } from "@client/lib/formatters";
 import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import {
@@ -209,14 +210,11 @@ function BillingPage() {
 										{sub?.currentPeriodEnd && (
 											<div className="grid min-w-28 content-between gap-1.5 rounded-md border border-dashed px-3.5 py-2">
 												<span className="font-medium text-base leading-none">
-													{new Date(sub.currentPeriodEnd).toLocaleDateString(
-														"en-US",
-														{
-															day: "numeric",
-															month: "short",
-															year: "2-digit",
-														},
-													)}
+													{formatDate(sub.currentPeriodEnd, {
+														day: "numeric",
+														month: "short",
+														year: "2-digit",
+													})}
 												</span>
 												<span className="text-muted-foreground text-sm">
 													{t("billing.renewalDate", "Renewal date")}
@@ -317,14 +315,11 @@ function BillingPage() {
 												</TableCell>
 												<TableCell className="px-4 py-3 text-right text-muted-foreground text-sm">
 													{tx.createdAt
-														? new Date(tx.createdAt).toLocaleDateString(
-																"en-US",
-																{
-																	day: "numeric",
-																	month: "short",
-																	year: "numeric",
-																},
-															)
+														? formatDate(tx.createdAt, {
+																day: "numeric",
+																month: "short",
+																year: "numeric",
+															})
 														: "—"}
 												</TableCell>
 												<TableCell className="px-4 py-3 text-right">

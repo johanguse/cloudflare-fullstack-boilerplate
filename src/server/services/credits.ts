@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import type { DBInstance } from "../db";
 import * as userSchema from "../db/schema/auth";
@@ -91,18 +91,32 @@ export async function deductCredits(
 	description: string,
 	notify?: { env: AppEnv; config: AppConfig },
 ): Promise<{ success: boolean; balanceAfter: number }> {
-	const balance = await getBalance(db, userId);
-	if (balance < amount) {
-		return { success: false, balanceAfter: balance };
-	}
+	// Debit atomically with a guarded UPDATE so concurrent deductions cannot
+	// both read the same balance and overwrite each other (lost update). The
+	// `credit_balance >= amount` predicate ensures we never go negative, and the
+	// RETURNING clause gives us the authoritative post-debit balance.
+	const balanceBefore = await getBalance(db, userId);
 
-	const newBalance = balance - amount;
-
-	await db.transaction(async (tx) => {
-		await tx
+	const { newBalance, applied } = await db.transaction(async (tx) => {
+		const updated = await tx
 			.update(schema.subscriptions)
-			.set({ creditBalance: newBalance, updatedAt: new Date() })
-			.where(eq(schema.subscriptions.userId, userId));
+			.set({
+				creditBalance: sql`credit_balance - ${amount}`,
+				updatedAt: new Date(),
+			})
+			.where(
+				and(
+					eq(schema.subscriptions.userId, userId),
+					gte(schema.subscriptions.creditBalance, amount),
+				),
+			)
+			.returning({ creditBalance: schema.subscriptions.creditBalance });
+
+		const row = updated[0];
+		if (!row) {
+			// Not enough credits (or no subscription row) — nothing was debited.
+			return { newBalance: balanceBefore, applied: false };
+		}
 
 		await tx.insert(schema.creditTransactions).values({
 			id: nanoid(),
@@ -110,14 +124,20 @@ export async function deductCredits(
 			amount: -amount,
 			type: "usage",
 			description,
-			balanceAfter: newBalance,
+			balanceAfter: row.creditBalance,
 		});
+
+		return { newBalance: row.creditBalance, applied: true };
 	});
+
+	if (!applied) {
+		return { success: false, balanceAfter: balanceBefore };
+	}
 
 	if (notify) {
 		if (
 			newBalance <= LOW_CREDIT_NOTIFY_THRESHOLD &&
-			balance > LOW_CREDIT_NOTIFY_THRESHOLD
+			balanceBefore > LOW_CREDIT_NOTIFY_THRESHOLD
 		) {
 			const [prefs, u, locale] = await Promise.all([
 				getNotificationPrefs(db, userId),

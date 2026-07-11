@@ -107,9 +107,27 @@ function AdminUsersPage() {
 										</div>
 										<div className="flex shrink-0 items-center gap-2">
 											{user.emailVerified ? (
-												<CheckCircle2 className="size-3.5 text-green-500" />
+												<span
+													className="flex items-center"
+													title="Email verified"
+												>
+													<CheckCircle2
+														aria-hidden="true"
+														className="size-3.5 text-green-500"
+													/>
+													<span className="sr-only">Email verified</span>
+												</span>
 											) : (
-												<XCircle className="size-3.5 text-muted-foreground" />
+												<span
+													className="flex items-center"
+													title="Email not verified"
+												>
+													<XCircle
+														aria-hidden="true"
+														className="size-3.5 text-muted-foreground"
+													/>
+													<span className="sr-only">Email not verified</span>
+												</span>
 											)}
 											<Badge
 												variant={planBadgeVariant(user.plan)}

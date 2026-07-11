@@ -1,3 +1,4 @@
+import { AuthErrorAlert } from "@client/components/auth/AuthErrorAlert";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -27,13 +28,19 @@ function ForgotPasswordPage() {
 	const [email, setEmail] = useState("");
 	const [sent, setSent] = useState(false);
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
+	const reportError = (message: string) => {
+		setErrorMessage(message);
+		toast.error(message);
+	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		setErrorMessage(null);
 		if (!turnstileToken) {
-			toast.error(
+			reportError(
 				t(
 					"auth.forgotPassword.completeVerification",
 					"Please complete the verification",
@@ -45,7 +52,10 @@ function ForgotPasswordPage() {
 			try {
 				const response = await fetch("/api/auth/forget-password", {
 					method: "POST",
-					headers: { "Content-Type": "application/json" },
+					headers: {
+						"Content-Type": "application/json",
+						"x-captcha-response": turnstileToken,
+					},
 					body: JSON.stringify({
 						email,
 						redirectTo: `${window.location.origin}/reset-password`,
@@ -56,7 +66,7 @@ function ForgotPasswordPage() {
 					message?: string;
 				};
 				if (!response.ok || result.error) {
-					toast.error(
+					reportError(
 						result.message ??
 							t(
 								"auth.forgotPassword.failedToSend",
@@ -69,7 +79,7 @@ function ForgotPasswordPage() {
 					setSent(true);
 				}
 			} catch {
-				toast.error(
+				reportError(
 					t(
 						"auth.forgotPassword.unexpectedError",
 						"An unexpected error occurred. Please try again.",
@@ -102,6 +112,7 @@ function ForgotPasswordPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
+						<AuthErrorAlert message={errorMessage} />
 						{sent ? (
 							<div className="space-y-4">
 								<div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-center">
@@ -152,6 +163,15 @@ function ForgotPasswordPage() {
 									ref={turnstileRef}
 									onVerify={setTurnstileToken}
 									onExpire={() => setTurnstileToken(null)}
+									onError={() => {
+										setTurnstileToken(null);
+										reportError(
+											t(
+												"auth.verificationFailed",
+												"Verification failed. Please try again.",
+											),
+										);
+									}}
 								/>
 								<Button
 									type="submit"

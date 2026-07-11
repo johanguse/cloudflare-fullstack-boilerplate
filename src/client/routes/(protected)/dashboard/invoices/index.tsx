@@ -11,6 +11,7 @@ import {
 } from "@client/components/ui/dialog";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
+import { Pagination } from "@client/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -29,14 +30,7 @@ import {
 import { trpc } from "@client/lib/trpc-client";
 import { keepPreviousData } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	ChevronLeft,
-	ChevronRight,
-	Download,
-	FileText,
-	Plus,
-	Receipt,
-} from "lucide-react";
+import { Download, FileText, Plus, Receipt } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -287,9 +281,13 @@ function CreateInvoiceDialog({
 											type="button"
 											variant="ghost"
 											size="icon"
+											aria-label={t(
+												"invoices.create.removeItem",
+												"Remove item",
+											)}
 											onClick={() => removeItem(idx)}
 										>
-											✕
+											<span aria-hidden="true">✕</span>
 										</Button>
 									)}
 								</div>
@@ -349,13 +347,6 @@ function InvoicesPage() {
 		},
 		{ placeholderData: keepPreviousData },
 	);
-
-	const downloadMutation = trpc.invoices.downloadPdf.useMutation({
-		onSuccess: (data) => {
-			window.open(data.downloadUrl, "_blank");
-		},
-		onError: (e) => toast.error(e.message),
-	});
 
 	const utils = trpc.useUtils();
 	const rows = invoicesQuery.data?.rows ?? [];
@@ -495,19 +486,28 @@ function InvoicesPage() {
 										<TableCell className="text-right">
 											<div className="flex justify-end gap-1">
 												<Button variant="ghost" size="icon" asChild>
-													<Link to={`/dashboard/invoices/${inv.id}` as never}>
+													<Link
+														to={`/dashboard/invoices/${inv.id}` as never}
+														aria-label={t(
+															"invoices.viewInvoice",
+															"View invoice {{number}}",
+															{ number: inv.number },
+														)}
+													>
 														<FileText className="size-4" />
 													</Link>
 												</Button>
-												<Button
-													variant="ghost"
-													size="icon"
-													onClick={() =>
-														downloadMutation.mutate({ id: inv.id })
-													}
-													disabled={downloadMutation.isPending}
-												>
-													<Download className="size-4" />
+												<Button variant="ghost" size="icon" asChild>
+													<a
+														href={`/api/invoices/${inv.id}/download`}
+														aria-label={t(
+															"invoices.downloadInvoice",
+															"Download invoice {{number}}",
+															{ number: inv.number },
+														)}
+													>
+														<Download className="size-4" />
+													</a>
 												</Button>
 											</div>
 										</TableCell>
@@ -526,24 +526,11 @@ function InvoicesPage() {
 										defaultValue: "Showing {{from}}–{{to}} of {{total}}",
 									})}
 								</p>
-								<div className="flex gap-1">
-									<Button
-										variant="outline"
-										size="icon"
-										onClick={() => setPage((p) => p - 1)}
-										disabled={page === 0}
-									>
-										<ChevronLeft className="size-4" />
-									</Button>
-									<Button
-										variant="outline"
-										size="icon"
-										onClick={() => setPage((p) => p + 1)}
-										disabled={page >= totalPages - 1}
-									>
-										<ChevronRight className="size-4" />
-									</Button>
-								</div>
+								<Pagination
+									page={page}
+									pageCount={totalPages}
+									onPageChange={setPage}
+								/>
 							</div>
 						)}
 					</>

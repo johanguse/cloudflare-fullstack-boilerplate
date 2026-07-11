@@ -10,6 +10,7 @@ import {
 import { Progress } from "@client/components/ui/progress";
 import { Skeleton } from "@client/components/ui/skeleton";
 import { authClient } from "@client/lib/auth-client";
+import { formatCurrency } from "@client/lib/formatters";
 import { trpc } from "@client/lib/trpc-client";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -461,11 +462,4 @@ function StatusBadge({ status }: { status: string }) {
 	const label = t(`invoices.status.${status}`, status);
 
 	return <Badge variant={variant}>{label}</Badge>;
-}
-
-function formatCurrency(cents: number, currency: string) {
-	return new Intl.NumberFormat("pt-BR", {
-		style: "currency",
-		currency: currency || "BRL",
-	}).format(cents / 100);
 }
