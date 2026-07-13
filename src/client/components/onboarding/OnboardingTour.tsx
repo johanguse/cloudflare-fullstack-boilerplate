@@ -27,6 +27,15 @@ export function OnboardingTour() {
 			arrowColor: "var(--popover)",
 			overlayColor: "color-mix(in oklab, var(--foreground) 45%, transparent)",
 			spotlightPadding: 8,
+			// The "Close tour" (X) should end the tour and persist completion. The
+			// default "close" action instead advances to the next step's beacon on
+			// non-final steps, so the tour re-runs next visit and finish() never
+			// fires. "skip" emits STATUS.SKIPPED → finish().
+			closeButtonAction: "skip",
+			// ESC and backdrop clicks can't emit SKIPPED (dismissKeyAction has no
+			// "skip"), so disable them rather than leaving the beacon behavior.
+			dismissKeyAction: false,
+			overlayClickAction: false,
 		},
 		onEvent: (data) => {
 			if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
