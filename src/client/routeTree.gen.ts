@@ -20,6 +20,7 @@ import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
 import { Route as protectedDashboardSettingsRouteImport } from './routes/(protected)/dashboard/settings'
+import { Route as protectedDashboardReferralsRouteImport } from './routes/(protected)/dashboard/referrals'
 import { Route as protectedDashboardInvoicesRouteImport } from './routes/(protected)/dashboard/invoices'
 import { Route as protectedDashboardBillingRouteImport } from './routes/(protected)/dashboard/billing'
 import { Route as protectedDashboardApiKeysRouteImport } from './routes/(protected)/dashboard/api-keys'
@@ -86,6 +87,12 @@ const protectedDashboardSettingsRoute =
   protectedDashboardSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => protectedDashboardRoute,
+  } as any)
+const protectedDashboardReferralsRoute =
+  protectedDashboardReferralsRouteImport.update({
+    id: '/referrals',
+    path: '/referrals',
     getParentRoute: () => protectedDashboardRoute,
   } as any)
 const protectedDashboardInvoicesRoute =
@@ -178,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
   '/dashboard/billing': typeof protectedDashboardBillingRouteWithChildren
   '/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
+  '/dashboard/referrals': typeof protectedDashboardReferralsRoute
   '/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
   '/dashboard/': typeof protectedDashboardIndexRoute
   '/dashboard/admin/activity': typeof protectedDashboardAdminActivityRoute
@@ -198,6 +206,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
   '/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
+  '/dashboard/referrals': typeof protectedDashboardReferralsRoute
   '/dashboard': typeof protectedDashboardIndexRoute
   '/dashboard/admin/activity': typeof protectedDashboardAdminActivityRoute
   '/dashboard/admin/users': typeof protectedDashboardAdminUsersRoute
@@ -224,6 +233,7 @@ export interface FileRoutesById {
   '/(protected)/dashboard/api-keys': typeof protectedDashboardApiKeysRoute
   '/(protected)/dashboard/billing': typeof protectedDashboardBillingRouteWithChildren
   '/(protected)/dashboard/invoices': typeof protectedDashboardInvoicesRouteWithChildren
+  '/(protected)/dashboard/referrals': typeof protectedDashboardReferralsRoute
   '/(protected)/dashboard/settings': typeof protectedDashboardSettingsRouteWithChildren
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
   '/(protected)/dashboard/admin/activity': typeof protectedDashboardAdminActivityRoute
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/invoices'
+    | '/dashboard/referrals'
     | '/dashboard/settings'
     | '/dashboard/'
     | '/dashboard/admin/activity'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/dashboard/api-keys'
+    | '/dashboard/referrals'
     | '/dashboard'
     | '/dashboard/admin/activity'
     | '/dashboard/admin/users'
@@ -295,6 +307,7 @@ export interface FileRouteTypes {
     | '/(protected)/dashboard/api-keys'
     | '/(protected)/dashboard/billing'
     | '/(protected)/dashboard/invoices'
+    | '/(protected)/dashboard/referrals'
     | '/(protected)/dashboard/settings'
     | '/(protected)/dashboard/'
     | '/(protected)/dashboard/admin/activity'
@@ -391,6 +404,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/dashboard/settings'
       preLoaderRoute: typeof protectedDashboardSettingsRouteImport
+      parentRoute: typeof protectedDashboardRoute
+    }
+    '/(protected)/dashboard/referrals': {
+      id: '/(protected)/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof protectedDashboardReferralsRouteImport
       parentRoute: typeof protectedDashboardRoute
     }
     '/(protected)/dashboard/invoices': {
@@ -580,6 +600,7 @@ interface protectedDashboardRouteChildren {
   protectedDashboardApiKeysRoute: typeof protectedDashboardApiKeysRoute
   protectedDashboardBillingRoute: typeof protectedDashboardBillingRouteWithChildren
   protectedDashboardInvoicesRoute: typeof protectedDashboardInvoicesRouteWithChildren
+  protectedDashboardReferralsRoute: typeof protectedDashboardReferralsRoute
   protectedDashboardSettingsRoute: typeof protectedDashboardSettingsRouteWithChildren
   protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
 }
@@ -589,6 +610,7 @@ const protectedDashboardRouteChildren: protectedDashboardRouteChildren = {
   protectedDashboardApiKeysRoute: protectedDashboardApiKeysRoute,
   protectedDashboardBillingRoute: protectedDashboardBillingRouteWithChildren,
   protectedDashboardInvoicesRoute: protectedDashboardInvoicesRouteWithChildren,
+  protectedDashboardReferralsRoute: protectedDashboardReferralsRoute,
   protectedDashboardSettingsRoute: protectedDashboardSettingsRouteWithChildren,
   protectedDashboardIndexRoute: protectedDashboardIndexRoute,
 }

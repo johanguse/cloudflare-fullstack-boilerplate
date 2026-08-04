@@ -1,12 +1,19 @@
 import { trpcServer } from "@hono/trpc-server";
 import * as Sentry from "@sentry/cloudflare";
 import { Hono } from "hono";
+import { setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import {
+	isValidReferralSlug,
+	normalizeReferralSlug,
+	REFERRAL_COOKIE_MAX_AGE,
+	REFERRAL_COOKIE_NAME,
+} from "../shared/referral";
 import { initDb } from "./db";
 import type { AppBindings } from "./lib/types";
 import authMiddleware from "./middlewares/authMiddleware";
@@ -152,6 +159,24 @@ app.use("/trpc/*", async (c, next) => {
 				: undefined,
 		}),
 	})(c, next);
+});
+
+// Referral links: `/r/:code` stamps a 30-day attribution cookie and forwards to
+// signup. The cookie is read server-side at user creation (works for both email
+// and OAuth signup) and is readable by the client so the register page can show
+// the applied-referral hint.
+app.get("/r/:code", (c) => {
+	const code = normalizeReferralSlug(c.req.param("code"));
+	if (isValidReferralSlug(code)) {
+		setCookie(c, REFERRAL_COOKIE_NAME, code, {
+			path: "/",
+			maxAge: REFERRAL_COOKIE_MAX_AGE,
+			sameSite: "Lax",
+			httpOnly: false,
+			secure: c.env.ENVIRONMENT !== "development",
+		});
+	}
+	return c.redirect("/register");
 });
 
 // Root route

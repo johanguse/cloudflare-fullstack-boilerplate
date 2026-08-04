@@ -45,7 +45,14 @@ export const creditTransactions = sqliteTable("credit_transactions", {
 		.references(() => user.id, { onDelete: "cascade" }),
 	amount: integer("amount").notNull(),
 	type: text("type", {
-		enum: ["purchase", "subscription_grant", "usage", "refund", "adjustment"],
+		enum: [
+			"purchase",
+			"subscription_grant",
+			"usage",
+			"refund",
+			"adjustment",
+			"referral",
+		],
 	}).notNull(),
 	description: text("description").notNull(),
 	stripePaymentIntentId: text("stripe_payment_intent_id"),

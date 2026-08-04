@@ -19,6 +19,7 @@ import {
 } from "../../services/email";
 import { createInvoiceFromStripe } from "../../services/invoices";
 import { getNotificationPrefs } from "../../services/notification-prefs";
+import { processReferralReward } from "../../services/referral";
 import { getUserLocale } from "../../services/user-locale";
 
 export function registerWebhookRoutes(app: Hono<AppBindings>) {
@@ -128,6 +129,32 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 						"subscription_grant",
 						`${plan?.name ?? "Starter"} plan monthly credits`,
 					);
+
+					// Referral reward qualifies on the first successful subscription
+					// payment. Idempotent and guarded (self-referral, duplicate identity,
+					// monthly cap) inside the service. Runs in the background so the
+					// webhook still returns 200 promptly.
+					const paymentIdentity = (
+						session.customer_details?.email ??
+						session.customer_email ??
+						""
+					)
+						.trim()
+						.toLowerCase();
+					if (paymentIdentity) {
+						c.executionCtx.waitUntil(
+							processReferralReward(db, {
+								referredUserId: userId,
+								paymentIdentity,
+								stripePaymentIntentId:
+									typeof session.payment_intent === "string"
+										? session.payment_intent
+										: null,
+							}).catch((err) =>
+								console.error("[referral] reward processing failed", err),
+							),
+						);
+					}
 				}
 				break;
 			}

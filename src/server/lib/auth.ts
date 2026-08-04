@@ -2,10 +2,13 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { captcha, emailOTP } from "better-auth/plugins";
 import type { DrizzleD1Database } from "drizzle-orm/d1";
+import { REFERRAL_COOKIE_NAME } from "../../shared/referral";
 import * as schema from "../db/schema/auth";
 import { sendOtpEmail } from "../services/email";
+import { recordReferralAttribution } from "../services/referral";
 import { getUserLocale } from "../services/user-locale";
 import { createAppConfig } from "./config";
+import { readCookie } from "./cookies";
 import type { AppBindings } from "./types";
 
 export const createAuth = (
@@ -103,7 +106,25 @@ export const createAuth = (
 		databaseHooks: {
 			user: {
 				create: {
-					after: async (created) => {
+					after: async (created, ctx) => {
+						// Referral attribution: a `/r/:code` link sets a cookie that both
+						// email and OAuth signups carry back here. Never let attribution
+						// failures block account creation.
+						const referralCode = readCookie(
+							ctx?.headers ?? ctx?.request?.headers,
+							REFERRAL_COOKIE_NAME,
+						);
+						if (referralCode) {
+							try {
+								await recordReferralAttribution(db, {
+									code: referralCode,
+									referredUserId: created.id,
+								});
+							} catch (e) {
+								console.error("[auth] referral attribution failed:", e);
+							}
+						}
+
 						if (config.isDevelopment) {
 							console.log(`[DEV] Welcome email would go to ${created.email}`);
 							return;

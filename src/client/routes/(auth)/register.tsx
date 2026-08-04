@@ -16,9 +16,10 @@ import {
 	TurnstileWidget,
 } from "@client/components/ui/turnstile";
 import { authClient } from "@client/lib/auth-client";
+import { REFERRAL_COOKIE_NAME, REFERRED_REWARD_CREDITS } from "@shared/referral";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Github, Loader2 } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { Github, Gift, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -104,6 +105,17 @@ function RegisterPage() {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
+	const [referred, setReferred] = useState(false);
+	// A `/r/:code` link drops a (non-HttpOnly) attribution cookie; surface a hint
+	// so the visitor knows the bonus will apply. Attribution itself is recorded
+	// server-side at account creation.
+	useEffect(() => {
+		setReferred(
+			document.cookie
+				.split(";")
+				.some((c) => c.trim().startsWith(`${REFERRAL_COOKIE_NAME}=`)),
+		);
+	}, []);
 	const reportError = (message: string) => {
 		setErrorMessage(message);
 		toast.error(message);
@@ -202,6 +214,18 @@ function RegisterPage() {
 					</CardHeader>
 
 					<CardContent className="space-y-4">
+						{referred && (
+							<div className="flex items-center gap-2 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm">
+								<Gift className="size-4 shrink-0 text-primary" />
+								<span>
+									{t("auth.register.referralBonus", {
+										defaultValue:
+											"You were invited! Get {{credits}} bonus credits after your first subscription.",
+										credits: REFERRED_REWARD_CREDITS,
+									})}
+								</span>
+							</div>
+						)}
 						<AuthErrorAlert message={errorMessage} />
 						<div className="grid grid-cols-2 gap-3">
 							<Button

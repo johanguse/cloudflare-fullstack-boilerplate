@@ -19,6 +19,7 @@ import {
 	CalendarClock,
 	CreditCard,
 	FileWarning,
+	Gift,
 	Key,
 	Loader2,
 	Plus,
@@ -197,6 +198,32 @@ function DashboardPage() {
 				</div>
 			) : null}
 
+			<Link
+				to="/dashboard/referrals"
+				className="group flex flex-col items-start gap-3 rounded-xl border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 outline-none transition-colors hover:from-primary/15 focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:justify-between"
+			>
+				<div className="flex items-center gap-3">
+					<span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+						<Gift className="size-5" />
+					</span>
+					<div>
+						<p className="font-medium text-sm">
+							{t("dashboard.referralCta.title", "Give 50 credits, get 50 credits")}
+						</p>
+						<p className="text-muted-foreground text-sm">
+							{t(
+								"dashboard.referralCta.description",
+								"Invite friends — you both earn credits when they subscribe.",
+							)}
+						</p>
+					</div>
+				</div>
+				<span className="inline-flex items-center font-medium text-primary text-sm">
+					{t("dashboard.referralCta.action", "Share your link")}
+					<ArrowRight className="ml-1.5 size-4 transition-transform group-hover:translate-x-0.5" />
+				</span>
+			</Link>
+
 			<div
 				className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
 				data-tour="stats"
@@ -354,6 +381,15 @@ function DashboardPage() {
 								"Connect external systems",
 							)}
 							href="/dashboard/api-keys"
+						/>
+						<QuickAction
+							icon={Gift}
+							label={t("dashboard.actions.referrals", "Refer & earn")}
+							description={t(
+								"dashboard.actions.referralsDescription",
+								"Share your link, earn credits",
+							)}
+							href="/dashboard/referrals"
 						/>
 						<QuickAction
 							icon={Settings2}
