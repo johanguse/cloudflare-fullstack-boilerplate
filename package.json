@@ -91,8 +91,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.6",
-		"@cloudflare/vite-plugin": "1.42.2",
-		"@cloudflare/vitest-pool-workers": "^0.16.20",
+		"@cloudflare/vite-plugin": "1.50.0",
+		"@cloudflare/vitest-pool-workers": "^0.20.1",
 		"@sentry/vite-plugin": "^5.4.0",
 		"@tanstack/react-query-devtools": "^5.101.4",
 		"@tanstack/react-router-devtools": "^1.167.0",
