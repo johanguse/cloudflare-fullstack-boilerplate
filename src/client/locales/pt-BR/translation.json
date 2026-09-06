@@ -49,7 +49,8 @@
 				"fair": "Razoável",
 				"strong": "Forte",
 				"veryStrong": "Muito forte"
-			}
+			},
+			"referralBonus": "Você foi convidado! Ganhe {{credits}} créditos de bônus após a sua primeira assinatura."
 		},
 		"forgotPassword": {
 			"title": "Redefinir senha",
@@ -132,7 +133,14 @@
 			"apiKeys": "Criar uma chave de API",
 			"apiKeysDescription": "Conectar sistemas externos",
 			"company": "Configurações da empresa",
-			"companyDescription": "Configuração fiscal e de NFSe"
+			"companyDescription": "Configuração fiscal e de NFSe",
+			"referrals": "Indique e ganhe",
+			"referralsDescription": "Compartilhe seu link, ganhe créditos"
+		},
+		"referralCta": {
+			"title": "Dê 50 créditos, ganhe 50 créditos",
+			"description": "Convide amigos — vocês dois ganham créditos quando eles assinam.",
+			"action": "Compartilhar link"
 		}
 	},
 	"profile": {
@@ -435,7 +443,8 @@
 		"settings": "Configurações",
 		"company": "Empresa",
 		"notifications": "Notificações",
-		"apiKeys": "Chaves de API"
+		"apiKeys": "Chaves de API",
+		"referrals": "Indique e ganhe"
 	},
 	"userMenu": {
 		"profile": "Perfil",
@@ -444,7 +453,8 @@
 		"lightMode": "Modo claro",
 		"darkMode": "Modo escuro",
 		"language": "Idioma",
-		"signOut": "Sair"
+		"signOut": "Sair",
+		"productTour": "Tour do produto"
 	},
 	"header": {
 		"dashboard": "Painel",
@@ -484,6 +494,79 @@
 				"sign_in": "entrou",
 				"payment": "pagamento"
 			}
+		}
+	},
+	"tour": {
+		"welcome": {
+			"title": "Bem-vindo(a) a bordo 👋",
+			"content": "Faça um tour rápido de 60 segundos para conhecer onde tudo fica. Você pode reiniciá-lo a qualquer momento no menu da sua conta."
+		},
+		"navigation": {
+			"title": "Navegação",
+			"content": "Alterne entre cobrança, faturas, chaves de API e configurações pela barra lateral. Ela recolhe em ícones quando você precisa de mais espaço."
+		},
+		"plan": {
+			"title": "Seu plano em resumo",
+			"content": "Acompanhe seu plano atual, status da assinatura e créditos restantes aqui. Faça upgrade ou gerencie a cobrança em um clique."
+		},
+		"stats": {
+			"title": "Métricas da conta",
+			"content": "Um resumo de faturas, pagamentos e chaves de API. Cada cartão leva direto à visão completa."
+		},
+		"quickActions": {
+			"title": "Ações rápidas",
+			"content": "Atalhos para as tarefas mais comuns — revisar faturas, gerenciar cobrança e criar chaves de API."
+		},
+		"createInvoice": {
+			"title": "Crie sua primeira fatura",
+			"content": "Pronto para cobrar um cliente? Comece uma nova fatura aqui quando precisar."
+		},
+		"account": {
+			"title": "Conta e preferências",
+			"content": "Troque o tema ou idioma, abra as configurações e reinicie este tour pelo menu da conta. Tudo pronto!"
+		},
+		"progress": "Passo {{current}} de {{total}}",
+		"close": "Fechar tour",
+		"skip": "Pular",
+		"back": "Voltar",
+		"next": "Próximo",
+		"finish": "Concluir"
+	},
+	"referral": {
+		"title": "Indique e ganhe",
+		"subtitle": "Dê {{referred}} créditos e ganhe {{referrer}} créditos quando um amigo assinar.",
+		"shareTitle": "Seu link de indicação",
+		"shareDescription": "Compartilhe este link. Quando alguém se cadastrar por ele e fizer o primeiro pagamento da assinatura, vocês dois ganham créditos.",
+		"linkLabel": "Link de indicação",
+		"customizeLabel": "Personalize seu link",
+		"slugHint": "4–32 letras minúsculas, números ou hífens.",
+		"save": "Salvar",
+		"loading": "Carregando…",
+		"copy": "Copiar link",
+		"linkCopied": "Link de indicação copiado",
+		"copyFailed": "Não foi possível copiar o link",
+		"slugUpdated": "Link de indicação atualizado",
+		"statsTitle": "Suas recompensas",
+		"statsDescription": "Resumo da atividade de indicações",
+		"stats": {
+			"total": "Indicados",
+			"rewarded": "Qualificados",
+			"pending": "Pendentes",
+			"creditsEarned": "Créditos ganhos"
+		},
+		"listTitle": "Suas indicações",
+		"listDescription": "Pessoas que se cadastraram com o seu link.",
+		"empty": "Nenhuma indicação ainda",
+		"emptyHint": "Compartilhe seu link para começar a ganhar créditos.",
+		"table": {
+			"user": "Usuário",
+			"status": "Status",
+			"date": "Entrou"
+		},
+		"status": {
+			"pending": "Pendente",
+			"rewarded": "Qualificado",
+			"rejected": "Não elegível"
 		}
 	}
 }

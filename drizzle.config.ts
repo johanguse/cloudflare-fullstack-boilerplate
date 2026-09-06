@@ -8,17 +8,30 @@ const isStaging = environment === "staging";
 function getDatabaseId() {
 	if (isStaging) {
 		const id = process.env.CLOUDFLARE_DATABASE_ID_STAGING;
-		if (!id) throw new Error("CLOUDFLARE_DATABASE_ID_STAGING is required for staging");
+		if (!id)
+			throw new Error("CLOUDFLARE_DATABASE_ID_STAGING is required for staging");
 		return id;
 	}
 	if (isProd) {
 		const id = process.env.CLOUDFLARE_DATABASE_ID_PRODUCTION;
-		if (!id) throw new Error("CLOUDFLARE_DATABASE_ID_PRODUCTION is required for production");
+		if (!id)
+			throw new Error(
+				"CLOUDFLARE_DATABASE_ID_PRODUCTION is required for production",
+			);
 		return id;
 	}
 	const id = process.env.CLOUDFLARE_DATABASE_ID_LOCAL;
-	if (!id) throw new Error("CLOUDFLARE_DATABASE_ID_LOCAL is required for local development");
+	if (!id)
+		throw new Error(
+			"CLOUDFLARE_DATABASE_ID_LOCAL is required for local development",
+		);
 	return id;
+}
+
+function requireEnv(name: "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN") {
+	const value = process.env[name];
+	if (!value) throw new Error(`${name} is required for ${environment}`);
+	return value;
 }
 
 export default defineConfig({
@@ -29,9 +42,9 @@ export default defineConfig({
 		? {
 				driver: "d1-http",
 				dbCredentials: {
-					accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
+					accountId: requireEnv("CLOUDFLARE_ACCOUNT_ID"),
 					databaseId: getDatabaseId(),
-					token: process.env.CLOUDFLARE_API_TOKEN!,
+					token: requireEnv("CLOUDFLARE_API_TOKEN"),
 				},
 			}
 		: {

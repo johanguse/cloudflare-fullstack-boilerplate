@@ -36,8 +36,10 @@ import {
 	FormMessage,
 } from "@client/components/ui/form";
 import { Input } from "@client/components/ui/input";
+import { Label } from "@client/components/ui/label";
 import { Skeleton } from "@client/components/ui/skeleton";
 import { authClient } from "@client/lib/auth-client";
+import { formatDate } from "@client/lib/formatters";
 import { trpc } from "@client/lib/trpc-client";
 import { cn } from "@client/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -61,7 +63,7 @@ type ProfileForm = z.infer<typeof profileSchema>;
 const passwordSchema = z
 	.object({
 		currentPassword: z.string().min(1, "Current password is required"),
-		newPassword: z.string().min(8, "Password must be at least 8 characters"),
+		newPassword: z.string().min(10, "Password must be at least 10 characters"),
 		confirmPassword: z.string(),
 	})
 	.refine((d) => d.newPassword === d.confirmPassword, {
@@ -109,6 +111,7 @@ function SettingsPage() {
 	const navigate = useNavigate();
 	const [passwordOpen, setPasswordOpen] = useState(false);
 	const [isChangingPassword, setIsChangingPassword] = useState(false);
+	const [deletePassword, setDeletePassword] = useState("");
 
 	const utils = trpc.useUtils();
 	const { refetch: refetchSession } = authClient.useSession();
@@ -126,6 +129,7 @@ function SettingsPage() {
 	const subQuery = trpc.billing.getSubscription.useQuery();
 	const deleteAccountMutation = trpc.user.deleteAccount.useMutation({
 		onSuccess: () => {
+			setDeletePassword("");
 			toast.success(t("settings.deleted", "Account deleted"));
 			navigate({ to: "/" });
 		},
@@ -300,7 +304,7 @@ function SettingsPage() {
 										{t("billing.renewsOn", "Renews on")}
 									</span>
 									<span className="font-medium">
-										{new Date(sub.currentPeriodEnd).toLocaleDateString()}
+										{formatDate(sub.currentPeriodEnd)}
 									</span>
 								</div>
 							)}
@@ -513,12 +517,42 @@ function SettingsPage() {
 									)}
 								</AlertDialogDescription>
 							</AlertDialogHeader>
+							<div className="space-y-2">
+								<Label htmlFor="delete-account-password">
+									{t("settings.currentPassword", "Current password")}
+								</Label>
+								<Input
+									id="delete-account-password"
+									type="password"
+									autoComplete="current-password"
+									value={deletePassword}
+									onChange={(event) => setDeletePassword(event.target.value)}
+									placeholder={t(
+										"settings.deleteAccountPasswordPlaceholder",
+										"Enter your password",
+									)}
+								/>
+								<p className="text-muted-foreground text-xs">
+									{t(
+										"settings.deleteAccountFreshSessionHint",
+										"Required unless you signed in within the last 15 minutes.",
+									)}
+								</p>
+							</div>
 							<AlertDialogFooter>
 								<AlertDialogCancel>
 									{t("settings.cancel", "Cancel")}
 								</AlertDialogCancel>
 								<AlertDialogAction
-									onClick={() => deleteAccountMutation.mutate()}
+									disabled={deleteAccountMutation.isPending}
+									onClick={(e) => {
+										// Keep the dialog open so the pending spinner is visible;
+										// we navigate away in the mutation's onSuccess handler.
+										e.preventDefault();
+										deleteAccountMutation.mutate({
+											password: deletePassword || undefined,
+										});
+									}}
 									className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 								>
 									{deleteAccountMutation.isPending && (

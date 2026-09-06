@@ -1,6 +1,6 @@
 -- Reset local development database
 -- Drops all application data while preserving schema (tables remain)
--- Run with: wrangler d1 execute DB --local --file=./src/server/db/seeds/reset.sql
+-- Run with: bun db:reset
 --
 -- WARNING: Destructive — use only in local dev.
 

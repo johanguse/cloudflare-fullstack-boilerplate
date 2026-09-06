@@ -1,3 +1,4 @@
+import { AuthErrorAlert } from "@client/components/auth/AuthErrorAlert";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -34,10 +35,16 @@ function VerifyEmailPage() {
 	const [isSending, setIsSending] = useState(false);
 	const [isVerifying, setIsVerifying] = useState(false);
 	const [otpSent, setOtpSent] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const reportError = (message: string) => {
+		setErrorMessage(message);
+		toast.error(message);
+	};
 
 	const handleSendOtp = async () => {
+		setErrorMessage(null);
 		if (!email) {
-			toast.error(t("auth.verifyEmail.enterEmail", "Please enter your email"));
+			reportError(t("auth.verifyEmail.enterEmail", "Please enter your email"));
 			return;
 		}
 		setIsSending(true);
@@ -47,7 +54,7 @@ function VerifyEmailPage() {
 		});
 		setIsSending(false);
 		if (error) {
-			toast.error(
+			reportError(
 				error.message ??
 					t("auth.verifyEmail.failedToSend", "Failed to send code"),
 			);
@@ -61,11 +68,12 @@ function VerifyEmailPage() {
 
 	const handleVerify = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setErrorMessage(null);
 		setIsVerifying(true);
 		const { error } = await authClient.emailOtp.verifyEmail({ email, otp });
 		setIsVerifying(false);
 		if (error) {
-			toast.error(
+			reportError(
 				error.message ?? t("auth.verifyEmail.invalidCode", "Invalid code"),
 			);
 			return;
@@ -100,6 +108,7 @@ function VerifyEmailPage() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
+						<AuthErrorAlert message={errorMessage} />
 						{!otpSent ? (
 							<>
 								<div className="space-y-1.5">

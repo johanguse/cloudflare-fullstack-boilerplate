@@ -15,6 +15,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import {
 	ActivitySquare,
 	CreditCard,
+	Gift,
 	KeyRound,
 	LayoutDashboard,
 	ScrollText,
@@ -44,7 +45,7 @@ export function AppSidebar() {
 				<TeamSwitcher />
 			</SidebarHeader>
 
-			<SidebarContent>
+			<SidebarContent data-tour="sidebar-nav">
 				{/* Main */}
 				<SidebarGroup>
 					<SidebarGroupLabel>{t("nav.main", "Main")}</SidebarGroupLabel>
@@ -103,6 +104,19 @@ export function AppSidebar() {
 								<Link to="/dashboard/api-keys">
 									<KeyRound />
 									<span>{t("nav.apiKeys", "API Keys")}</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								asChild
+								isActive={isExact("/dashboard/referrals")}
+								tooltip={t("nav.referrals", "Refer & earn")}
+							>
+								<Link to="/dashboard/referrals">
+									<Gift />
+									<span>{t("nav.referrals", "Refer & earn")}</span>
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>

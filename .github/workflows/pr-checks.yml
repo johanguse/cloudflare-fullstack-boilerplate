@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Apply migrations
-        run: bun db:migrate
+        run: bun db:migrate:local
       - name: Verify schema is up to date
         run: |
           bun db:generate

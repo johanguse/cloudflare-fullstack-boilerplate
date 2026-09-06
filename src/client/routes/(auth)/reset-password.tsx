@@ -1,3 +1,4 @@
+import { AuthErrorAlert } from "@client/components/auth/AuthErrorAlert";
 import { Button } from "@client/components/ui/button";
 import {
 	Card,
@@ -36,8 +37,13 @@ function ResetPasswordPage() {
 	const [password, setPassword] = useState("");
 	const [confirm, setConfirm] = useState("");
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isPending, startTransition] = useTransition();
 	const turnstileRef = useRef<TurnstileRef>(null);
+	const reportError = (message: string) => {
+		setErrorMessage(message);
+		toast.error(message);
+	};
 
 	if (searchError ?? !token) {
 		return (
@@ -68,14 +74,15 @@ function ResetPasswordPage() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		setErrorMessage(null);
 		if (password !== confirm) {
-			toast.error(
+			reportError(
 				t("auth.resetPassword.passwordsNoMatch", "Passwords do not match"),
 			);
 			return;
 		}
 		if (password.length < 8) {
-			toast.error(
+			reportError(
 				t(
 					"auth.resetPassword.passwordTooShort",
 					"Password must be at least 8 characters",
@@ -84,7 +91,7 @@ function ResetPasswordPage() {
 			return;
 		}
 		if (!turnstileToken) {
-			toast.error(
+			reportError(
 				t(
 					"auth.resetPassword.completeVerification",
 					"Please complete the verification",
@@ -96,7 +103,10 @@ function ResetPasswordPage() {
 			try {
 				const response = await fetch("/api/auth/reset-password", {
 					method: "POST",
-					headers: { "Content-Type": "application/json" },
+					headers: {
+						"Content-Type": "application/json",
+						"x-captcha-response": turnstileToken,
+					},
 					body: JSON.stringify({ newPassword: password, token }),
 				});
 				const result = (await response.json()) as {
@@ -104,7 +114,7 @@ function ResetPasswordPage() {
 					message?: string;
 				};
 				if (!response.ok || result.error) {
-					toast.error(
+					reportError(
 						result.message ??
 							t("auth.resetPassword.failedToReset", "Failed to reset password"),
 					);
@@ -120,7 +130,7 @@ function ResetPasswordPage() {
 					navigate({ to: "/login" });
 				}
 			} catch {
-				toast.error(
+				reportError(
 					t(
 						"auth.resetPassword.unexpectedError",
 						"An unexpected error occurred. Please try again.",
@@ -149,6 +159,7 @@ function ResetPasswordPage() {
 					</CardHeader>
 					<CardContent>
 						<form onSubmit={handleSubmit} className="space-y-3">
+							<AuthErrorAlert message={errorMessage} />
 							<div className="space-y-1.5">
 								<Label htmlFor="password">
 									{t("auth.resetPassword.newPassword", "New password")}
@@ -196,6 +207,15 @@ function ResetPasswordPage() {
 								ref={turnstileRef}
 								onVerify={setTurnstileToken}
 								onExpire={() => setTurnstileToken(null)}
+								onError={() => {
+									setTurnstileToken(null);
+									reportError(
+										t(
+											"auth.verificationFailed",
+											"Verification failed. Please try again.",
+										),
+									);
+								}}
 							/>
 							<Button
 								type="submit"

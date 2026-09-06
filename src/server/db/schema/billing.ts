@@ -5,6 +5,7 @@ export const subscriptions = sqliteTable("subscriptions", {
 	id: text("id").primaryKey(),
 	userId: text("user_id")
 		.notNull()
+		.unique()
 		.references(() => user.id, { onDelete: "cascade" }),
 	stripeCustomerId: text("stripe_customer_id").notNull(),
 	stripeSubscriptionId: text("stripe_subscription_id"),
@@ -44,7 +45,14 @@ export const creditTransactions = sqliteTable("credit_transactions", {
 		.references(() => user.id, { onDelete: "cascade" }),
 	amount: integer("amount").notNull(),
 	type: text("type", {
-		enum: ["purchase", "subscription_grant", "usage", "refund", "adjustment"],
+		enum: [
+			"purchase",
+			"subscription_grant",
+			"usage",
+			"refund",
+			"adjustment",
+			"referral",
+		],
 	}).notNull(),
 	description: text("description").notNull(),
 	stripePaymentIntentId: text("stripe_payment_intent_id"),
@@ -72,6 +80,20 @@ export const creditPackages = sqliteTable("credit_packages", {
 
 export type CreditPackage = typeof creditPackages.$inferSelect;
 export type NewCreditPackage = typeof creditPackages.$inferInsert;
+
+// Processed Stripe webhook events — used to make webhook handling idempotent.
+// Stripe guarantees at-least-once delivery and retries on any non-2xx, so every
+// event id is recorded before its side effects run and rejected on redelivery.
+export const webhookEvents = sqliteTable("webhook_events", {
+	id: text("id").primaryKey(), // Stripe event.id
+	type: text("type").notNull(),
+	createdAt: integer("created_at", { mode: "timestamp" })
+		.notNull()
+		.$defaultFn(() => new Date()),
+});
+
+export type WebhookEvent = typeof webhookEvents.$inferSelect;
+export type NewWebhookEvent = typeof webhookEvents.$inferInsert;
 
 export const plans = [
 	{ id: "free", name: "Free", creditsPerMonth: 50, priceInCents: 0 },

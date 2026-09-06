@@ -3,9 +3,7 @@
 	"name": "cf-boilerplate",
 	"main": "./src/server/index.ts",
 	"compatibility_date": "2026-05-09",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
+	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": true,
 	"placement": {
 		"mode": "smart"
@@ -17,9 +15,7 @@
 	// Cron Triggers
 	"triggers": {
 		// Daily at 6 AM UTC — cleanup expired sessions, stale records
-		"crons": [
-			"0 6 * * *"
-		]
+		"crons": ["0 6 * * *"]
 	},
 	// Serve React SPA from Workers Assets
 	"assets": {
@@ -89,12 +85,12 @@
 	"kv_namespaces": [
 		{
 			"binding": "SESSION_KV",
-			// Run: wrangler kv namespace create SESSION_KV
+			// Run: wrangler kv namespace create cf-boilerplate_SESSION_KV
 			"id": "<TO_BE_PROVISIONED>"
 		},
 		{
 			"binding": "CACHE_KV",
-			// Run: wrangler kv namespace create CACHE_KV
+			// Run: wrangler kv namespace create cf-boilerplate_CACHE_KV
 			"id": "<TO_BE_PROVISIONED>"
 		}
 	],
@@ -139,8 +135,9 @@
 	//   BETTER_AUTH_GITHUB_CLIENT_SECRET
 	//   STRIPE_API_KEY
 	//   STRIPE_WEBHOOK_SECRET
-	//   FISCAL_NACIONAL_API_KEY
-	//   SENTRY_DSN (optional)
+	// Optional secrets (features degrade gracefully when unset):
+	//   FISCAL_NACIONAL_API_KEY (NFSe / Brazilian fiscal invoicing — see docs/NFSE_SETUP.md)
+	//   SENTRY_DSN
 	"env": {
 		// --------------------------------
 		// Staging environment
@@ -148,9 +145,7 @@
 		"staging": {
 			"name": "cf-boilerplate-staging",
 			"main": "./dist/staging/index.js",
-			"compatibility_flags": [
-				"nodejs_compat"
-			],
+			"compatibility_flags": ["nodejs_compat"],
 			"minify": true,
 			"assets": {
 				"binding": "ASSETS",
@@ -159,9 +154,7 @@
 				"not_found_handling": "single-page-application"
 			},
 			"triggers": {
-				"crons": [
-					"0 6 * * *"
-				]
+				"crons": ["0 6 * * *"]
 			},
 			"routes": [
 				{
@@ -210,12 +203,12 @@
 			"kv_namespaces": [
 				{
 					"binding": "SESSION_KV",
-					// Run: wrangler kv namespace create SESSION_KV_STAGING
+					// Run: wrangler kv namespace create cf-boilerplate_SESSION_KV_STAGING
 					"id": "<TO_BE_PROVISIONED>"
 				},
 				{
 					"binding": "CACHE_KV",
-					// Run: wrangler kv namespace create CACHE_KV_STAGING
+					// Run: wrangler kv namespace create cf-boilerplate_CACHE_KV_STAGING
 					"id": "<TO_BE_PROVISIONED>"
 				}
 			],
@@ -244,9 +237,7 @@
 		// --------------------------------
 		// Plain `wrangler dev` uses top-level config + .dev.vars overrides.
 		"local": {
-			"compatibility_flags": [
-				"nodejs_compat"
-			],
+			"compatibility_flags": ["nodejs_compat"],
 			"d1_databases": [
 				{
 					"binding": "DB",
@@ -257,11 +248,14 @@
 			"kv_namespaces": [
 				{
 					"binding": "SESSION_KV",
-					"id": "<SAME_AS_STAGING_OK_FOR_LOCAL>"
+					// Local dev only — never contacted remotely, so any unique
+					// placeholder ID works. Run: wrangler kv namespace create cf-boilerplate_SESSION_KV_LOCAL
+					"id": "<TO_BE_PROVISIONED_LOCAL_SESSION_KV>"
 				},
 				{
 					"binding": "CACHE_KV",
-					"id": "<SAME_AS_STAGING_OK_FOR_LOCAL>"
+					// Run: wrangler kv namespace create cf-boilerplate_CACHE_KV_LOCAL
+					"id": "<TO_BE_PROVISIONED_LOCAL_CACHE_KV>"
 				}
 			],
 			"r2_buckets": [

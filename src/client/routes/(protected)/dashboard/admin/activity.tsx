@@ -16,6 +16,7 @@ import {
 } from "@client/components/ui/dropdown-menu";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
+import { Pagination } from "@client/components/ui/pagination";
 import {
 	Select,
 	SelectContent,
@@ -38,8 +39,6 @@ import { cn } from "@client/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	ArrowDown,
-	ChevronLeft,
-	ChevronRight,
 	ChevronsUpDown,
 	CreditCard,
 	KeyRound,
@@ -319,40 +318,11 @@ function AdminActivityPage() {
 											filteredEvents.length,
 										)} of ${filteredEvents.length}`}
 							</div>
-							<div className="flex items-center gap-1">
-								<Button
-									type="button"
-									variant="ghost"
-									size="icon"
-									className="size-7"
-									disabled={page === 0}
-									onClick={() => setPage((p) => Math.max(0, p - 1))}
-								>
-									<ChevronLeft className="size-4" />
-								</Button>
-								{Array.from({ length: pageCount }).map((_, i) => (
-									<Button
-										key={i}
-										type="button"
-										variant={page === i ? "secondary" : "ghost"}
-										size="icon"
-										className="size-7"
-										onClick={() => setPage(i)}
-									>
-										{i + 1}
-									</Button>
-								))}
-								<Button
-									type="button"
-									variant="ghost"
-									size="icon"
-									className="size-7"
-									disabled={page >= pageCount - 1}
-									onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-								>
-									<ChevronRight className="size-4" />
-								</Button>
-							</div>
+							<Pagination
+								page={page}
+								pageCount={pageCount}
+								onPageChange={setPage}
+							/>
 						</div>
 					</div>
 				</CardFooter>

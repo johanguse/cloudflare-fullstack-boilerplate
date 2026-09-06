@@ -1,12 +1,19 @@
 import { trpcServer } from "@hono/trpc-server";
 import * as Sentry from "@sentry/cloudflare";
 import { Hono } from "hono";
+import { setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import {
+	isValidReferralSlug,
+	normalizeReferralSlug,
+	REFERRAL_COOKIE_MAX_AGE,
+	REFERRAL_COOKIE_NAME,
+} from "../shared/referral";
 import { initDb } from "./db";
 import type { AppBindings } from "./lib/types";
 import authMiddleware from "./middlewares/authMiddleware";
@@ -63,7 +70,31 @@ app.use(
 	"*",
 	secureHeaders({
 		contentSecurityPolicy: {
-			reportUri: "/api/v1/csp-report",
+			defaultSrc: ["'self'"],
+			// Turnstile + PostHog inject their own scripts.
+			scriptSrc: [
+				"'self'",
+				"https://challenges.cloudflare.com",
+				"https://*.posthog.com",
+				"https://*.i.posthog.com",
+			],
+			// Tailwind/shadcn and the generated invoice HTML use inline styles.
+			styleSrc: ["'self'", "'unsafe-inline'"],
+			imgSrc: ["'self'", "data:", "https:"],
+			fontSrc: ["'self'", "data:"],
+			connectSrc: [
+				"'self'",
+				"https://*.posthog.com",
+				"https://*.i.posthog.com",
+				"https://*.ingest.sentry.io",
+				"https://*.sentry.io",
+				"https://challenges.cloudflare.com",
+			],
+			frameSrc: ["https://challenges.cloudflare.com"],
+			frameAncestors: ["'none'"],
+			baseUri: ["'self'"],
+			formAction: ["'self'"],
+			objectSrc: ["'none'"],
 		},
 	}),
 );
@@ -116,6 +147,7 @@ app.use("/trpc/*", async (c, next) => {
 			session: ctx.get("session"),
 			db: ctx.get("db"),
 			env: ctx.env,
+			headers: ctx.req.raw.headers,
 			geo: cf
 				? {
 						country: cf.country,
@@ -127,6 +159,24 @@ app.use("/trpc/*", async (c, next) => {
 				: undefined,
 		}),
 	})(c, next);
+});
+
+// Referral links: `/r/:code` stamps a 30-day attribution cookie and forwards to
+// signup. The cookie is read server-side at user creation (works for both email
+// and OAuth signup) and is readable by the client so the register page can show
+// the applied-referral hint.
+app.get("/r/:code", (c) => {
+	const code = normalizeReferralSlug(c.req.param("code"));
+	if (isValidReferralSlug(code)) {
+		setCookie(c, REFERRAL_COOKIE_NAME, code, {
+			path: "/",
+			maxAge: REFERRAL_COOKIE_MAX_AGE,
+			sameSite: "Lax",
+			httpOnly: false,
+			secure: c.env.ENVIRONMENT !== "development",
+		});
+	}
+	return c.redirect("/register");
 });
 
 // Root route

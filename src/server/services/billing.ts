@@ -2,7 +2,10 @@ import Stripe from "stripe";
 
 function createStripeClient(secretKey: string): Stripe {
 	return new Stripe(secretKey, {
-		apiVersion: "2026-05-27.dahlia",
+		// Tracks whatever version ships with the installed `stripe` package —
+		// a hardcoded literal breaks the build every time that package bumps
+		// its bundled API version (the type is pinned 1:1 to it).
+		apiVersion: Stripe.API_VERSION,
 		httpClient: Stripe.createFetchHttpClient(),
 	});
 }

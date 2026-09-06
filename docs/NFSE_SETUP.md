@@ -2,6 +2,8 @@
 
 This document describes how to integrate your SaaS application with the Fiscal Nacional External API to automatically generate NFS-e (Nota Fiscal de Serviço Eletrônica) for your customers.
 
+> **This integration is optional.** It's only relevant if you need Brazilian electronic service invoices. Leave `FISCAL_NACIONAL_API_KEY` unset and Stripe billing, invoices, and everything else keep working normally — the NFSe UI and background job simply stay inactive.
+
 ## Overview
 
 The External API allows your application to generate Brazilian electronic service invoices (NFS-e) programmatically using a simple REST API with API Key authentication. No user session or OAuth flow required.

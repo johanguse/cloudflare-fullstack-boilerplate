@@ -49,7 +49,8 @@
 				"fair": "Fair",
 				"strong": "Strong",
 				"veryStrong": "Very strong"
-			}
+			},
+			"referralBonus": "You were invited! Get {{credits}} bonus credits after your first subscription."
 		},
 		"forgotPassword": {
 			"title": "Reset password",
@@ -132,7 +133,14 @@
 			"apiKeys": "Create an API key",
 			"apiKeysDescription": "Connect external systems",
 			"company": "Company settings",
-			"companyDescription": "Fiscal and NFSe setup"
+			"companyDescription": "Fiscal and NFSe setup",
+			"referrals": "Refer & earn",
+			"referralsDescription": "Share your link, earn credits"
+		},
+		"referralCta": {
+			"title": "Give 50 credits, get 50 credits",
+			"description": "Invite friends — you both earn credits when they subscribe.",
+			"action": "Share your link"
 		}
 	},
 	"profile": {
@@ -435,7 +443,8 @@
 		"settings": "Settings",
 		"company": "Company",
 		"notifications": "Notifications",
-		"apiKeys": "API Keys"
+		"apiKeys": "API Keys",
+		"referrals": "Refer & earn"
 	},
 	"userMenu": {
 		"profile": "Profile",
@@ -444,7 +453,8 @@
 		"lightMode": "Light mode",
 		"darkMode": "Dark mode",
 		"language": "Language",
-		"signOut": "Sign out"
+		"signOut": "Sign out",
+		"productTour": "Product tour"
 	},
 	"header": {
 		"dashboard": "Dashboard",
@@ -484,6 +494,79 @@
 				"sign_in": "signed in",
 				"payment": "payment"
 			}
+		}
+	},
+	"tour": {
+		"welcome": {
+			"title": "Welcome aboard 👋",
+			"content": "Take a quick 60-second tour to learn where everything lives. You can restart it any time from your account menu."
+		},
+		"navigation": {
+			"title": "Navigation",
+			"content": "Jump between billing, invoices, API keys, and settings from the sidebar. It collapses to icons when you need more room."
+		},
+		"plan": {
+			"title": "Your plan at a glance",
+			"content": "Track your current plan, subscription status, and remaining credits here. Upgrade or manage billing in one click."
+		},
+		"stats": {
+			"title": "Account metrics",
+			"content": "A snapshot of invoices, payments, and API keys. Each card links straight to the full view."
+		},
+		"quickActions": {
+			"title": "Quick actions",
+			"content": "Shortcuts to the tasks you'll do most — reviewing invoices, managing billing, and creating API keys."
+		},
+		"createInvoice": {
+			"title": "Create your first invoice",
+			"content": "Ready to bill a customer? Start a new invoice here whenever you need one."
+		},
+		"account": {
+			"title": "Account & preferences",
+			"content": "Switch theme or language, open settings, and restart this tour from your account menu. You're all set!"
+		},
+		"progress": "Step {{current}} of {{total}}",
+		"close": "Close tour",
+		"skip": "Skip",
+		"back": "Back",
+		"next": "Next",
+		"finish": "Finish"
+	},
+	"referral": {
+		"title": "Refer & earn",
+		"subtitle": "Give {{referred}} credits, get {{referrer}} credits when a friend subscribes.",
+		"shareTitle": "Your referral link",
+		"shareDescription": "Share this link. When someone signs up through it and makes their first subscription payment, you both get credits.",
+		"linkLabel": "Referral link",
+		"customizeLabel": "Customize your link",
+		"slugHint": "4–32 lowercase letters, numbers, or hyphens.",
+		"save": "Save",
+		"loading": "Loading…",
+		"copy": "Copy link",
+		"linkCopied": "Referral link copied",
+		"copyFailed": "Could not copy link",
+		"slugUpdated": "Referral link updated",
+		"statsTitle": "Your rewards",
+		"statsDescription": "Referral activity summary",
+		"stats": {
+			"total": "Referred",
+			"rewarded": "Qualified",
+			"pending": "Pending",
+			"creditsEarned": "Credits earned"
+		},
+		"listTitle": "Your referrals",
+		"listDescription": "People who signed up with your link.",
+		"empty": "No referrals yet",
+		"emptyHint": "Share your link to start earning credits.",
+		"table": {
+			"user": "User",
+			"status": "Status",
+			"date": "Joined"
+		},
+		"status": {
+			"pending": "Pending",
+			"rewarded": "Qualified",
+			"rejected": "Not eligible"
 		}
 	}
 }

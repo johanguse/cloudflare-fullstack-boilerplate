@@ -49,7 +49,8 @@
 				"fair": "Regular",
 				"strong": "Fuerte",
 				"veryStrong": "Muy fuerte"
-			}
+			},
+			"referralBonus": "¡Te invitaron! Gana {{credits}} créditos de bonificación después de tu primera suscripción."
 		},
 		"forgotPassword": {
 			"title": "Restablecer contraseña",
@@ -132,7 +133,14 @@
 			"apiKeys": "Crear una clave de API",
 			"apiKeysDescription": "Conectar sistemas externos",
 			"company": "Configuración de empresa",
-			"companyDescription": "Configuración fiscal y de NFSe"
+			"companyDescription": "Configuración fiscal y de NFSe",
+			"referrals": "Recomienda y gana",
+			"referralsDescription": "Comparte tu enlace, gana créditos"
+		},
+		"referralCta": {
+			"title": "Da 50 créditos, gana 50 créditos",
+			"description": "Invita a amigos: ambos ganan créditos cuando se suscriben.",
+			"action": "Comparte tu enlace"
 		}
 	},
 	"profile": {
@@ -435,7 +443,8 @@
 		"settings": "Configuración",
 		"company": "Empresa",
 		"notifications": "Notificaciones",
-		"apiKeys": "Claves de API"
+		"apiKeys": "Claves de API",
+		"referrals": "Recomienda y gana"
 	},
 	"userMenu": {
 		"profile": "Perfil",
@@ -444,7 +453,8 @@
 		"lightMode": "Modo claro",
 		"darkMode": "Modo oscuro",
 		"language": "Idioma",
-		"signOut": "Cerrar sesión"
+		"signOut": "Cerrar sesión",
+		"productTour": "Recorrido del producto"
 	},
 	"header": {
 		"dashboard": "Panel",
@@ -484,6 +494,79 @@
 				"sign_in": "inició sesión",
 				"payment": "pago"
 			}
+		}
+	},
+	"tour": {
+		"welcome": {
+			"title": "Te damos la bienvenida 👋",
+			"content": "Haz un recorrido rápido de 60 segundos para conocer dónde está todo. Puedes reiniciarlo cuando quieras desde el menú de tu cuenta."
+		},
+		"navigation": {
+			"title": "Navegación",
+			"content": "Cambia entre facturación, facturas, claves de API y ajustes desde la barra lateral. Se contrae en iconos cuando necesitas más espacio."
+		},
+		"plan": {
+			"title": "Tu plan de un vistazo",
+			"content": "Consulta aquí tu plan actual, el estado de la suscripción y los créditos restantes. Mejora tu plan o gestiona la facturación con un clic."
+		},
+		"stats": {
+			"title": "Métricas de la cuenta",
+			"content": "Un resumen de facturas, pagos y claves de API. Cada tarjeta enlaza directamente con la vista completa."
+		},
+		"quickActions": {
+			"title": "Acciones rápidas",
+			"content": "Atajos a las tareas más frecuentes: revisar facturas, gestionar la facturación y crear claves de API."
+		},
+		"createInvoice": {
+			"title": "Crea tu primera factura",
+			"content": "¿Listo para facturar a un cliente? Empieza una factura nueva aquí cuando lo necesites."
+		},
+		"account": {
+			"title": "Cuenta y preferencias",
+			"content": "Cambia el tema o el idioma, abre los ajustes y reinicia este recorrido desde el menú de tu cuenta. ¡Todo listo!"
+		},
+		"progress": "Paso {{current}} de {{total}}",
+		"close": "Cerrar recorrido",
+		"skip": "Omitir",
+		"back": "Atrás",
+		"next": "Siguiente",
+		"finish": "Finalizar"
+	},
+	"referral": {
+		"title": "Recomienda y gana",
+		"subtitle": "Da {{referred}} créditos y gana {{referrer}} créditos cuando un amigo se suscriba.",
+		"shareTitle": "Tu enlace de referido",
+		"shareDescription": "Comparte este enlace. Cuando alguien se registre a través de él y realice su primer pago de suscripción, ambos reciben créditos.",
+		"linkLabel": "Enlace de referido",
+		"customizeLabel": "Personaliza tu enlace",
+		"slugHint": "4–32 letras minúsculas, números o guiones.",
+		"save": "Guardar",
+		"loading": "Cargando…",
+		"copy": "Copiar enlace",
+		"linkCopied": "Enlace de referido copiado",
+		"copyFailed": "No se pudo copiar el enlace",
+		"slugUpdated": "Enlace de referido actualizado",
+		"statsTitle": "Tus recompensas",
+		"statsDescription": "Resumen de actividad de referidos",
+		"stats": {
+			"total": "Referidos",
+			"rewarded": "Calificados",
+			"pending": "Pendientes",
+			"creditsEarned": "Créditos ganados"
+		},
+		"listTitle": "Tus referidos",
+		"listDescription": "Personas que se registraron con tu enlace.",
+		"empty": "Aún no hay referidos",
+		"emptyHint": "Comparte tu enlace para empezar a ganar créditos.",
+		"table": {
+			"user": "Usuario",
+			"status": "Estado",
+			"date": "Se unió"
+		},
+		"status": {
+			"pending": "Pendiente",
+			"rewarded": "Calificado",
+			"rejected": "No elegible"
 		}
 	}
 }

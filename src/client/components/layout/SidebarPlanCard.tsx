@@ -6,6 +6,7 @@ import {
 	useSidebar,
 } from "@client/components/ui/sidebar";
 import { Skeleton } from "@client/components/ui/skeleton";
+import { formatDate, formatNumber } from "@client/lib/formatters";
 import { trpc } from "@client/lib/trpc-client";
 import { cn } from "@client/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -47,7 +48,7 @@ export function SidebarPlanCard() {
 	const credits = data?.creditBalance ?? 0;
 	const cancelAtEnd = data?.cancelAtPeriodEnd ?? false;
 	const renewDate = data?.currentPeriodEnd
-		? new Date(data.currentPeriodEnd).toLocaleDateString(undefined, {
+		? formatDate(data.currentPeriodEnd, {
 				month: "short",
 				day: "numeric",
 				year: "numeric",
@@ -158,7 +159,7 @@ export function SidebarPlanCard() {
 						{t("sidebar.plan.credits", "Credits")}
 					</span>
 					<span className="font-semibold tabular-nums">
-						{credits.toLocaleString()}
+						{formatNumber(credits)}
 					</span>
 				</div>
 				<MiniProgress value={Math.min((credits / 1000) * 100, 100)} />

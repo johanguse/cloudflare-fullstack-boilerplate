@@ -17,6 +17,7 @@ import {
 	TableCell,
 	TableRow,
 } from "@client/components/ui/table";
+import { formatNumber } from "@client/lib/formatters";
 import { trpc } from "@client/lib/trpc-client";
 import { cn } from "@client/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
@@ -139,9 +140,31 @@ const PLANS: Plan[] = [
 		annualStripePriceId:
 			import.meta.env.VITE_STRIPE_PRICE_BUSINESS_ANNUAL ?? "",
 	},
+	{
+		id: "agency",
+		name: "Agency",
+		description: "Maximum scale for agencies and resellers",
+		monthlyPrice: "$69.99",
+		annualPrice: "$58.99",
+		credits: 4000,
+		websites: "Unlimited",
+		updateFrequency: "Real-time",
+		support: "Dedicated + SLA",
+		apiAccess: true,
+		teamManagement: true,
+		features: [
+			"4,000 credits/month",
+			"Unlimited websites",
+			"Real-time auto-updates",
+			"Dedicated support + SLA",
+			"Team management",
+		],
+		monthlyStripePriceId: import.meta.env.VITE_STRIPE_PRICE_AGENCY ?? "",
+		annualStripePriceId: import.meta.env.VITE_STRIPE_PRICE_AGENCY_ANNUAL ?? "",
+	},
 ];
 
-const PLAN_ORDER = ["free", "starter", "professional", "business"];
+const PLAN_ORDER = ["free", "starter", "professional", "business", "agency"];
 
 const stripeUnconfigured = PLANS.filter((p) => p.id !== "free").every(
 	(p) => !p.monthlyStripePriceId && !p.annualStripePriceId,
@@ -239,7 +262,7 @@ function UpgradePage() {
 				/>
 			</div>
 
-			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 				{PLANS.map((plan) => {
 					const { isCurrent, isDowngrade, isPaid, isDisabled } =
 						getPlanActionState(plan);
@@ -378,7 +401,7 @@ function PricingComparisonTable({
 	return (
 		<Card>
 			<CardContent className="p-0">
-				<Table className="mt-3 min-w-[1000px] table-fixed border-separate border-spacing-0 rounded-xl text-foreground">
+				<Table className="mt-3 min-w-[1200px] table-fixed border-separate border-spacing-0 rounded-xl text-foreground">
 					<TableBody>
 						<TableRow className="*:border-border hover:bg-transparent">
 							<TableCell className="border-b-0 p-5 pt-7 align-bottom">
@@ -401,7 +424,7 @@ function PricingComparisonTable({
 						</TableRow>
 						<ComparisonRow
 							label={t("upgrade.credits", "Credits per month")}
-							values={PLANS.map((plan) => plan.credits.toLocaleString())}
+							values={PLANS.map((plan) => formatNumber(plan.credits))}
 							getPlanActionState={getPlanActionState}
 						/>
 						<ComparisonRow
@@ -553,9 +576,15 @@ function ComparisonRow({
 				>
 					{typeof value === "boolean" ? (
 						value ? (
-							<Check className="mx-auto size-4 text-green-500" />
+							<span className="flex justify-center">
+								<Check aria-hidden="true" className="size-4 text-green-500" />
+								<span className="sr-only">Included</span>
+							</span>
 						) : (
-							<span className="text-muted-foreground">-</span>
+							<span className="text-muted-foreground">
+								<span aria-hidden="true">-</span>
+								<span className="sr-only">Not included</span>
+							</span>
 						)
 					) : (
 						value

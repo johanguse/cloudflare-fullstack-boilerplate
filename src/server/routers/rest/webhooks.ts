@@ -19,6 +19,7 @@ import {
 } from "../../services/email";
 import { createInvoiceFromStripe } from "../../services/invoices";
 import { getNotificationPrefs } from "../../services/notification-prefs";
+import { processReferralReward } from "../../services/referral";
 import { getUserLocale } from "../../services/user-locale";
 
 export function registerWebhookRoutes(app: Hono<AppBindings>) {
@@ -45,6 +46,20 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 					? err.message
 					: "Webhook signature verification failed";
 			return c.json({ error: message }, 400);
+		}
+
+		// Idempotency guard: Stripe delivers at-least-once and retries on any
+		// non-2xx, so record the event id before running side effects and skip
+		// anything we've already processed. INSERT ... ON CONFLICT DO NOTHING is
+		// atomic, so concurrent redeliveries cannot both proceed.
+		const inserted = await db
+			.insert(billingSchema.webhookEvents)
+			.values({ id: event.id, type: event.type })
+			.onConflictDoNothing()
+			.returning({ id: billingSchema.webhookEvents.id });
+
+		if (inserted.length === 0) {
+			return c.json({ received: true, duplicate: true });
 		}
 
 		const planPriceMap: Record<string, Array<string | undefined>> = {
@@ -114,6 +129,32 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 						"subscription_grant",
 						`${plan?.name ?? "Starter"} plan monthly credits`,
 					);
+
+					// Referral reward qualifies on the first successful subscription
+					// payment. Idempotent and guarded (self-referral, duplicate identity,
+					// monthly cap) inside the service. Runs in the background so the
+					// webhook still returns 200 promptly.
+					const paymentIdentity = (
+						session.customer_details?.email ??
+						session.customer_email ??
+						""
+					)
+						.trim()
+						.toLowerCase();
+					if (paymentIdentity) {
+						c.executionCtx.waitUntil(
+							processReferralReward(db, {
+								referredUserId: userId,
+								paymentIdentity,
+								stripePaymentIntentId:
+									typeof session.payment_intent === "string"
+										? session.payment_intent
+										: null,
+							}).catch((err) =>
+								console.error("[referral] reward processing failed", err),
+							),
+						);
+					}
 				}
 				break;
 			}
@@ -355,17 +396,31 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 								}
 
 								try {
-									await db.insert(nfseSchema.nfseRecords).values({
-										id: nfseRecordId,
-										invoiceId: invoice.id,
-										userId: sub.userId,
-										status: "pending",
-									});
+									// NFSe is optional (Brazilian fiscal invoicing) — skip
+									// entirely when not configured so billing never depends on it.
+									if (!c.env.FISCAL_NACIONAL_API_KEY) return;
 
-									await c.env.NFSE_WORKFLOW.create({
-										id: nfseRecordId,
-										params: { invoiceId: invoice.id, nfseRecordId },
-									});
+									// Only queue NFSe once per invoice — guards against
+									// duplicate fiscal documents if this block runs twice.
+									const existingNfse = await db
+										.select({ id: nfseSchema.nfseRecords.id })
+										.from(nfseSchema.nfseRecords)
+										.where(eq(nfseSchema.nfseRecords.invoiceId, invoice.id))
+										.get();
+
+									if (!existingNfse) {
+										await db.insert(nfseSchema.nfseRecords).values({
+											id: nfseRecordId,
+											invoiceId: invoice.id,
+											userId: sub.userId,
+											status: "pending",
+										});
+
+										await c.env.NFSE_WORKFLOW.create({
+											id: nfseRecordId,
+											params: { invoiceId: invoice.id, nfseRecordId },
+										});
+									}
 								} catch (err) {
 									console.error("[nfse] Failed to queue NFSe task:", err);
 								}

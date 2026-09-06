@@ -95,6 +95,7 @@ const NFSE_STATUS_ICONS: Record<
 function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 	const { t } = useTranslation();
 	const utils = trpc.useUtils();
+	const isEnabledQuery = trpc.nfse.isEnabled.useQuery();
 	const nfseQuery = trpc.nfse.getStatus.useQuery(
 		{ invoiceId },
 		{
@@ -137,6 +138,13 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 	}
 
 	const record = nfseQuery.data;
+
+	// NFSe is an optional feature (Brazilian fiscal invoicing) — hide the
+	// widget entirely when this deployment hasn't configured it and there's
+	// no pre-existing record to show.
+	if (!record && isEnabledQuery.data === false) {
+		return null;
+	}
 
 	if (!record) {
 		return (
