@@ -85,12 +85,12 @@
 	"kv_namespaces": [
 		{
 			"binding": "SESSION_KV",
-			// Run: wrangler kv namespace create SESSION_KV
+			// Run: wrangler kv namespace create cf-boilerplate_SESSION_KV
 			"id": "<TO_BE_PROVISIONED>"
 		},
 		{
 			"binding": "CACHE_KV",
-			// Run: wrangler kv namespace create CACHE_KV
+			// Run: wrangler kv namespace create cf-boilerplate_CACHE_KV
 			"id": "<TO_BE_PROVISIONED>"
 		}
 	],
@@ -203,12 +203,12 @@
 			"kv_namespaces": [
 				{
 					"binding": "SESSION_KV",
-					// Run: wrangler kv namespace create SESSION_KV_STAGING
+					// Run: wrangler kv namespace create cf-boilerplate_SESSION_KV_STAGING
 					"id": "<TO_BE_PROVISIONED>"
 				},
 				{
 					"binding": "CACHE_KV",
-					// Run: wrangler kv namespace create CACHE_KV_STAGING
+					// Run: wrangler kv namespace create cf-boilerplate_CACHE_KV_STAGING
 					"id": "<TO_BE_PROVISIONED>"
 				}
 			],
@@ -248,11 +248,14 @@
 			"kv_namespaces": [
 				{
 					"binding": "SESSION_KV",
-					"id": "<SAME_AS_STAGING_OK_FOR_LOCAL>"
+					// Local dev only — never contacted remotely, so any unique
+					// placeholder ID works. Run: wrangler kv namespace create cf-boilerplate_SESSION_KV_LOCAL
+					"id": "<TO_BE_PROVISIONED_LOCAL_SESSION_KV>"
 				},
 				{
 					"binding": "CACHE_KV",
-					"id": "<SAME_AS_STAGING_OK_FOR_LOCAL>"
+					// Run: wrangler kv namespace create cf-boilerplate_CACHE_KV_LOCAL
+					"id": "<TO_BE_PROVISIONED_LOCAL_CACHE_KV>"
 				}
 			],
 			"r2_buckets": [

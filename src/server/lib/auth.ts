@@ -92,6 +92,22 @@ export const createAuth = (
 				const value = await env.SESSION_KV.get(key);
 				return value;
 			},
+			// KV has no atomic get-and-delete; best effort for this store.
+			getAndDelete: async (key) => {
+				const value = await env.SESSION_KV.get(key);
+				await env.SESSION_KV.delete(key);
+				return value;
+			},
+			// KV has no atomic counter; a read-then-write race can under-count
+			// under concurrent hits. Acceptable for this store's rate-limit use.
+			increment: async (key, ttl) => {
+				const current = await env.SESSION_KV.get(key);
+				const next = (current ? Number.parseInt(current, 10) : 0) + 1;
+				await env.SESSION_KV.put(key, String(next), {
+					expirationTtl: current ? undefined : ttl,
+				});
+				return next;
+			},
 			set: async (key, value, ttl) => {
 				if (ttl) {
 					await env.SESSION_KV.put(key, value, { expirationTtl: ttl });
