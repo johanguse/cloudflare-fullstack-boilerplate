@@ -21,7 +21,7 @@ import {
 	REFERRED_REWARD_CREDITS,
 } from "@shared/referral";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Github, Gift, Loader2 } from "lucide-react";
+import { Gift, Github, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
