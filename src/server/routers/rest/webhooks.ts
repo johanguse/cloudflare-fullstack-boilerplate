@@ -396,6 +396,10 @@ export function registerWebhookRoutes(app: Hono<AppBindings>) {
 								}
 
 								try {
+									// NFSe is optional (Brazilian fiscal invoicing) — skip
+									// entirely when not configured so billing never depends on it.
+									if (!c.env.FISCAL_NACIONAL_API_KEY) return;
+
 									// Only queue NFSe once per invoice — guards against
 									// duplicate fiscal documents if this block runs twice.
 									const existingNfse = await db

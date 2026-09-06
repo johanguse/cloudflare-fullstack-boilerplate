@@ -18,7 +18,9 @@ export type AppEnv = Env & {
 	// Cloudflare Turnstile server secret — when set, the captcha plugin verifies
 	// tokens on sign-in/sign-up/forgot-password. Leave unset only in local dev.
 	TURNSTILE_SECRET_KEY?: string;
-	FISCAL_NACIONAL_API_KEY: string;
+	// NFSe (Brazilian fiscal invoicing) — optional. Leave unset to skip NFSe
+	// generation entirely; Stripe billing works fully without it.
+	FISCAL_NACIONAL_API_KEY?: string;
 	FISCAL_NACIONAL_ENVIRONMENT: string;
 	NFSE_WORKFLOW: Workflow;
 	SENTRY_DSN?: string;

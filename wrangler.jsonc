@@ -135,8 +135,9 @@
 	//   BETTER_AUTH_GITHUB_CLIENT_SECRET
 	//   STRIPE_API_KEY
 	//   STRIPE_WEBHOOK_SECRET
-	//   FISCAL_NACIONAL_API_KEY
-	//   SENTRY_DSN (optional)
+	// Optional secrets (features degrade gracefully when unset):
+	//   FISCAL_NACIONAL_API_KEY (NFSe / Brazilian fiscal invoicing — see docs/NFSE_SETUP.md)
+	//   SENTRY_DSN
 	"env": {
 		// --------------------------------
 		// Staging environment

@@ -8,6 +8,12 @@ import { protectedProcedure, router } from "../../lib/trpc";
 import { getFiscalNacionalService } from "../../services/nfse";
 
 export const nfseRouter = router({
+	// Lets the dashboard hide NFSe UI entirely on deployments that haven't
+	// configured Fiscal Nacional — NFSe is optional, Stripe billing doesn't need it.
+	isEnabled: protectedProcedure.query(({ ctx }) =>
+		Boolean(ctx.env.FISCAL_NACIONAL_API_KEY),
+	),
+
 	getStatus: protectedProcedure
 		.input(z.object({ invoiceId: z.string() }))
 		.query(async ({ ctx, input }) => {
@@ -52,6 +58,12 @@ export const nfseRouter = router({
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "NFSe can only be emitted for paid invoices",
+				});
+			}
+			if (!ctx.env.FISCAL_NACIONAL_API_KEY) {
+				throw new TRPCError({
+					code: "PRECONDITION_FAILED",
+					message: "NFSe is not configured for this deployment",
 				});
 			}
 

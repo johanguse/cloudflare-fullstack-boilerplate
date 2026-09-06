@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 function createStripeClient(secretKey: string): Stripe {
 	return new Stripe(secretKey, {
-		apiVersion: "2026-05-27.dahlia",
+		apiVersion: "2026-07-29.dahlia",
 		httpClient: Stripe.createFetchHttpClient(),
 	});
 }
