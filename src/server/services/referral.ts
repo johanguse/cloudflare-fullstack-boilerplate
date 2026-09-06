@@ -159,7 +159,11 @@ export async function processReferralReward(
 	const markRejected = async (reason: string) => {
 		await db
 			.update(schema.referrals)
-			.set({ status: "rejected", rejectionReason: reason, updatedAt: new Date() })
+			.set({
+				status: "rejected",
+				rejectionReason: reason,
+				updatedAt: new Date(),
+			})
 			.where(eq(schema.referrals.id, referral.id));
 	};
 

@@ -16,7 +16,10 @@ import {
 	TurnstileWidget,
 } from "@client/components/ui/turnstile";
 import { authClient } from "@client/lib/auth-client";
-import { REFERRAL_COOKIE_NAME, REFERRED_REWARD_CREDITS } from "@shared/referral";
+import {
+	REFERRAL_COOKIE_NAME,
+	REFERRED_REWARD_CREDITS,
+} from "@shared/referral";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Github, Gift, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";

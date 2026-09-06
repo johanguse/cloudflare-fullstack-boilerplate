@@ -46,8 +46,7 @@ function ReferralsPage() {
 		if (code) setSlug(code);
 	}, [code]);
 
-	const origin =
-		typeof window !== "undefined" ? window.location.origin : "";
+	const origin = typeof window !== "undefined" ? window.location.origin : "";
 	const referralLink = code ? buildReferralLink(origin, code) : "";
 
 	const updateSlug = trpc.referral.updateSlug.useMutation({
@@ -312,8 +311,6 @@ function ReferralStatusBadge({ status }: { status: string }) {
 		return "secondary" as const;
 	}, [status]);
 	return (
-		<Badge variant={variant}>
-			{t(`referral.status.${status}`, status)}
-		</Badge>
+		<Badge variant={variant}>{t(`referral.status.${status}`, status)}</Badge>
 	);
 }

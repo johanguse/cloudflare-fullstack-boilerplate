@@ -28,6 +28,12 @@ function getDatabaseId() {
 	return id;
 }
 
+function requireEnv(name: "CLOUDFLARE_ACCOUNT_ID" | "CLOUDFLARE_API_TOKEN") {
+	const value = process.env[name];
+	if (!value) throw new Error(`${name} is required for ${environment}`);
+	return value;
+}
+
 export default defineConfig({
 	dialect: "sqlite",
 	schema: "./src/server/db/schema",
@@ -36,9 +42,9 @@ export default defineConfig({
 		? {
 				driver: "d1-http",
 				dbCredentials: {
-					accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
+					accountId: requireEnv("CLOUDFLARE_ACCOUNT_ID"),
 					databaseId: getDatabaseId(),
-					token: process.env.CLOUDFLARE_API_TOKEN!,
+					token: requireEnv("CLOUDFLARE_API_TOKEN"),
 				},
 			}
 		: {

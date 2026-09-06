@@ -208,7 +208,10 @@ function DashboardPage() {
 					</span>
 					<div>
 						<p className="font-medium text-sm">
-							{t("dashboard.referralCta.title", "Give 50 credits, get 50 credits")}
+							{t(
+								"dashboard.referralCta.title",
+								"Give 50 credits, get 50 credits",
+							)}
 						</p>
 						<p className="text-muted-foreground text-sm">
 							{t(
