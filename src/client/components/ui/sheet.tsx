@@ -3,40 +3,24 @@ import { Button } from "@client/components/ui/button";
 
 import { cn } from "@client/lib/utils";
 import { XIcon } from "lucide-react";
-import * as React from "react";
+import type * as React from "react";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
 	return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
 
-function SheetTrigger({
-	asChild = false,
-	children,
-	...props
-}: SheetPrimitive.Trigger.Props & { asChild?: boolean }) {
+function SheetTrigger({ children, ...props }: SheetPrimitive.Trigger.Props) {
 	return (
-		<SheetPrimitive.Trigger
-			data-slot="sheet-trigger"
-			render={asChild && React.isValidElement(children) ? children : undefined}
-			{...props}
-		>
-			{asChild ? undefined : children}
+		<SheetPrimitive.Trigger data-slot="sheet-trigger" {...props}>
+			{children}
 		</SheetPrimitive.Trigger>
 	);
 }
 
-function SheetClose({
-	asChild = false,
-	children,
-	...props
-}: SheetPrimitive.Close.Props & { asChild?: boolean }) {
+function SheetClose({ children, ...props }: SheetPrimitive.Close.Props) {
 	return (
-		<SheetPrimitive.Close
-			data-slot="sheet-close"
-			render={asChild && React.isValidElement(children) ? children : undefined}
-			{...props}
-		>
-			{asChild ? undefined : children}
+		<SheetPrimitive.Close data-slot="sheet-close" {...props}>
+			{children}
 		</SheetPrimitive.Close>
 	);
 }
