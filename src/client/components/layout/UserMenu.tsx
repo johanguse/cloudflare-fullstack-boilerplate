@@ -78,30 +78,30 @@ export function UserMenu() {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<SidebarMenuButton
-					size="lg"
-					data-tour="user-menu"
-					className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-				>
-					<Avatar className="size-8 shrink-0 rounded-lg">
-						{user.image && (
-							<AvatarImage src={user.image} alt={user.name ?? user.email} />
-						)}
-						<AvatarFallback className="rounded-lg text-xs">
-							{initials}
-						</AvatarFallback>
-					</Avatar>
-					<div className="grid flex-1 text-left text-sm leading-tight">
-						<span className="truncate font-semibold">
-							{user.name ?? "User"}
-						</span>
-						<span className="truncate text-muted-foreground text-xs">
-							{user.email}
-						</span>
-					</div>
-					<ChevronsUpDown className="ml-auto size-4 shrink-0" />
-				</SidebarMenuButton>
+			<DropdownMenuTrigger
+				render={
+					<SidebarMenuButton
+						size="lg"
+						data-tour="user-menu"
+						className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
+					/>
+				}
+			>
+				<Avatar className="size-8 shrink-0 rounded-lg">
+					{user.image && (
+						<AvatarImage src={user.image} alt={user.name ?? user.email} />
+					)}
+					<AvatarFallback className="rounded-lg text-xs">
+						{initials}
+					</AvatarFallback>
+				</Avatar>
+				<div className="grid flex-1 text-left text-sm leading-tight">
+					<span className="truncate font-semibold">{user.name ?? "User"}</span>
+					<span className="truncate text-muted-foreground text-xs">
+						{user.email}
+					</span>
+				</div>
+				<ChevronsUpDown className="ml-auto size-4 shrink-0" />
 			</DropdownMenuTrigger>
 
 			<DropdownMenuContent
@@ -122,17 +122,13 @@ export function UserMenu() {
 
 				<DropdownMenuSeparator />
 
-				<DropdownMenuItem asChild>
-					<Link to="/dashboard/settings">
-						<Settings2 className="size-4" />
-						{t("userMenu.settings", "Settings")}
-					</Link>
+				<DropdownMenuItem render={<Link to="/dashboard/settings" />}>
+					<Settings2 className="size-4" />
+					{t("userMenu.settings", "Settings")}
 				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<Link to="/dashboard/billing">
-						<CreditCard className="size-4" />
-						{t("userMenu.billing", "Billing")}
-					</Link>
+				<DropdownMenuItem render={<Link to="/dashboard/billing" />}>
+					<CreditCard className="size-4" />
+					{t("userMenu.billing", "Billing")}
 				</DropdownMenuItem>
 
 				<DropdownMenuItem onClick={handleStartTour}>

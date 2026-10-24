@@ -1,7 +1,7 @@
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { cn } from "@client/lib/utils";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
-import * as React from "react";
+import type * as React from "react";
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
 	return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
@@ -12,17 +12,12 @@ function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
 }
 
 function DropdownMenuTrigger({
-	asChild = false,
 	children,
 	...props
-}: MenuPrimitive.Trigger.Props & { asChild?: boolean }) {
+}: MenuPrimitive.Trigger.Props) {
 	return (
-		<MenuPrimitive.Trigger
-			data-slot="dropdown-menu-trigger"
-			render={asChild && React.isValidElement(children) ? children : undefined}
-			{...props}
-		>
-			{asChild ? undefined : children}
+		<MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props}>
+			{children}
 		</MenuPrimitive.Trigger>
 	);
 }
@@ -87,13 +82,11 @@ function DropdownMenuLabel({
 
 function DropdownMenuItem({
 	className,
-	asChild = false,
 	children,
 	inset,
 	variant = "default",
 	...props
 }: MenuPrimitive.Item.Props & {
-	asChild?: boolean;
 	inset?: boolean;
 	variant?: "default" | "destructive";
 }) {
@@ -106,10 +99,9 @@ function DropdownMenuItem({
 				"group/dropdown-menu-item relative flex cursor-default select-none items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-inset:pl-7 data-[variant=destructive]:text-destructive data-disabled:opacity-50 data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[variant=destructive]:*:[svg]:text-destructive",
 				className,
 			)}
-			render={asChild && React.isValidElement(children) ? children : undefined}
 			{...props}
 		>
-			{asChild ? undefined : children}
+			{children}
 		</MenuPrimitive.Item>
 	);
 }
