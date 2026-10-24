@@ -341,24 +341,26 @@ function SettingsPage() {
 				<div className="space-y-1">
 					{/* Change password */}
 					<Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
-						<DialogTrigger asChild>
-							<button
-								type="button"
-								className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
-							>
-								<KeyRound className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-								<div>
-									<p className="font-medium text-sm">
-										{t("profile.changePassword", "Change password")}
-									</p>
-									<p className="text-muted-foreground text-xs">
-										{t(
-											"profile.changePasswordDesc",
-											"Update your password to keep your account secure.",
-										)}
-									</p>
-								</div>
-							</button>
+						<DialogTrigger
+							render={
+								<button
+									type="button"
+									className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
+								/>
+							}
+						>
+							<KeyRound className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+							<div>
+								<p className="font-medium text-sm">
+									{t("profile.changePassword", "Change password")}
+								</p>
+								<p className="text-muted-foreground text-xs">
+									{t(
+										"profile.changePasswordDesc",
+										"Update your password to keep your account secure.",
+									)}
+								</p>
+							</div>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-md">
 							<DialogHeader>
