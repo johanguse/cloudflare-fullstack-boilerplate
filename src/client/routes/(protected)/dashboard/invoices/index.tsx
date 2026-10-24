@@ -485,30 +485,40 @@ function InvoicesPage() {
 										</TableCell>
 										<TableCell className="text-right">
 											<div className="flex justify-end gap-1">
-												<Button variant="ghost" size="icon" asChild>
-													<Link
-														to={`/dashboard/invoices/${inv.id}` as never}
-														aria-label={t(
-															"invoices.viewInvoice",
-															"View invoice {{number}}",
-															{ number: inv.number },
-														)}
-													>
-														<FileText className="size-4" />
-													</Link>
+												<Button
+													variant="ghost"
+													size="icon"
+													nativeButton={false}
+													render={
+														<Link
+															to={`/dashboard/invoices/${inv.id}` as never}
+															aria-label={t(
+																"invoices.viewInvoice",
+																"View invoice {{number}}",
+																{ number: inv.number },
+															)}
+														/>
+													}
+												>
+													<FileText className="size-4" />
 												</Button>
-												<Button variant="ghost" size="icon" asChild>
-													<a
-														href={`/api/invoices/${inv.id}/download`}
-														aria-label={t(
-															"invoices.downloadInvoice",
-															"Download invoice {{number}}",
-															{ number: inv.number },
-														)}
-													>
-														<Download className="size-4" />
-													</a>
-												</Button>
+												<Button
+													variant="ghost"
+													size="icon"
+													nativeButton={false}
+													render={
+														<a
+															href={`/api/invoices/${inv.id}/download`}
+															aria-label={t(
+																"invoices.downloadInvoice",
+																"Download invoice {{number}}",
+																{ number: inv.number },
+															)}
+														>
+															<Download className="size-4" />
+														</a>
+													}
+												/>
 											</div>
 										</TableCell>
 									</TableRow>

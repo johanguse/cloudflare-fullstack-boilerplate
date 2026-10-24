@@ -52,14 +52,12 @@ export function AppSidebar() {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton
-								asChild
 								isActive={isExact("/dashboard")}
 								tooltip={t("nav.dashboard", "Dashboard")}
+								render={<Link to="/dashboard" />}
 							>
-								<Link to="/dashboard">
-									<LayoutDashboard />
-									<span>{t("nav.dashboard", "Dashboard")}</span>
-								</Link>
+								<LayoutDashboard />
+								<span>{t("nav.dashboard", "Dashboard")}</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
@@ -71,66 +69,56 @@ export function AppSidebar() {
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<SidebarMenuButton
-								asChild
 								isActive={isPrefixed("/dashboard/billing")}
 								tooltip={t("nav.billing", "Billing")}
+								render={<Link to="/dashboard/billing" />}
 							>
-								<Link to="/dashboard/billing">
-									<CreditCard />
-									<span>{t("nav.billing", "Billing")}</span>
-								</Link>
+								<CreditCard />
+								<span>{t("nav.billing", "Billing")}</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton
-								asChild
 								isActive={isPrefixed("/dashboard/invoices")}
 								tooltip={t("nav.invoices", "Invoices")}
+								render={<Link to="/dashboard/invoices" />}
 							>
-								<Link to="/dashboard/invoices">
-									<ScrollText />
-									<span>{t("nav.invoices", "Invoices")}</span>
-								</Link>
+								<ScrollText />
+								<span>{t("nav.invoices", "Invoices")}</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton
-								asChild
 								isActive={isExact("/dashboard/api-keys")}
 								tooltip={t("nav.apiKeys", "API Keys")}
+								render={<Link to="/dashboard/api-keys" />}
 							>
-								<Link to="/dashboard/api-keys">
-									<KeyRound />
-									<span>{t("nav.apiKeys", "API Keys")}</span>
-								</Link>
+								<KeyRound />
+								<span>{t("nav.apiKeys", "API Keys")}</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton
-								asChild
 								isActive={isExact("/dashboard/referrals")}
 								tooltip={t("nav.referrals", "Refer & earn")}
+								render={<Link to="/dashboard/referrals" />}
 							>
-								<Link to="/dashboard/referrals">
-									<Gift />
-									<span>{t("nav.referrals", "Refer & earn")}</span>
-								</Link>
+								<Gift />
+								<span>{t("nav.referrals", "Refer & earn")}</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 
 						<SidebarMenuItem>
 							<SidebarMenuButton
-								asChild
 								isActive={isPrefixed("/dashboard/settings")}
 								tooltip={t("nav.settings", "Settings")}
+								render={<Link to="/dashboard/settings" />}
 							>
-								<Link to="/dashboard/settings">
-									<Settings2 />
-									<span>{t("nav.settings", "Settings")}</span>
-								</Link>
+								<Settings2 />
+								<span>{t("nav.settings", "Settings")}</span>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					</SidebarMenu>
@@ -148,40 +136,34 @@ export function AppSidebar() {
 							<SidebarMenu>
 								<SidebarMenuItem>
 									<SidebarMenuButton
-										asChild
 										isActive={isExact("/dashboard/admin")}
 										tooltip={t("nav.adminReports", "Reports")}
+										render={<Link to="/dashboard/admin" />}
 									>
-										<Link to="/dashboard/admin">
-											<ScrollText />
-											<span>{t("nav.adminReports", "Reports")}</span>
-										</Link>
+										<ScrollText />
+										<span>{t("nav.adminReports", "Reports")}</span>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 
 								<SidebarMenuItem>
 									<SidebarMenuButton
-										asChild
 										isActive={isExact("/dashboard/admin/users")}
 										tooltip={t("nav.adminUsers", "All Users")}
+										render={<Link to="/dashboard/admin/users" />}
 									>
-										<Link to="/dashboard/admin/users">
-											<Users />
-											<span>{t("nav.adminUsers", "All Users")}</span>
-										</Link>
+										<Users />
+										<span>{t("nav.adminUsers", "All Users")}</span>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 
 								<SidebarMenuItem>
 									<SidebarMenuButton
-										asChild
 										isActive={isExact("/dashboard/admin/activity")}
 										tooltip={t("nav.adminActivity", "Activity Logs")}
+										render={<Link to="/dashboard/admin/activity" />}
 									>
-										<Link to="/dashboard/admin/activity">
-											<ActivitySquare />
-											<span>{t("nav.adminActivity", "Activity Logs")}</span>
-										</Link>
+										<ActivitySquare />
+										<span>{t("nav.adminActivity", "Activity Logs")}</span>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							</SidebarMenu>

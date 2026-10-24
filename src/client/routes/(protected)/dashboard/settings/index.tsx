@@ -216,12 +216,17 @@ function SettingsPage() {
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>{t("profile.fullName", "Name")}</FormLabel>
-										<FormControl>
-											<Input
-												placeholder={t("profile.namePlaceholder", "Your name")}
-												{...field}
-											/>
-										</FormControl>
+										<FormControl
+											render={
+												<Input
+													placeholder={t(
+														"profile.namePlaceholder",
+														"Your name",
+													)}
+													{...field}
+												/>
+											}
+										/>
 										<FormMessage />
 									</FormItem>
 								)}
@@ -316,11 +321,14 @@ function SettingsPage() {
 							>
 								{t("billing.upgradePlan", "Upgrade plan")}
 							</Button>
-							<Button variant="outline" size="sm" asChild>
-								<Link to="/dashboard/billing">
-									<ExternalLink className="mr-1.5 size-3.5" />
-									{t("settings.viewBilling", "View billing")}
-								</Link>
+							<Button
+								variant="outline"
+								size="sm"
+								nativeButton={false}
+								render={<Link to="/dashboard/billing" />}
+							>
+								<ExternalLink className="mr-1.5 size-3.5" />
+								{t("settings.viewBilling", "View billing")}
 							</Button>
 						</div>
 					</div>
@@ -338,24 +346,26 @@ function SettingsPage() {
 				<div className="space-y-1">
 					{/* Change password */}
 					<Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
-						<DialogTrigger asChild>
-							<button
-								type="button"
-								className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
-							>
-								<KeyRound className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-								<div>
-									<p className="font-medium text-sm">
-										{t("profile.changePassword", "Change password")}
-									</p>
-									<p className="text-muted-foreground text-xs">
-										{t(
-											"profile.changePasswordDesc",
-											"Update your password to keep your account secure.",
-										)}
-									</p>
-								</div>
-							</button>
+						<DialogTrigger
+							render={
+								<button
+									type="button"
+									className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
+								/>
+							}
+						>
+							<KeyRound className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+							<div>
+								<p className="font-medium text-sm">
+									{t("profile.changePassword", "Change password")}
+								</p>
+								<p className="text-muted-foreground text-xs">
+									{t(
+										"profile.changePasswordDesc",
+										"Update your password to keep your account secure.",
+									)}
+								</p>
+							</div>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-md">
 							<DialogHeader>
@@ -383,14 +393,16 @@ function SettingsPage() {
 												<FormLabel>
 													{t("profile.currentPassword", "Current password")}
 												</FormLabel>
-												<FormControl>
-													<Input
-														type="password"
-														placeholder="••••••••"
-														autoComplete="current-password"
-														{...field}
-													/>
-												</FormControl>
+												<FormControl
+													render={
+														<Input
+															type="password"
+															placeholder="••••••••"
+															autoComplete="current-password"
+															{...field}
+														/>
+													}
+												/>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -403,14 +415,16 @@ function SettingsPage() {
 												<FormLabel>
 													{t("profile.newPassword", "New password")}
 												</FormLabel>
-												<FormControl>
-													<Input
-														type="password"
-														placeholder="••••••••"
-														autoComplete="new-password"
-														{...field}
-													/>
-												</FormControl>
+												<FormControl
+													render={
+														<Input
+															type="password"
+															placeholder="••••••••"
+															autoComplete="new-password"
+															{...field}
+														/>
+													}
+												/>
 												{newPassword && (
 													<div className="space-y-1">
 														<div className="flex gap-1">
@@ -452,14 +466,16 @@ function SettingsPage() {
 												<FormLabel>
 													{t("profile.confirmPassword", "Confirm new password")}
 												</FormLabel>
-												<FormControl>
-													<Input
-														type="password"
-														placeholder="••••••••"
-														autoComplete="new-password"
-														{...field}
-													/>
-												</FormControl>
+												<FormControl
+													render={
+														<Input
+															type="password"
+															placeholder="••••••••"
+															autoComplete="new-password"
+															{...field}
+														/>
+													}
+												/>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -483,24 +499,26 @@ function SettingsPage() {
 
 					{/* Delete account */}
 					<AlertDialog>
-						<AlertDialogTrigger asChild>
-							<button
-								type="button"
-								className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
-							>
-								<Trash2 className="mt-0.5 size-4 shrink-0 text-destructive" />
-								<div>
-									<p className="font-medium text-destructive text-sm">
-										{t("settings.deleteAccount", "Delete account")}
-									</p>
-									<p className="text-muted-foreground text-xs">
-										{t(
-											"settings.deleteAccountDesc2",
-											"Permanently delete your account and all saved content.",
-										)}
-									</p>
-								</div>
-							</button>
+						<AlertDialogTrigger
+							render={
+								<button
+									type="button"
+									className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
+								/>
+							}
+						>
+							<Trash2 className="mt-0.5 size-4 shrink-0 text-destructive" />
+							<div>
+								<p className="font-medium text-destructive text-sm">
+									{t("settings.deleteAccount", "Delete account")}
+								</p>
+								<p className="text-muted-foreground text-xs">
+									{t(
+										"settings.deleteAccountDesc2",
+										"Permanently delete your account and all saved content.",
+									)}
+								</p>
+							</div>
 						</AlertDialogTrigger>
 						<AlertDialogContent>
 							<AlertDialogHeader>

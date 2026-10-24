@@ -1,5 +1,6 @@
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
 import { Label } from "@client/components/ui/label";
-import { Slot } from "@client/components/ui/slot";
 import { cn } from "@client/lib/utils";
 import * as React from "react";
 import {
@@ -100,23 +101,24 @@ function FormLabel({
 	);
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
+function FormControl({ render, ...props }: useRender.ComponentProps<"input">) {
 	const { error, formItemId, formDescriptionId, formMessageId } =
 		useFormField();
-
-	return (
-		<Slot
-			data-slot="form-control"
-			id={formItemId}
-			aria-describedby={
-				!error
-					? `${formDescriptionId}`
-					: `${formDescriptionId} ${formMessageId}`
-			}
-			aria-invalid={!!error}
-			{...props}
-		/>
-	);
+	return useRender({
+		defaultTagName: "input",
+		render,
+		state: { slot: "form-control" },
+		props: mergeProps<"input">(
+			{
+				id: formItemId,
+				"aria-describedby": !error
+					? formDescriptionId
+					: `${formDescriptionId} ${formMessageId}`,
+				"aria-invalid": !!error,
+			},
+			props,
+		),
+	});
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
