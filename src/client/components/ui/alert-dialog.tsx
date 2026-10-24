@@ -4,24 +4,19 @@ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog
 import { Button } from "@client/components/ui/button";
 
 import { cn } from "@client/lib/utils";
-import * as React from "react";
+import type * as React from "react";
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
 	return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 }
 
 function AlertDialogTrigger({
-	asChild = false,
 	children,
 	...props
-}: AlertDialogPrimitive.Trigger.Props & { asChild?: boolean }) {
+}: AlertDialogPrimitive.Trigger.Props) {
 	return (
-		<AlertDialogPrimitive.Trigger
-			data-slot="alert-dialog-trigger"
-			render={asChild && React.isValidElement(children) ? children : undefined}
-			{...props}
-		>
-			{asChild ? undefined : children}
+		<AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props}>
+			{children}
 		</AlertDialogPrimitive.Trigger>
 	);
 }

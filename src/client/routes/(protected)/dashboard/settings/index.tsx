@@ -488,24 +488,26 @@ function SettingsPage() {
 
 					{/* Delete account */}
 					<AlertDialog>
-						<AlertDialogTrigger asChild>
-							<button
-								type="button"
-								className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
-							>
-								<Trash2 className="mt-0.5 size-4 shrink-0 text-destructive" />
-								<div>
-									<p className="font-medium text-destructive text-sm">
-										{t("settings.deleteAccount", "Delete account")}
-									</p>
-									<p className="text-muted-foreground text-xs">
-										{t(
-											"settings.deleteAccountDesc2",
-											"Permanently delete your account and all saved content.",
-										)}
-									</p>
-								</div>
-							</button>
+						<AlertDialogTrigger
+							render={
+								<button
+									type="button"
+									className="flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-muted"
+								/>
+							}
+						>
+							<Trash2 className="mt-0.5 size-4 shrink-0 text-destructive" />
+							<div>
+								<p className="font-medium text-destructive text-sm">
+									{t("settings.deleteAccount", "Delete account")}
+								</p>
+								<p className="text-muted-foreground text-xs">
+									{t(
+										"settings.deleteAccountDesc2",
+										"Permanently delete your account and all saved content.",
+									)}
+								</p>
+							</div>
 						</AlertDialogTrigger>
 						<AlertDialogContent>
 							<AlertDialogHeader>
