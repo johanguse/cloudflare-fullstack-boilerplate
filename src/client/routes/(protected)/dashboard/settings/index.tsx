@@ -216,12 +216,17 @@ function SettingsPage() {
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>{t("profile.fullName", "Name")}</FormLabel>
-										<FormControl>
-											<Input
-												placeholder={t("profile.namePlaceholder", "Your name")}
-												{...field}
-											/>
-										</FormControl>
+										<FormControl
+											render={
+												<Input
+													placeholder={t(
+														"profile.namePlaceholder",
+														"Your name",
+													)}
+													{...field}
+												/>
+											}
+										/>
 										<FormMessage />
 									</FormItem>
 								)}
@@ -388,14 +393,16 @@ function SettingsPage() {
 												<FormLabel>
 													{t("profile.currentPassword", "Current password")}
 												</FormLabel>
-												<FormControl>
-													<Input
-														type="password"
-														placeholder="••••••••"
-														autoComplete="current-password"
-														{...field}
-													/>
-												</FormControl>
+												<FormControl
+													render={
+														<Input
+															type="password"
+															placeholder="••••••••"
+															autoComplete="current-password"
+															{...field}
+														/>
+													}
+												/>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -408,14 +415,16 @@ function SettingsPage() {
 												<FormLabel>
 													{t("profile.newPassword", "New password")}
 												</FormLabel>
-												<FormControl>
-													<Input
-														type="password"
-														placeholder="••••••••"
-														autoComplete="new-password"
-														{...field}
-													/>
-												</FormControl>
+												<FormControl
+													render={
+														<Input
+															type="password"
+															placeholder="••••••••"
+															autoComplete="new-password"
+															{...field}
+														/>
+													}
+												/>
 												{newPassword && (
 													<div className="space-y-1">
 														<div className="flex gap-1">
@@ -457,14 +466,16 @@ function SettingsPage() {
 												<FormLabel>
 													{t("profile.confirmPassword", "Confirm new password")}
 												</FormLabel>
-												<FormControl>
-													<Input
-														type="password"
-														placeholder="••••••••"
-														autoComplete="new-password"
-														{...field}
-													/>
-												</FormControl>
+												<FormControl
+													render={
+														<Input
+															type="password"
+															placeholder="••••••••"
+															autoComplete="new-password"
+															{...field}
+														/>
+													}
+												/>
 												<FormMessage />
 											</FormItem>
 										)}
