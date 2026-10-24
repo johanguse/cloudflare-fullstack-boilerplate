@@ -100,17 +100,23 @@ function DashboardPage() {
 							</p>
 						</div>
 						<div className="flex flex-wrap gap-2">
-							<Button asChild variant="outline" size="sm">
-								<Link to="/dashboard/api-keys">
-									<Key className="mr-2 size-4" />
-									{t("dashboard.createApiKey", "New API key")}
-								</Link>
+							<Button
+								variant="outline"
+								size="sm"
+								nativeButton={false}
+								render={<Link to="/dashboard/api-keys" />}
+							>
+								<Key className="mr-2 size-4" />
+								{t("dashboard.createApiKey", "New API key")}
 							</Button>
-							<Button asChild size="sm" data-tour="create-invoice">
-								<Link to="/dashboard/invoices">
-									<Plus className="mr-2 size-4" />
-									{t("dashboard.createInvoice", "New invoice")}
-								</Link>
+							<Button
+								size="sm"
+								data-tour="create-invoice"
+								nativeButton={false}
+								render={<Link to="/dashboard/invoices" />}
+							>
+								<Plus className="mr-2 size-4" />
+								{t("dashboard.createInvoice", "New invoice")}
 							</Button>
 						</div>
 					</div>
@@ -161,11 +167,15 @@ function DashboardPage() {
 									</div>
 									<Progress value={Math.min(100, creditBalance)} />
 								</div>
-								<Button asChild variant="outline" size="sm" className="w-full">
-									<Link to="/dashboard/billing">
-										{t("dashboard.managePlan", "Manage plan")}
-										<ArrowRight className="ml-2 size-4" />
-									</Link>
+								<Button
+									variant="outline"
+									size="sm"
+									className="w-full"
+									nativeButton={false}
+									render={<Link to="/dashboard/billing" />}
+								>
+									{t("dashboard.managePlan", "Manage plan")}
+									<ArrowRight className="ml-2 size-4" />
 								</Button>
 							</>
 						)}
@@ -285,11 +295,15 @@ function DashboardPage() {
 								)}
 							</CardDescription>
 						</div>
-						<Button variant="ghost" size="sm" asChild className="h-8">
-							<Link to="/dashboard/invoices">
-								{t("dashboard.viewAll", "View all")}
-								<ArrowRight className="ml-2 size-4" />
-							</Link>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-8"
+							nativeButton={false}
+							render={<Link to="/dashboard/invoices" />}
+						>
+							{t("dashboard.viewAll", "View all")}
+							<ArrowRight className="ml-2 size-4" />
 						</Button>
 					</CardHeader>
 					<CardContent>

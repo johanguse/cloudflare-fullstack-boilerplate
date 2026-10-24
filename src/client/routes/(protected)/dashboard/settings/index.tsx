@@ -316,11 +316,14 @@ function SettingsPage() {
 							>
 								{t("billing.upgradePlan", "Upgrade plan")}
 							</Button>
-							<Button variant="outline" size="sm" asChild>
-								<Link to="/dashboard/billing">
-									<ExternalLink className="mr-1.5 size-3.5" />
-									{t("settings.viewBilling", "View billing")}
-								</Link>
+							<Button
+								variant="outline"
+								size="sm"
+								nativeButton={false}
+								render={<Link to="/dashboard/billing" />}
+							>
+								<ExternalLink className="mr-1.5 size-3.5" />
+								{t("settings.viewBilling", "View billing")}
 							</Button>
 						</div>
 					</div>
