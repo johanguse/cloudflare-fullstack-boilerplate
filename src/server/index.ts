@@ -1,4 +1,3 @@
-import { trpcServer } from "@hono/trpc-server";
 import * as Sentry from "@sentry/cloudflare";
 import { sentry } from "@sentry/hono/cloudflare";
 import { Hono } from "hono";
@@ -17,6 +16,7 @@ import {
 } from "../shared/referral";
 import { initDb } from "./db";
 import { getSentryOptions } from "./lib/sentry";
+import { trpcServer } from "./lib/trpc-http";
 import type { AppBindings } from "./lib/types";
 import authMiddleware from "./middlewares/authMiddleware";
 import corsMiddleware from "./middlewares/corsMiddleware";
