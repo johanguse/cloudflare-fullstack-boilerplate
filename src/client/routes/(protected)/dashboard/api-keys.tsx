@@ -192,11 +192,11 @@ function ApiKeysPage() {
 								{t("apiKeys.createKey", "Add New")}
 							</Button>
 							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button type="button" variant="outline" size="sm">
-										<Settings2 className="mr-1.5 size-3.5" />
-										{t("common.columns", "Columns")}
-									</Button>
+								<DropdownMenuTrigger
+									render={<Button type="button" variant="outline" size="sm" />}
+								>
+									<Settings2 className="mr-1.5 size-3.5" />
+									{t("common.columns", "Columns")}
 								</DropdownMenuTrigger>
 								<DropdownMenuContent align="end">
 									<DropdownMenuGroup>

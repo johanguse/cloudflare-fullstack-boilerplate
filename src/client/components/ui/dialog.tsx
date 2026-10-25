@@ -3,24 +3,16 @@ import { Button } from "@client/components/ui/button";
 
 import { cn } from "@client/lib/utils";
 import { XIcon } from "lucide-react";
-import * as React from "react";
+import type * as React from "react";
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
 	return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
-function DialogTrigger({
-	asChild = false,
-	children,
-	...props
-}: DialogPrimitive.Trigger.Props & { asChild?: boolean }) {
+function DialogTrigger({ children, ...props }: DialogPrimitive.Trigger.Props) {
 	return (
-		<DialogPrimitive.Trigger
-			data-slot="dialog-trigger"
-			render={asChild && React.isValidElement(children) ? children : undefined}
-			{...props}
-		>
-			{asChild ? undefined : children}
+		<DialogPrimitive.Trigger data-slot="dialog-trigger" {...props}>
+			{children}
 		</DialogPrimitive.Trigger>
 	);
 }
@@ -29,18 +21,10 @@ function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
 	return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
-function DialogClose({
-	asChild = false,
-	children,
-	...props
-}: DialogPrimitive.Close.Props & { asChild?: boolean }) {
+function DialogClose({ children, ...props }: DialogPrimitive.Close.Props) {
 	return (
-		<DialogPrimitive.Close
-			data-slot="dialog-close"
-			render={asChild && React.isValidElement(children) ? children : undefined}
-			{...props}
-		>
-			{asChild ? undefined : children}
+		<DialogPrimitive.Close data-slot="dialog-close" {...props}>
+			{children}
 		</DialogPrimitive.Close>
 	);
 }

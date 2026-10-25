@@ -345,10 +345,13 @@ function BillingPage() {
 						</CardContent>
 						{(historyQuery.data?.length ?? 0) > 0 && (
 							<CardFooter className="flex justify-center border-t py-3">
-								<Button variant="link" size="sm" asChild>
-									<Link to="/dashboard/billing/history">
-										{t("billing.viewAll", "View all transactions")}
-									</Link>
+								<Button
+									variant="link"
+									size="sm"
+									nativeButton={false}
+									render={<Link to="/dashboard/billing/history" />}
+								>
+									{t("billing.viewAll", "View all transactions")}
 								</Button>
 							</CardFooter>
 						)}
