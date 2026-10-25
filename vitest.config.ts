@@ -1,6 +1,11 @@
 import path from "node:path";
-import { cloudflareTest } from "@cloudflare/vitest-pool-workers";
+import {
+	cloudflareTest,
+	readD1Migrations,
+} from "@cloudflare/vitest-pool-workers";
 import { defineConfig } from "vitest/config";
+
+const authMigrations = await readD1Migrations("./src/server/db/migrations");
 
 export default defineConfig({
 	plugins: [
@@ -9,7 +14,8 @@ export default defineConfig({
 			miniflare: {
 				compatibilityDate: "2026-03-10",
 				compatibilityFlags: ["nodejs_compat"],
-				bindings: { ENVIRONMENT: "test" },
+				d1Databases: ["AUTH_TEST_DB"],
+				bindings: { ENVIRONMENT: "test", AUTH_TEST_MIGRATIONS: authMigrations },
 			},
 		}),
 	],
