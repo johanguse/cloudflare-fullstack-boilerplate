@@ -1,5 +1,9 @@
 # Needs validation: cloudflare-fullstack-boilerplate (run-1)
 
+> **Current implementation status:** [AUTH-REMEDIATION.md](AUTH-REMEDIATION.md)
+> tracks local changes for N1–N5, N7, N10 and N14. The original source traces
+> below describe run-1 and must be revalidated before closure.
+
 These 14 records are source-grounded boundary hypotheses. Each is blocked on a fact that this source-only run could not observe. They have no severity. They are ordered by fingerprint.
 
 ## N1. Email OTP and reset attempt cap relies on non-atomic KV and a rate limiter that may default to off

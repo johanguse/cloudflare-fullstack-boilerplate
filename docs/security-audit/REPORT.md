@@ -1,5 +1,9 @@
 # Security audit report: cloudflare-fullstack-boilerplate (run-1)
 
+> **2026-10-25 follow-up:** See [AUTH-REMEDIATION.md](AUTH-REMEDIATION.md) for the
+> credentials/auth implementation batch and outstanding runtime proof. This
+> report and `findings.json` retain the original run-1 snapshot and verdicts.
+
 ## 1. Scope, profile and execution
 
 - **Profile:** `standard` (full audit, all six phases, no agent budget).
