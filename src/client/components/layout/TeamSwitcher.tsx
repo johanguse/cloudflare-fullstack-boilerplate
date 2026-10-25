@@ -49,23 +49,25 @@ export function TeamSwitcher() {
 		<SidebarMenu>
 			<SidebarMenuItem>
 				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<SidebarMenuButton
-							size="lg"
-							tooltip={activeTeam.name}
-							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-						>
-							<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-								<Logo className="size-4" />
-							</div>
-							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-medium">{activeTeam.name}</span>
-								<span className="truncate text-muted-foreground text-xs">
-									{activeTeam.plan}
-								</span>
-							</div>
-							<ChevronsUpDown className="ml-auto size-4 shrink-0" />
-						</SidebarMenuButton>
+					<DropdownMenuTrigger
+						render={
+							<SidebarMenuButton
+								size="lg"
+								tooltip={activeTeam.name}
+								className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
+							/>
+						}
+					>
+						<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+							<Logo className="size-4" />
+						</div>
+						<div className="grid flex-1 text-left text-sm leading-tight">
+							<span className="truncate font-medium">{activeTeam.name}</span>
+							<span className="truncate text-muted-foreground text-xs">
+								{activeTeam.plan}
+							</span>
+						</div>
+						<ChevronsUpDown className="ml-auto size-4 shrink-0" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						className="w-(--anchor-width) min-w-56 rounded-lg"

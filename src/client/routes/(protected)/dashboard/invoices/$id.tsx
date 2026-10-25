@@ -220,20 +220,30 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 
 				<div className="flex flex-wrap gap-2 pt-1">
 					{record.pdfUrl && (
-						<Button size="sm" variant="outline" asChild>
-							<a href={record.pdfUrl} target="_blank" rel="noreferrer">
-								<ExternalLink className="mr-1.5 size-3.5" />
-								{t("invoiceDetail.nfse.viewPdf", "View PDF")}
-							</a>
-						</Button>
+						<Button
+							size="sm"
+							variant="outline"
+							nativeButton={false}
+							render={
+								<a href={record.pdfUrl} target="_blank" rel="noreferrer">
+									<ExternalLink className="mr-1.5 size-3.5" />
+									{t("invoiceDetail.nfse.viewPdf", "View PDF")}
+								</a>
+							}
+						/>
 					)}
 					{record.xmlUrl && (
-						<Button size="sm" variant="outline" asChild>
-							<a href={record.xmlUrl} target="_blank" rel="noreferrer">
-								<Download className="mr-1.5 size-3.5" />
-								{t("invoiceDetail.nfse.xml", "Download XML")}
-							</a>
-						</Button>
+						<Button
+							size="sm"
+							variant="outline"
+							nativeButton={false}
+							render={
+								<a href={record.xmlUrl} target="_blank" rel="noreferrer">
+									<Download className="mr-1.5 size-3.5" />
+									{t("invoiceDetail.nfse.xml", "Download XML")}
+								</a>
+							}
+						/>
 					)}
 					{(status === "error" || status === "cancelled") && (
 						<Button
@@ -339,10 +349,12 @@ function InvoiceDetailPage() {
 				<p className="font-medium">
 					{t("invoiceDetail.notFound", "Invoice not found")}
 				</p>
-				<Button variant="link" asChild>
-					<Link to="/dashboard/invoices">
-						{t("invoiceDetail.back", "Back to invoices")}
-					</Link>
+				<Button
+					variant="link"
+					nativeButton={false}
+					render={<Link to="/dashboard/invoices" />}
+				>
+					{t("invoiceDetail.back", "Back to invoices")}
 				</Button>
 			</div>
 		);
@@ -356,10 +368,13 @@ function InvoiceDetailPage() {
 			{/* Header */}
 			<div className="flex items-start justify-between">
 				<div className="flex items-center gap-3">
-					<Button variant="ghost" size="icon" asChild>
-						<Link to="/dashboard/invoices">
-							<ArrowLeft className="size-4" />
-						</Link>
+					<Button
+						variant="ghost"
+						size="icon"
+						nativeButton={false}
+						render={<Link to="/dashboard/invoices" />}
+					>
+						<ArrowLeft className="size-4" />
 					</Button>
 					<div>
 						<div className="flex items-center gap-2">

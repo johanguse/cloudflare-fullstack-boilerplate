@@ -58,6 +58,9 @@
 		"ignoreUnknown": true,
 		"includes": [
 			"**",
+			"!**/.agents/skills/**",
+			"!**/.claude/skills/**",
+			"!**/skills-lock.json",
 			"!**/dist/**",
 			"!**/node_modules/**",
 			"!**/public/**",
