@@ -115,10 +115,12 @@ export const createAuth = (
 					},
 				);
 				if (!result.allowed) {
-					ctx.setHeader("Retry-After", String(result.retryAfter));
-					throw new APIError("TOO_MANY_REQUESTS", {
-						message: "Too many email requests. Please try again later.",
-					});
+					// Headers set via ctx.setHeader are dropped when the hook throws.
+					throw new APIError(
+						"TOO_MANY_REQUESTS",
+						{ message: "Too many email requests. Please try again later." },
+						{ "Retry-After": String(result.retryAfter) },
+					);
 				}
 			}),
 		},
