@@ -1,5 +1,5 @@
-import { trpcServer } from "@hono/trpc-server";
 import * as Sentry from "@sentry/cloudflare";
+import { sentry } from "@sentry/hono/cloudflare";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
@@ -15,6 +15,8 @@ import {
 	REFERRAL_COOKIE_NAME,
 } from "../shared/referral";
 import { initDb } from "./db";
+import { getSentryOptions } from "./lib/sentry";
+import { trpcServer } from "./lib/trpc-http";
 import type { AppBindings } from "./lib/types";
 import authMiddleware from "./middlewares/authMiddleware";
 import corsMiddleware from "./middlewares/corsMiddleware";
@@ -24,6 +26,8 @@ import { restApiRouter } from "./routers/rest";
 import { runScheduledCleanup } from "./services/cron-cleanup";
 
 const app = new Hono<AppBindings>({ strict: false });
+
+app.use("*", sentry(app, getSentryOptions));
 
 app.onError((err, c) => {
 	console.error("Unhandled error:", err);
@@ -218,22 +222,9 @@ export type AppType = typeof app;
 export { NfseGenerationWorkflow } from "./workflows/nfse-generation";
 
 const workerHandler: ExportedHandler<AppBindings["Bindings"]> = {
-	fetch(request, env, ctx) {
-		return app.fetch(request, env, ctx);
-	},
+	// Reuse the instrumented fetch so withSentry does not wrap it twice.
+	fetch: app.fetch,
 	scheduled,
 };
 
-export default Sentry.withSentry(
-	(env: AppBindings["Bindings"]) =>
-		env.SENTRY_DSN
-			? {
-					dsn: env.SENTRY_DSN,
-					environment: env.ENVIRONMENT,
-					tracesSampleRate: env.ENVIRONMENT === "production" ? 0.2 : 1.0,
-					sendDefaultPii: false,
-					integrations: [Sentry.honoIntegration()],
-				}
-			: undefined,
-	workerHandler,
-);
+export default Sentry.withSentry(getSentryOptions, workerHandler);

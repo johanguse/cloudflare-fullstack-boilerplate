@@ -110,6 +110,12 @@ bun stripe:listen     # Forwards to localhost:5173/api/v1/webhooks/stripe
 
 ## Seed accounts
 
+The fixed credentials below are for the **local** seed only. The staging seed
+requires distinct passwords supplied through `STAGING_SEED_PASSWORDS`, rotates
+existing seed credentials and revokes their sessions. See the
+[authentication rollout notes](docs/security-audit/AUTH-REMEDIATION.md) before
+running it or deploying the D1-backed auth changes.
+
 | Email | Password | Plan | Credits |
 |-------|----------|------|---------|
 | `admin@example.com` | `Admin1234!` | Professional | 600 |

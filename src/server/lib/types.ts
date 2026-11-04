@@ -16,7 +16,7 @@ export type AppEnv = Env & {
 	STRIPE_API_KEY: string;
 	STRIPE_WEBHOOK_SECRET: string;
 	// Cloudflare Turnstile server secret — when set, the captcha plugin verifies
-	// tokens on sign-in/sign-up/forgot-password. Leave unset only in local dev.
+	// tokens on sign-in/sign-up and email-sending routes. Required outside local dev.
 	TURNSTILE_SECRET_KEY?: string;
 	// NFSe (Brazilian fiscal invoicing) — optional. Leave unset to skip NFSe
 	// generation entirely; Stripe billing works fully without it.

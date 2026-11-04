@@ -1,21 +1,22 @@
 /**
- * Staging database seed
- *
- * Inserts test accounts into the staging D1 database via `wrangler d1 execute`.
- * Requires: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in env.
- *
- * Usage: bun db:seed:staging
- *
- * | Email                    | Password       | Role  | Plan         | Credits |
- * |--------------------------|----------------|-------|--------------|---------|
- * | admin@example.com        | Admin1234!     | admin | professional | 600     |
- * | user@example.com         | User1234!      | user  | free         | 50      |
- * | pro@example.com          | Pro1234!       | user  | starter      | 200     |
- * | business@example.com     | Business1234!  | user  | business     | 1500    |
- * | agency@example.com       | Agency1234!    | user  | agency       | 4000    |
+ * Seeds staging with operator-supplied passwords and rotates existing seed
+ * credentials. STAGING_SEED_PASSWORDS is a JSON object keyed by seed email.
+ * See docs/security-audit/AUTH-REMEDIATION.md. Never prints passwords.
  */
-
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { hashPassword } from "better-auth/crypto";
 import { $ } from "bun";
+import {
+	parseStagingSeedPasswords,
+	STAGING_SEED_EMAILS,
+} from "./staging-credentials";
+
+const passwords = parseStagingSeedPasswords(process.env.STAGING_SEED_PASSWORDS);
+const hashes = await Promise.all(
+	STAGING_SEED_EMAILS.map((email) => hashPassword(passwords[email])),
+);
 
 const SQL = `
 -- Users
@@ -31,35 +32,43 @@ VALUES
 INSERT OR IGNORE INTO account (id, account_id, provider_id, user_id, password, created_at, updated_at)
 VALUES
   (
-    'seed-acct-admin-0000-0000-000000000001', 'admin@example.com', 'credential',
+    'seed-acct-admin-0000-0000-000000000001', 'seed-user-admin-0000-0000-000000000001', 'credential',
     'seed-user-admin-0000-0000-000000000001',
-    '94fc589cf13dd6b1bbb53e2e6f9044f2:e373f4ed796503aed8a605c997cfe968dbf769b72adc316089980e5002a1b4953fb1b699b37ad9c82a81b6ff17b213d7e32f90bdfab9e4089a5eb0d80edbead0',
+    '${hashes[0]}',
     strftime('%s', 'now'), strftime('%s', 'now')
   ),
   (
-    'seed-acct-basic-0000-0000-000000000002', 'user@example.com', 'credential',
+    'seed-acct-basic-0000-0000-000000000002', 'seed-user-basic-0000-0000-000000000002', 'credential',
     'seed-user-basic-0000-0000-000000000002',
-    'ac190992d8ce6efef46b16e8be7e3f59:36490f79aed0efbea9fac25de632787877499f43fb236fed764cccf3cd68d5590fc675d6ff8076077a9410042c07af86c0e74c01149313ece6bdc1cc953c4859',
+    '${hashes[1]}',
     strftime('%s', 'now'), strftime('%s', 'now')
   ),
   (
-    'seed-acct-pro-000-0000-0000-000000000003', 'pro@example.com', 'credential',
+    'seed-acct-pro-000-0000-0000-000000000003', 'seed-user-pro-00-0000-0000-000000000003', 'credential',
     'seed-user-pro-00-0000-0000-000000000003',
-    'ac190992d8ce6efef46b16e8be7e3f59:36490f79aed0efbea9fac25de632787877499f43fb236fed764cccf3cd68d5590fc675d6ff8076077a9410042c07af86c0e74c01149313ece6bdc1cc953c4859',
+    '${hashes[2]}',
     strftime('%s', 'now'), strftime('%s', 'now')
   ),
   (
-    'seed-acct-biz-0-0000-0000-000000000004', 'business@example.com', 'credential',
+    'seed-acct-biz-0-0000-0000-000000000004', 'seed-user-biz-0-0000-0000-000000000004', 'credential',
     'seed-user-biz-0-0000-0000-000000000004',
-    'ac190992d8ce6efef46b16e8be7e3f59:36490f79aed0efbea9fac25de632787877499f43fb236fed764cccf3cd68d5590fc675d6ff8076077a9410042c07af86c0e74c01149313ece6bdc1cc953c4859',
+    '${hashes[3]}',
     strftime('%s', 'now'), strftime('%s', 'now')
   ),
   (
-    'seed-acct-agc-0-0000-0000-000000000005', 'agency@example.com', 'credential',
+    'seed-acct-agc-0-0000-0000-000000000005', 'seed-user-agc-0-0000-0000-000000000005', 'credential',
     'seed-user-agc-0-0000-0000-000000000005',
-    'ac190992d8ce6efef46b16e8be7e3f59:36490f79aed0efbea9fac25de632787877499f43fb236fed764cccf3cd68d5590fc675d6ff8076077a9410042c07af86c0e74c01149313ece6bdc1cc953c4859',
+    '${hashes[4]}',
     strftime('%s', 'now'), strftime('%s', 'now')
   );
+
+-- Rotate only the known seed accounts, and revoke their D1 sessions.
+UPDATE account SET account_id = user_id, password = '${hashes[0]}', updated_at = strftime('%s', 'now') WHERE provider_id = 'credential' AND user_id = 'seed-user-admin-0000-0000-000000000001';
+UPDATE account SET account_id = user_id, password = '${hashes[1]}', updated_at = strftime('%s', 'now') WHERE provider_id = 'credential' AND user_id = 'seed-user-basic-0000-0000-000000000002';
+UPDATE account SET account_id = user_id, password = '${hashes[2]}', updated_at = strftime('%s', 'now') WHERE provider_id = 'credential' AND user_id = 'seed-user-pro-00-0000-0000-000000000003';
+UPDATE account SET account_id = user_id, password = '${hashes[3]}', updated_at = strftime('%s', 'now') WHERE provider_id = 'credential' AND user_id = 'seed-user-biz-0-0000-0000-000000000004';
+UPDATE account SET account_id = user_id, password = '${hashes[4]}', updated_at = strftime('%s', 'now') WHERE provider_id = 'credential' AND user_id = 'seed-user-agc-0-0000-0000-000000000005';
+DELETE FROM session WHERE user_id IN ('seed-user-admin-0000-0000-000000000001', 'seed-user-basic-0000-0000-000000000002', 'seed-user-pro-00-0000-0000-000000000003', 'seed-user-biz-0-0000-0000-000000000004', 'seed-user-agc-0-0000-0000-000000000005');
 
 -- Subscriptions
 INSERT OR IGNORE INTO subscriptions (id, user_id, stripe_customer_id, plan, status, credit_balance, created_at, updated_at)
@@ -98,32 +107,15 @@ VALUES
   ('pkg-1000', '1000 Credits', 1000, 6990, 1, 3, strftime('%s', 'now'));
 `;
 
-const tmpFile = `/tmp/seed-staging-${Date.now()}.sql`;
-
-await Bun.write(tmpFile, SQL);
-
-console.log("Seeding staging database...");
-
+const scratchDir = await mkdtemp(join(tmpdir(), "seed-staging-"));
+const tmpFile = join(scratchDir, "seed.sql");
 try {
+	await writeFile(tmpFile, SQL, { mode: 0o600 });
+	console.log("Seeding staging database and rotating seed credentials...");
 	await $`wrangler d1 execute DB --env staging --remote --file=${tmpFile}`;
-	console.log("✓ Staging database seeded.");
-	console.log("");
-	console.log("Seed accounts:");
 	console.log(
-		"  admin@example.com    / Admin1234!    — admin, Professional, 600 credits",
-	);
-	console.log(
-		"  user@example.com     / User1234!     — user,  Free,          50 credits",
-	);
-	console.log(
-		"  pro@example.com      / Pro1234!      — user,  Starter,      200 credits",
-	);
-	console.log(
-		"  business@example.com / Business1234! — user,  Business,    1500 credits",
-	);
-	console.log(
-		"  agency@example.com   / Agency1234!   — user,  Agency,      4000 credits",
+		"Staging database seeded. Seed passwords updated and D1 sessions revoked.",
 	);
 } finally {
-	await $`rm -f ${tmpFile}`;
+	await rm(scratchDir, { recursive: true, force: true });
 }

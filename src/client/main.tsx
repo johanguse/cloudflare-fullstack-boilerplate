@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react";
+import { getSentryDataCollection } from "@shared/sentry";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import posthog from "posthog-js";
 import { StrictMode } from "react";
@@ -15,6 +16,7 @@ if (sentryDsn) {
 		environment: viteEnv,
 		integrations: [Sentry.browserTracingIntegration()],
 		tracesSampleRate: viteEnv === "production" ? 0.2 : 1.0,
+		dataCollection: getSentryDataCollection(),
 	});
 }
 

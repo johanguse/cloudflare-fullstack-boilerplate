@@ -43,6 +43,13 @@
       "when": 1783968978207,
       "tag": "0005_amusing_phantom_reporter",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792886400000,
+      "tag": "0006_auth_rate_limits",
+      "breakpoints": true
     }
   ]
 }

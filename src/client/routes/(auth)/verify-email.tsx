@@ -9,10 +9,14 @@ import {
 } from "@client/components/ui/card";
 import { Input } from "@client/components/ui/input";
 import { Label } from "@client/components/ui/label";
+import {
+	type TurnstileRef,
+	TurnstileWidget,
+} from "@client/components/ui/turnstile";
 import { authClient } from "@client/lib/auth-client";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2, Mail } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -35,6 +39,8 @@ function VerifyEmailPage() {
 	const [isSending, setIsSending] = useState(false);
 	const [isVerifying, setIsVerifying] = useState(false);
 	const [otpSent, setOtpSent] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+	const turnstileRef = useRef<TurnstileRef>(null);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const reportError = (message: string) => {
 		setErrorMessage(message);
@@ -47,23 +53,42 @@ function VerifyEmailPage() {
 			reportError(t("auth.verifyEmail.enterEmail", "Please enter your email"));
 			return;
 		}
-		setIsSending(true);
-		const { error } = await authClient.emailOtp.sendVerificationOtp({
-			email,
-			type: "email-verification",
-		});
-		setIsSending(false);
-		if (error) {
+		if (!turnstileToken) {
 			reportError(
-				error.message ??
-					t("auth.verifyEmail.failedToSend", "Failed to send code"),
+				t(
+					"auth.forgotPassword.completeVerification",
+					"Please complete the verification",
+				),
 			);
 			return;
 		}
-		setOtpSent(true);
-		toast.success(
-			t("auth.verifyEmail.codeSent", "Verification code sent to your email"),
-		);
+		setIsSending(true);
+		try {
+			const { error } = await authClient.emailOtp.sendVerificationOtp(
+				{
+					email,
+					type: "email-verification",
+				},
+				{ headers: { "x-captcha-response": turnstileToken } },
+			);
+			if (error) {
+				reportError(
+					error.message ??
+						t("auth.verifyEmail.failedToSend", "Failed to send code"),
+				);
+				return;
+			}
+			setOtpSent(true);
+			toast.success(
+				t("auth.verifyEmail.codeSent", "Verification code sent to your email"),
+			);
+		} catch {
+			reportError(t("auth.verifyEmail.failedToSend", "Failed to send code"));
+		} finally {
+			setIsSending(false);
+			turnstileRef.current?.reset();
+			setTurnstileToken(null);
+		}
 	};
 
 	const handleVerify = async (e: React.FormEvent) => {
@@ -126,10 +151,16 @@ function VerifyEmailPage() {
 										)}
 									/>
 								</div>
+								<TurnstileWidget
+									ref={turnstileRef}
+									onVerify={setTurnstileToken}
+									onExpire={() => setTurnstileToken(null)}
+									onError={() => setTurnstileToken(null)}
+								/>
 								<Button
 									onClick={handleSendOtp}
 									className="w-full"
-									disabled={isSending}
+									disabled={isSending || !turnstileToken}
 								>
 									{isSending && (
 										<Loader2 className="mr-2 size-4 animate-spin" />

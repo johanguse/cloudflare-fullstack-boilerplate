@@ -113,18 +113,11 @@ export const userRouter = router({
 				}
 			}
 
-			// Revoke all sessions so any other device/tab is immediately logged out.
-			try {
-				await ctx.db
-					.delete(schema.session)
-					.where(eq(schema.session.userId, ctx.session.userId));
-			} catch (err) {
-				console.error("[user] failed to revoke sessions on delete", err);
-			}
-
-			await ctx.db
-				.delete(schema.user)
-				.where(eq(schema.user.id, ctx.session.userId));
+			// Use Better Auth's lifecycle so sessions and linked accounts are
+			// revoked as well. A failed revocation must abort account deletion.
+			const auth = createAuth(ctx.db, ctx.env);
+			const authContext = await auth.$context;
+			await authContext.internalAdapter.deleteUser(ctx.session.userId);
 			return { success: true };
 		}),
 });
