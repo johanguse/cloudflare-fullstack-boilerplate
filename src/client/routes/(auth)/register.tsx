@@ -87,7 +87,7 @@ function PasswordStrengthBar({ password }: { password: string }) {
 				))}
 			</div>
 			<p
-				className={`font-medium text-xs ${filled <= 1 ? "text-destructive" : filled <= 2 ? "text-orange-500" : "text-green-600"}`}
+				className={`text-xs font-medium ${filled <= 1 ? "text-destructive" : filled <= 2 ? "text-orange-500" : "text-green-600"}`}
 			>
 				{t(
 					`auth.register.strength.${labelKey}`,
@@ -195,10 +195,10 @@ function RegisterPage() {
 		<div className="flex min-h-screen items-center justify-center bg-background px-4">
 			<div className="w-full max-w-sm">
 				<div className="mb-8 text-center">
-					<h1 className="font-semibold text-2xl text-foreground tracking-tight">
+					<h1 className="text-2xl font-semibold tracking-tight text-foreground">
 						{t("auth.register.title", "Create account")}
 					</h1>
-					<p className="mt-1 text-muted-foreground text-sm">
+					<p className="mt-1 text-sm text-muted-foreground">
 						{t("auth.register.subtitle", "Start your free trial today")}
 					</p>
 				</div>
@@ -346,7 +346,7 @@ function RegisterPage() {
 					</CardContent>
 
 					<CardFooter className="justify-center pt-0">
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{t(
 								"auth.register.alreadyHaveAccount",
 								"Already have an account?",

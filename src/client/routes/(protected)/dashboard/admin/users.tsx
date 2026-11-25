@@ -40,10 +40,10 @@ function AdminUsersPage() {
 	return (
 		<div className="w-full space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("admin.users.title", "All Users")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t("admin.users.subtitle", "View and manage all registered users.")}
 				</p>
 			</div>
@@ -98,10 +98,10 @@ function AdminUsersPage() {
 											</AvatarFallback>
 										</Avatar>
 										<div className="min-w-0 flex-1">
-											<p className="truncate font-medium text-sm">
+											<p className="truncate text-sm font-medium">
 												{user.name || "—"}
 											</p>
-											<p className="truncate text-muted-foreground text-xs">
+											<p className="truncate text-xs text-muted-foreground">
 												{user.email}
 											</p>
 										</div>
@@ -139,7 +139,7 @@ function AdminUsersPage() {
 												<Button
 													variant="ghost"
 													size="sm"
-													className="h-6 px-2 text-muted-foreground text-xs"
+													className="h-6 px-2 text-xs text-muted-foreground"
 													disabled={updateRoleMutation.isPending}
 													onClick={() =>
 														updateRoleMutation.mutate({

@@ -77,10 +77,10 @@ function ReferralsPage() {
 	return (
 		<div className="w-full space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("referral.title", "Refer & earn")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t(
 						"referral.subtitle",
 						"Give {{referred}} credits, get {{referrer}} credits when a friend subscribes.",
@@ -141,7 +141,7 @@ function ReferralsPage() {
 								{t("referral.customizeLabel", "Customize your link")}
 							</Label>
 							<div className="flex flex-wrap gap-2">
-								<div className="flex flex-1 items-center rounded-md border pl-3 text-muted-foreground text-sm focus-within:ring-1 focus-within:ring-ring">
+								<div className="flex flex-1 items-center rounded-md border pl-3 text-sm text-muted-foreground focus-within:ring-1 focus-within:ring-ring">
 									<span className="shrink-0 select-none">/r/</span>
 									<Input
 										id="referral-slug"
@@ -165,7 +165,7 @@ function ReferralsPage() {
 									{t("referral.save", "Save")}
 								</Button>
 							</div>
-							<p className="text-muted-foreground text-xs">
+							<p className="text-xs text-muted-foreground">
 								{t(
 									"referral.slugHint",
 									"4–32 lowercase letters, numbers, or hyphens.",
@@ -231,10 +231,10 @@ function ReferralsPage() {
 					) : (listQuery.data?.length ?? 0) === 0 ? (
 						<div className="flex flex-col items-center justify-center py-14 text-center">
 							<Users className="mb-3 size-10 text-muted-foreground/40" />
-							<p className="font-medium text-sm">
+							<p className="text-sm font-medium">
 								{t("referral.empty", "No referrals yet")}
 							</p>
-							<p className="mt-1 max-w-xs text-muted-foreground text-sm">
+							<p className="mt-1 max-w-xs text-sm text-muted-foreground">
 								{t(
 									"referral.emptyHint",
 									"Share your link to start earning credits.",
@@ -257,14 +257,14 @@ function ReferralsPage() {
 									<TableRow key={row.id}>
 										<TableCell>
 											<div className="font-medium">{row.name ?? "—"}</div>
-											<div className="text-muted-foreground text-xs">
+											<div className="text-xs text-muted-foreground">
 												{row.email}
 											</div>
 										</TableCell>
 										<TableCell>
 											<ReferralStatusBadge status={row.status} />
 										</TableCell>
-										<TableCell className="text-right text-muted-foreground text-sm">
+										<TableCell className="text-right text-sm text-muted-foreground">
 											{new Date(row.createdAt).toLocaleDateString(undefined, {
 												year: "numeric",
 												month: "short",
@@ -296,9 +296,9 @@ function Stat({
 			{loading ? (
 				<Skeleton className="h-8 w-14" />
 			) : (
-				<div className="font-semibold text-2xl tabular-nums">{value}</div>
+				<div className="text-2xl font-semibold tabular-nums">{value}</div>
 			)}
-			<p className="mt-1 text-muted-foreground text-xs">{label}</p>
+			<p className="mt-1 text-xs text-muted-foreground">{label}</p>
 		</div>
 	);
 }

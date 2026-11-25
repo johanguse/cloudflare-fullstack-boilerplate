@@ -112,10 +112,10 @@ function BillingPage() {
 	return (
 		<div className="w-full">
 			<div className="mb-6">
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("billing.title", "Billing")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t("billing.subtitle", "Manage your subscription and credits")}
 				</p>
 			</div>
@@ -137,7 +137,7 @@ function BillingPage() {
 									<div className="flex flex-wrap items-center justify-between gap-4">
 										<div className="flex flex-col gap-1">
 											<div className="flex items-center gap-2.5">
-												<h2 className="font-semibold text-xl capitalize">
+												<h2 className="text-xl font-semibold capitalize">
 													{sub?.plan ?? "Free"} {t("billing.plan", "Plan")}
 												</h2>
 												<Badge
@@ -150,7 +150,7 @@ function BillingPage() {
 													{sub?.status ?? "inactive"}
 												</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">
+											<p className="text-sm text-muted-foreground">
 												{t(
 													"billing.planDesc",
 													"Your current subscription plan",
@@ -192,31 +192,31 @@ function BillingPage() {
 									{/* Stats */}
 									<div className="flex flex-wrap gap-3">
 										<div className="grid min-w-28 content-between gap-1.5 rounded-md border border-dashed px-3.5 py-2">
-											<span className="font-medium text-base leading-none">
+											<span className="text-base leading-none font-medium">
 												{sub?.creditBalance ?? 0}
 											</span>
-											<span className="text-muted-foreground text-sm">
+											<span className="text-sm text-muted-foreground">
 												{t("billing.creditsBalance", "Credits left")}
 											</span>
 										</div>
 										<div className="grid min-w-28 content-between gap-1.5 rounded-md border border-dashed px-3.5 py-2">
-											<span className="font-medium text-base leading-none">
+											<span className="text-base leading-none font-medium">
 												{maxCredits}
 											</span>
-											<span className="text-muted-foreground text-sm">
+											<span className="text-sm text-muted-foreground">
 												{t("billing.planLimit", "Plan limit")}
 											</span>
 										</div>
 										{sub?.currentPeriodEnd && (
 											<div className="grid min-w-28 content-between gap-1.5 rounded-md border border-dashed px-3.5 py-2">
-												<span className="font-medium text-base leading-none">
+												<span className="text-base leading-none font-medium">
 													{formatDate(sub.currentPeriodEnd, {
 														day: "numeric",
 														month: "short",
 														year: "2-digit",
 													})}
 												</span>
-												<span className="text-muted-foreground text-sm">
+												<span className="text-sm text-muted-foreground">
 													{t("billing.renewalDate", "Renewal date")}
 												</span>
 											</div>
@@ -225,7 +225,7 @@ function BillingPage() {
 
 									{/* Usage bar */}
 									<div className="flex flex-col gap-2">
-										<span className="text-muted-foreground text-sm">
+										<span className="text-sm text-muted-foreground">
 											{t("billing.usage", "Usage")} ({sub?.creditBalance ?? 0} /{" "}
 											{maxCredits} {t("billing.credits", "credits")})
 										</span>
@@ -233,7 +233,7 @@ function BillingPage() {
 									</div>
 
 									{sub?.cancelAtPeriodEnd && (
-										<p className="text-destructive text-xs">
+										<p className="text-xs text-destructive">
 											{t(
 												"billing.cancelsAtEnd",
 												"Your subscription will be canceled at the end of the billing period.",
@@ -248,7 +248,7 @@ function BillingPage() {
 					{/* Transaction history */}
 					<Card>
 						<CardHeader className="flex flex-row items-center justify-between border-b px-5 py-3.5">
-							<CardTitle className="font-semibold text-base">
+							<CardTitle className="text-base font-semibold">
 								{t("billing.recentTransactions", "Recent transactions")}
 							</CardTitle>
 							{sub?.stripeSubscriptionId && (
@@ -313,7 +313,7 @@ function BillingPage() {
 														{tx.type.replace(/_/g, " ")}
 													</Badge>
 												</TableCell>
-												<TableCell className="px-4 py-3 text-right text-muted-foreground text-sm">
+												<TableCell className="px-4 py-3 text-right text-sm text-muted-foreground">
 													{tx.createdAt
 														? formatDate(tx.createdAt, {
 																day: "numeric",
@@ -325,7 +325,7 @@ function BillingPage() {
 												<TableCell className="px-4 py-3 text-right">
 													<div className="flex items-center justify-end gap-1.5">
 														<span
-															className={`font-mono font-semibold text-sm ${txTypeColor[tx.type] ?? ""}`}
+															className={`font-mono text-sm font-semibold ${txTypeColor[tx.type] ?? ""}`}
 														>
 															{tx.amount > 0 ? "+" : ""}
 															{tx.amount}
@@ -425,11 +425,11 @@ function SidebarItem({
 			<div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-950/30">
 				{icon}
 			</div>
-			<p className="font-semibold text-sm">{title}</p>
-			<p className="text-muted-foreground text-sm">{description}</p>
+			<p className="text-sm font-semibold">{title}</p>
+			<p className="text-sm text-muted-foreground">{description}</p>
 			<Link
 				to={href}
-				className="font-medium text-primary text-sm underline decoration-dashed underline-offset-4 hover:text-primary/80"
+				className="text-sm font-medium text-primary underline decoration-dashed underline-offset-4 hover:text-primary/80"
 			>
 				{t("billing.learnMore", "Learn more")}
 			</Link>

@@ -195,7 +195,7 @@ function ResetPasswordPage() {
 									autoComplete="new-password"
 								/>
 								{confirm && password !== confirm && (
-									<p className="text-destructive text-xs">
+									<p className="text-xs text-destructive">
 										{t(
 											"auth.resetPassword.passwordsNoMatch",
 											"Passwords do not match",

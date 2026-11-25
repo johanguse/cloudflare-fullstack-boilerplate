@@ -97,7 +97,7 @@ export function UserMenu() {
 				</Avatar>
 				<div className="grid flex-1 text-left text-sm leading-tight">
 					<span className="truncate font-semibold">{user.name ?? "User"}</span>
-					<span className="truncate text-muted-foreground text-xs">
+					<span className="truncate text-xs text-muted-foreground">
 						{user.email}
 					</span>
 				</div>
@@ -112,10 +112,10 @@ export function UserMenu() {
 			>
 				{/* User info header — plain div, not a GroupLabel */}
 				<div className="flex flex-col gap-0.5 px-2 py-1.5">
-					<p className="truncate font-medium text-sm leading-none">
+					<p className="truncate text-sm leading-none font-medium">
 						{user.name ?? "User"}
 					</p>
-					<p className="truncate text-muted-foreground text-xs leading-none">
+					<p className="truncate text-xs leading-none text-muted-foreground">
 						{user.email}
 					</p>
 				</div>

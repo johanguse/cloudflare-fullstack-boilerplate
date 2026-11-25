@@ -231,10 +231,10 @@ function UpgradePage() {
 	return (
 		<div className="w-full space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("upgrade.title", "Upgrade your plan")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t(
 						"upgrade.subtitle",
 						"Choose the plan that fits your needs. Credits never expire.",
@@ -273,7 +273,7 @@ function UpgradePage() {
 							className={`relative flex flex-col ${plan.popular ? "border-primary shadow-md" : ""} ${isCurrent ? "bg-muted/30" : ""}`}
 						>
 							{plan.popular && (
-								<div className="-top-3 -translate-x-1/2 absolute left-1/2">
+								<div className="absolute -top-3 left-1/2 -translate-x-1/2">
 									<Badge className="gap-1">
 										<Zap className="size-3" />
 										{t("upgrade.mostPopular", "Most popular")}
@@ -283,11 +283,11 @@ function UpgradePage() {
 							<CardHeader className="pb-2">
 								<CardTitle className="text-base">{plan.name}</CardTitle>
 								<CardDescription>
-									<span className="font-bold text-2xl text-foreground">
+									<span className="text-2xl font-bold text-foreground">
 										{getPlanPrice(plan, billingCycle)}
 									</span>
 									{plan.id !== "free" && (
-										<span className="text-muted-foreground text-sm">
+										<span className="text-sm text-muted-foreground">
 											{t("upgrade.perMonth", "/month")}
 										</span>
 									)}
@@ -337,7 +337,7 @@ function UpgradePage() {
 				isPending={checkoutMutation.isPending}
 			/>
 
-			<p className="text-center text-muted-foreground text-xs">
+			<p className="text-center text-xs text-muted-foreground">
 				{t(
 					"upgrade.footer",
 					"All plans include a 14-day free trial. Cancel anytime. No credit card required for Free.",
@@ -368,7 +368,7 @@ function BillingCycleToggle({
 					setBillingCycle(checked ? "annual" : "monthly")
 				}
 			/>
-			<Label htmlFor={id} className="font-medium text-sm">
+			<Label htmlFor={id} className="text-sm font-medium">
 				{t("upgrade.annualBilling", "Annual billing")}
 			</Label>
 			<Badge variant="secondary" className="ml-1">
@@ -491,30 +491,30 @@ function PlanHeaderCell({
 			)}
 		>
 			{isCurrent && (
-				<Badge className="-translate-x-1/2 -translate-y-1/2 absolute top-0 left-1/2">
+				<Badge className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
 					{t("upgrade.currentPlan", "Current plan")}
 				</Badge>
 			)}
 			<div className="space-y-4">
 				<div>
 					<div className="flex items-center gap-2">
-						<h3 className="font-medium text-lg text-mono">{plan.name}</h3>
+						<h3 className="text-mono text-lg font-medium">{plan.name}</h3>
 						{plan.popular && !isCurrent && (
 							<Badge variant="secondary">
 								{t("upgrade.mostPopular", "Most popular")}
 							</Badge>
 						)}
 					</div>
-					<p className="mt-1 min-h-10 text-muted-foreground text-sm">
+					<p className="mt-1 min-h-10 text-sm text-muted-foreground">
 						{plan.description}
 					</p>
 				</div>
 				<div>
-					<span className="font-semibold text-2xl text-mono leading-none">
+					<span className="text-mono text-2xl leading-none font-semibold">
 						{getPlanPrice(plan, billingCycle)}
 					</span>
 					{plan.id !== "free" && (
-						<span className="ml-1.5 text-muted-foreground text-xs">
+						<span className="ml-1.5 text-xs text-muted-foreground">
 							{t("upgrade.perMonthLabel", "per month")}
 						</span>
 					)}
@@ -560,14 +560,14 @@ function ComparisonRow({
 }) {
 	return (
 		<TableRow className="hover:bg-transparent">
-			<TableCell className="border-b border-l px-5 py-3.5 font-medium text-mono text-sm">
+			<TableCell className="text-mono border-b border-l px-5 py-3.5 text-sm font-medium">
 				{label}
 			</TableCell>
 			{values.map((value, index) => (
 				<TableCell
 					key={`${label}-${PLANS[index]?.id ?? index}`}
 					className={cn(
-						"border-b border-l px-5 py-3.5 text-foreground text-sm",
+						"border-b border-l px-5 py-3.5 text-sm text-foreground",
 						PLANS[index] && getPlanActionState(PLANS[index]).isCurrent
 							? "bg-muted/40"
 							: "",

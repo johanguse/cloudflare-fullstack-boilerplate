@@ -64,10 +64,10 @@ In `wrangler.jsonc`, set:
 
 For Sentry browser and PostHog, set at **build time** (e.g. in CI or a root `.env` file used by Vite):
 
-| Variable | Purpose |
-|----------|---------|
-| `VITE_SENTRY_DSN` | Browser errors (optional) |
-| `VITE_POSTHOG_KEY` | PostHog project API key (optional) |
+| Variable            | Purpose                                                             |
+| ------------------- | ------------------------------------------------------------------- |
+| `VITE_SENTRY_DSN`   | Browser errors (optional)                                           |
+| `VITE_POSTHOG_KEY`  | PostHog project API key (optional)                                  |
 | `VITE_POSTHOG_HOST` | Default `https://us.i.posthog.com` (EU: `https://eu.i.posthog.com`) |
 
 `CLOUDFLARE_ENVIRONMENT` is set by `build:staging` / `build:production` scripts.
@@ -124,4 +124,4 @@ Workers cron is configured in `wrangler.jsonc` (`0 6 * * *` UTC). The handler de
 
 - **Empty Worker or 500 on first deploy:** ensure `dist/client` exists — deploy scripts run `build` first.
 - **OAuth redirects wrong:** `BETTER_AUTH_URL` must match the origin users hit (see dual dev server note in README).
-- **tRPC 404 on api.* domain:** by design, tRPC is app-origin only in production; REST is on the API host.
+- _*tRPC 404 on api.* domain:_* by design, tRPC is app-origin only in production; REST is on the API host.

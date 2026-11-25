@@ -31,7 +31,7 @@ function StatCard({
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="font-medium text-muted-foreground text-sm">
+				<CardTitle className="text-sm font-medium text-muted-foreground">
 					{title}
 				</CardTitle>
 				<Icon className="size-4 text-muted-foreground" />
@@ -40,9 +40,9 @@ function StatCard({
 				{isPending ? (
 					<Skeleton className="h-8 w-24" />
 				) : (
-					<p className="font-bold text-2xl tabular-nums">{value}</p>
+					<p className="text-2xl font-bold tabular-nums">{value}</p>
 				)}
-				{sub && <p className="mt-1 text-muted-foreground text-xs">{sub}</p>}
+				{sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
 			</CardContent>
 		</Card>
 	);
@@ -62,10 +62,10 @@ function AdminReportsPage() {
 	return (
 		<div className="w-full space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("admin.reports.title", "Reports")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t(
 						"admin.reports.subtitle",
 						"Platform-wide statistics and revenue overview.",

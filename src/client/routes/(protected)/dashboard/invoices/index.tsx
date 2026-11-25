@@ -294,7 +294,7 @@ function CreateInvoiceDialog({
 							))}
 						</div>
 						{subtotal > 0 && (
-							<p className="text-right font-medium text-sm">
+							<p className="text-right text-sm font-medium">
 								{t("invoices.create.subtotal", {
 									amount: fmt(Math.round(subtotal * 100), "BRL"),
 									defaultValue: "Subtotal: {{amount}}",
@@ -361,10 +361,10 @@ function InvoicesPage() {
 		<div className="w-full space-y-6">
 			<div className="flex items-start justify-between">
 				<div>
-					<h1 className="font-semibold text-2xl tracking-tight">
+					<h1 className="text-2xl font-semibold tracking-tight">
 						{t("invoices.title", "Invoices")}
 					</h1>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-sm text-muted-foreground">
 						{t("invoices.subtitle", "Manage and track your invoices")}
 					</p>
 				</div>
@@ -409,16 +409,16 @@ function InvoicesPage() {
 
 			<Card>
 				{invoicesQuery.isPending ? (
-					<CardContent className="py-12 text-center text-muted-foreground text-sm">
+					<CardContent className="py-12 text-center text-sm text-muted-foreground">
 						{t("invoices.loading", "Loading…")}
 					</CardContent>
 				) : rows.length === 0 ? (
 					<CardContent className="flex flex-col items-center justify-center py-16 text-center">
 						<Receipt className="mb-3 size-10 text-muted-foreground/40" />
-						<p className="font-medium text-sm">
+						<p className="text-sm font-medium">
 							{t("invoices.noInvoices", "No invoices found")}
 						</p>
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{statusFilter !== "all"
 								? t(
 										"invoices.noInvoicesFilter",
@@ -459,10 +459,10 @@ function InvoicesPage() {
 											{inv.number}
 										</TableCell>
 										<TableCell>
-											<div className="font-medium text-sm">
+											<div className="text-sm font-medium">
 												{inv.customerName ?? "—"}
 											</div>
-											<div className="text-muted-foreground text-xs">
+											<div className="text-xs text-muted-foreground">
 												{inv.customerEmail ?? ""}
 											</div>
 										</TableCell>
@@ -472,7 +472,7 @@ function InvoicesPage() {
 										<TableCell className="text-sm">
 											{fmtDate(inv.dueDate)}
 										</TableCell>
-										<TableCell className="font-medium text-sm">
+										<TableCell className="text-sm font-medium">
 											{fmt(inv.amountTotal, inv.currency ?? "BRL")}
 										</TableCell>
 										<TableCell>
@@ -528,7 +528,7 @@ function InvoicesPage() {
 
 						{totalPages > 1 && (
 							<div className="flex items-center justify-between border-t px-4 py-3">
-								<p className="text-muted-foreground text-sm">
+								<p className="text-sm text-muted-foreground">
 									{t("invoices.showing", {
 										from: page * PAGE_SIZE + 1,
 										to: Math.min((page + 1) * PAGE_SIZE, total),

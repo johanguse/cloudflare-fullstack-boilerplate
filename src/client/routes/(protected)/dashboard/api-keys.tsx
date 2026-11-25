@@ -166,10 +166,10 @@ function ApiKeysPage() {
 		<>
 			<div className="w-full space-y-6">
 				<div>
-					<h1 className="font-semibold text-2xl tracking-tight">
+					<h1 className="text-2xl font-semibold tracking-tight">
 						{t("apiKeys.title", "API Keys")}
 					</h1>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-sm text-muted-foreground">
 						{t(
 							"apiKeys.subtitle",
 							"Programmatic access — store keys securely; we only store a hash",
@@ -217,13 +217,13 @@ function ApiKeysPage() {
 
 					<CardContent className="grid grow p-0">
 						{listQuery.isPending ? (
-							<div className="px-5 py-10 text-center text-muted-foreground text-sm">
+							<div className="px-5 py-10 text-center text-sm text-muted-foreground">
 								{t("apiKeys.loading", "Loading…")}
 							</div>
 						) : rows.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-14 text-center">
 								<Key className="mb-3 size-10 text-muted-foreground/40" />
-								<p className="text-muted-foreground text-sm">
+								<p className="text-sm text-muted-foreground">
 									{t("apiKeys.noKeys", "No API keys yet")}
 								</p>
 							</div>
@@ -244,7 +244,7 @@ function ApiKeysPage() {
 					<CardFooter className="min-h-14 border-t px-5">
 						<div className="flex grow flex-col flex-wrap items-center justify-between gap-2.5 py-2.5 sm:flex-row sm:py-0">
 							<div className="order-2 flex items-center gap-2.5 sm:order-1">
-								<span className="text-muted-foreground text-sm">
+								<span className="text-sm text-muted-foreground">
 									{t("common.rowsPerPage", "Rows per page")}
 								</span>
 								<Select
@@ -267,7 +267,7 @@ function ApiKeysPage() {
 								</Select>
 							</div>
 							<div className="order-1 flex flex-col items-center gap-2.5 sm:order-2 sm:flex-row">
-								<div className="text-nowrap text-muted-foreground text-sm">
+								<div className="text-sm text-nowrap text-muted-foreground">
 									{rows.length === 0
 										? "0"
 										: `${page * pageSizeNumber + 1} - ${Math.min(
@@ -325,7 +325,7 @@ function ApiKeysTable({
 	const { t } = useTranslation();
 
 	return (
-		<Table className="min-w-[900px] table-fixed border-separate border-spacing-0 text-left font-normal text-sm">
+		<Table className="min-w-[900px] table-fixed border-separate border-spacing-0 text-left text-sm font-normal">
 			<TableHeader>
 				<TableRow className="bg-muted/40 hover:bg-muted/40 [&>th]:border-b">
 					<TableHead className="h-10 w-[52px] border-r px-4">
@@ -385,7 +385,7 @@ function ApiKeysTable({
 							)}
 							{visibleColumns.has("apiKey") && (
 								<TableCell className="border-r px-4 py-3">
-									<div className="flex items-center gap-1 font-mono text-foreground text-xs">
+									<div className="flex items-center gap-1 font-mono text-xs text-foreground">
 										<span>{row.keyPrefix}...</span>
 										<Button
 											type="button"
@@ -546,7 +546,7 @@ function CreatedKeyDialog({
 						)}
 					</DialogDescription>
 				</DialogHeader>
-				<pre className="overflow-x-auto break-all rounded-md bg-muted p-3 font-mono text-xs">
+				<pre className="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs break-all">
 					{createdKey}
 				</pre>
 				<DialogFooter>

@@ -11,12 +11,10 @@ Use [Stripe Dashboard](https://dashboard.stripe.com). For staging, stay in **Tes
 1. Create one **Product** per paid plan (Starter, Professional, and Business).
 2. For each product, create **recurring prices** for monthly and annual billing.
 3. Copy each **Price ID** (`price_...`) into `wrangler.jsonc` under `vars`:
-
    - `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PROFESSIONAL`, `STRIPE_PRICE_BUSINESS`
    - `STRIPE_PRICE_STARTER_ANNUAL`, `STRIPE_PRICE_PROFESSIONAL_ANNUAL`, `STRIPE_PRICE_BUSINESS_ANNUAL`
 
 4. Add the same client-facing price IDs to `.env` with the `VITE_` prefix:
-
    - `VITE_STRIPE_PRICE_STARTER`, `VITE_STRIPE_PRICE_PROFESSIONAL`, `VITE_STRIPE_PRICE_BUSINESS`
    - `VITE_STRIPE_PRICE_STARTER_ANNUAL`, `VITE_STRIPE_PRICE_PROFESSIONAL_ANNUAL`, `VITE_STRIPE_PRICE_BUSINESS_ANNUAL`
 
@@ -41,7 +39,6 @@ wrangler secret put STRIPE_API_KEY --env staging
    - Production: `https://api.yourdomain.com/api/v1/webhooks/stripe` (or your chosen API host + path).
    - Local: use Stripe CLI (see below).
 3. Events to send (minimum set used by the boilerplate — add more if you extend handlers):
-
    - `checkout.session.completed`
    - `invoice.payment_succeeded`
    - `customer.subscription.updated`

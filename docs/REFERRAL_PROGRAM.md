@@ -43,6 +43,7 @@ reference: [better-auth-referral](https://github.com/marinedotsh/better-auth-ref
 ## Still missing / TODO
 
 ### Verification (blocked in this environment)
+
 - [ ] **Run the test suite** — `bun run test` was blocked by a local esbuild
       service crash (resource exhaustion), not a code failure. Re-run once the
       machine is healthy: `bunx vitest run test/integration/referral-service.spec.ts`.
@@ -52,6 +53,7 @@ reference: [better-auth-referral](https://github.com/marinedotsh/better-auth-ref
       version error in `src/server/services/billing.ts` (not from this feature).
 
 ### Correctness / hardening
+
 - [ ] **Payment-identity strength.** Duplicate detection currently keys on the
       normalized billing email. Consider upgrading to the Stripe **card
       fingerprint** (`payment_method.card.fingerprint`) for stronger anti-abuse,
@@ -70,6 +72,7 @@ reference: [better-auth-referral](https://github.com/marinedotsh/better-auth-ref
       in the list as "Not eligible" but there's no reason tooltip or admin view.
 
 ### Product / UX
+
 - [ ] **Admin surface.** No admin view of referral activity, top referrers, or
       manual reward reversal. Consider adding to the `admin` router/pages.
 - [ ] **Fraud monitoring.** No alerting on unusual referral velocity per
@@ -83,6 +86,7 @@ reference: [better-auth-referral](https://github.com/marinedotsh/better-auth-ref
       move to env/config if they need to change without a deploy.
 
 ### Docs / ops
+
 - [ ] Document the program in user-facing help/marketing.
 - [ ] Add a note to `STRIPE_SETUP.md` that `checkout.session.completed` must
       include `customer_details.email` (it does by default) for reward attribution.

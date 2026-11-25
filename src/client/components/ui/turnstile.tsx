@@ -44,7 +44,7 @@ export function TurnstileWidget({
 		return (
 			<div className={className}>
 				<div className="flex h-16 items-center justify-center rounded border border-destructive/20 bg-destructive/10">
-					<p className="text-destructive text-sm">
+					<p className="text-sm text-destructive">
 						Verification service not configured
 					</p>
 				</div>
@@ -66,7 +66,7 @@ export function TurnstileWidget({
 				options={{ theme: "auto", size: "flexible" }}
 			/>
 			{isDevelopment && (
-				<p className="mt-2 text-center text-muted-foreground text-xs">
+				<p className="mt-2 text-center text-xs text-muted-foreground">
 					Development mode{" "}
 					{isTestCredentials
 						? `- ${siteKey === TEST_SITE_KEY_PASS ? "test credentials (always passes)" : "test credentials (always fails)"}`

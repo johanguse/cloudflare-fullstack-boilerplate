@@ -63,7 +63,7 @@ export function TeamSwitcher() {
 						</div>
 						<div className="grid flex-1 text-left text-sm leading-tight">
 							<span className="truncate font-medium">{activeTeam.name}</span>
-							<span className="truncate text-muted-foreground text-xs">
+							<span className="truncate text-xs text-muted-foreground">
 								{activeTeam.plan}
 							</span>
 						</div>
@@ -76,7 +76,7 @@ export function TeamSwitcher() {
 						sideOffset={4}
 					>
 						<DropdownMenuGroup>
-							<DropdownMenuLabel className="text-muted-foreground text-xs">
+							<DropdownMenuLabel className="text-xs text-muted-foreground">
 								{t("teams.label", "Teams")}
 							</DropdownMenuLabel>
 							{TEAMS.map((team, index) => {
@@ -93,7 +93,7 @@ export function TeamSwitcher() {
 										</div>
 										<div className="grid min-w-0 flex-1">
 											<span className="truncate">{team.name}</span>
-											<span className="truncate text-muted-foreground text-xs">
+											<span className="truncate text-xs text-muted-foreground">
 												{team.plan}
 											</span>
 										</div>

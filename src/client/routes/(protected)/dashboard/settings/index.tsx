@@ -240,7 +240,7 @@ function SettingsPage() {
 									disabled
 									className="bg-muted"
 								/>
-								<p className="text-muted-foreground text-xs">
+								<p className="text-xs text-muted-foreground">
 									{t(
 										"profile.emailNote",
 										"Used for login and account notifications.",
@@ -280,7 +280,7 @@ function SettingsPage() {
 					<div className="space-y-4">
 						<div className="rounded-lg border p-4">
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">
+								<span className="text-sm text-muted-foreground">
 									{t("billing.currentPlan", "Current plan")}
 								</span>
 								<Badge
@@ -356,10 +356,10 @@ function SettingsPage() {
 						>
 							<KeyRound className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 							<div>
-								<p className="font-medium text-sm">
+								<p className="text-sm font-medium">
 									{t("profile.changePassword", "Change password")}
 								</p>
-								<p className="text-muted-foreground text-xs">
+								<p className="text-xs text-muted-foreground">
 									{t(
 										"profile.changePasswordDesc",
 										"Update your password to keep your account secure.",
@@ -509,10 +509,10 @@ function SettingsPage() {
 						>
 							<Trash2 className="mt-0.5 size-4 shrink-0 text-destructive" />
 							<div>
-								<p className="font-medium text-destructive text-sm">
+								<p className="text-sm font-medium text-destructive">
 									{t("settings.deleteAccount", "Delete account")}
 								</p>
-								<p className="text-muted-foreground text-xs">
+								<p className="text-xs text-muted-foreground">
 									{t(
 										"settings.deleteAccountDesc2",
 										"Permanently delete your account and all saved content.",
@@ -550,7 +550,7 @@ function SettingsPage() {
 										"Enter your password",
 									)}
 								/>
-								<p className="text-muted-foreground text-xs">
+								<p className="text-xs text-muted-foreground">
 									{t(
 										"settings.deleteAccountFreshSessionHint",
 										"Required unless you signed in within the last 15 minutes.",
@@ -571,7 +571,7 @@ function SettingsPage() {
 											password: deletePassword || undefined,
 										});
 									}}
-									className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+									className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
 								>
 									{deleteAccountMutation.isPending && (
 										<Loader2 className="mr-2 size-3.5 animate-spin" />
