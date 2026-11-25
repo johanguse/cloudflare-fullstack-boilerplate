@@ -175,10 +175,10 @@ function AdminActivityPage() {
 	return (
 		<div className="w-full space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("admin.activity.title", "Activity Logs")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t(
 						"admin.activity.subtitle",
 						"Recent sign-ins, payments, and API key events across the platform.",
@@ -190,7 +190,7 @@ function AdminActivityPage() {
 				<CardHeader className="flex min-h-14 flex-row flex-wrap items-center justify-between gap-2.5 border-b px-5 py-0">
 					<div className="flex flex-wrap items-center gap-2.5">
 						<div className="relative">
-							<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+							<Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 							<Input
 								value={query}
 								onChange={(event) => {
@@ -269,7 +269,7 @@ function AdminActivityPage() {
 							))}
 						</div>
 					) : filteredEvents.length === 0 ? (
-						<p className="px-6 py-10 text-center text-muted-foreground text-sm">
+						<p className="px-6 py-10 text-center text-sm text-muted-foreground">
 							{t("admin.activity.empty", "No recent activity found.")}
 						</p>
 					) : (
@@ -287,7 +287,7 @@ function AdminActivityPage() {
 				<CardFooter className="min-h-14 border-t px-5">
 					<div className="flex grow flex-col flex-wrap items-center justify-between gap-2.5 py-2.5 sm:flex-row sm:py-0">
 						<div className="order-2 flex items-center gap-2.5 sm:order-1">
-							<span className="text-muted-foreground text-sm">
+							<span className="text-sm text-muted-foreground">
 								{t("common.rowsPerPage", "Rows per page")}
 							</span>
 							<Select
@@ -310,7 +310,7 @@ function AdminActivityPage() {
 							</Select>
 						</div>
 						<div className="order-1 flex flex-col items-center gap-2.5 sm:order-2 sm:flex-row">
-							<div className="text-nowrap text-muted-foreground text-sm">
+							<div className="text-sm text-nowrap text-muted-foreground">
 								{filteredEvents.length === 0
 									? "0"
 									: `${page * pageSizeNumber + 1} - ${Math.min(
@@ -349,7 +349,7 @@ function ActivityTable({
 	const { t } = useTranslation();
 
 	return (
-		<Table className="min-w-[1100px] table-fixed border-separate border-spacing-0 text-left font-normal text-sm">
+		<Table className="min-w-[1100px] table-fixed border-separate border-spacing-0 text-left text-sm font-normal">
 			<TableHeader>
 				<TableRow className="bg-muted/40 hover:bg-muted/40 [&>th]:border-b">
 					<TableHead className="h-10 w-[52px] border-r px-4">
@@ -429,7 +429,7 @@ function ActivityTable({
 								<TableCell className="border-r px-4 py-3 text-secondary-foreground">
 									<div className="truncate">{event.action}</div>
 									{event.detail && (
-										<div className="truncate text-muted-foreground text-xs">
+										<div className="truncate text-xs text-muted-foreground">
 											{event.detail}
 										</div>
 									)}

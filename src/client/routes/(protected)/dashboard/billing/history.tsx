@@ -53,10 +53,10 @@ function BillingHistoryPage() {
 	return (
 		<div className="w-full space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl tracking-tight">
+				<h1 className="text-2xl font-semibold tracking-tight">
 					{t("history.title", "Credit history")}
 				</h1>
-				<p className="text-muted-foreground text-sm">
+				<p className="text-sm text-muted-foreground">
 					{t("history.subtitle", "Full log of your credit transactions")}
 				</p>
 			</div>
@@ -121,18 +121,18 @@ function BillingHistoryPage() {
 												{t(`history.types.${tx.type}`, tx.type)}
 											</Badge>
 										</TableCell>
-										<TableCell className="text-muted-foreground text-xs">
+										<TableCell className="text-xs text-muted-foreground">
 											{tx.createdAt ? formatDate(tx.createdAt) : "—"}
 										</TableCell>
 										<TableCell className="text-right">
 											<span
-												className={`font-mono font-semibold text-sm ${tx.amount > 0 ? "text-green-600" : "text-destructive"}`}
+												className={`font-mono text-sm font-semibold ${tx.amount > 0 ? "text-green-600" : "text-destructive"}`}
 											>
 												{tx.amount > 0 ? "+" : ""}
 												{tx.amount}
 											</span>
 										</TableCell>
-										<TableCell className="text-right font-mono text-muted-foreground text-sm">
+										<TableCell className="text-right font-mono text-sm text-muted-foreground">
 											{tx.balanceAfter}
 										</TableCell>
 									</TableRow>

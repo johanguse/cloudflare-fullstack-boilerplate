@@ -25,48 +25,48 @@ assistive-technology behaviour.
 
 ## Critical
 
-| ID | Status | Finding | Location |
-|----|--------|---------|----------|
-| C-1 | ✅ | Credit balance lost-update race → double-spend | `services/credits.ts` `deductCredits` |
-| C-2 | ✅ | Stripe webhook not idempotent → duplicate credit grants / NFSe | `routers/rest/webhooks.ts` |
-| C-3 | ✅ | `subscriptions.user_id` missing UNIQUE index but upserted via `onConflictDoUpdate` | `db/schema/billing.ts` + migration |
+| ID  | Status | Finding                                                                            | Location                              |
+| --- | ------ | ---------------------------------------------------------------------------------- | ------------------------------------- |
+| C-1 | ✅     | Credit balance lost-update race → double-spend                                     | `services/credits.ts` `deductCredits` |
+| C-2 | ✅     | Stripe webhook not idempotent → duplicate credit grants / NFSe                     | `routers/rest/webhooks.ts`            |
+| C-3 | ✅     | `subscriptions.user_id` missing UNIQUE index but upserted via `onConflictDoUpdate` | `db/schema/billing.ts` + migration    |
 
 ## High
 
-| ID | Status | Finding | Location |
-|----|--------|---------|----------|
-| H-1 | ✅ | API-key "pause"/"disable" was client-only cosmetic state | `routes/(protected)/dashboard/api-keys.tsx` |
-| H-2 | ✅ | Turnstile CAPTCHA collected but never verified server-side | `lib/auth.ts` |
-| H-3 | ✅ | `createCheckoutSession` accepts arbitrary `priceId` (no allowlist) | `routers/trpc/billing.ts` |
-| H-4 | ✅ | Unescaped user input rendered as `text/html` (stored XSS) | `services/invoices.ts` `generateInvoiceHtml` |
-| H-5 | ✅ | Account deletion leaves Stripe billing active / no re-auth | `routers/trpc/user.ts` |
+| ID  | Status | Finding                                                            | Location                                     |
+| --- | ------ | ------------------------------------------------------------------ | -------------------------------------------- |
+| H-1 | ✅     | API-key "pause"/"disable" was client-only cosmetic state           | `routes/(protected)/dashboard/api-keys.tsx`  |
+| H-2 | ✅     | Turnstile CAPTCHA collected but never verified server-side         | `lib/auth.ts`                                |
+| H-3 | ✅     | `createCheckoutSession` accepts arbitrary `priceId` (no allowlist) | `routers/trpc/billing.ts`                    |
+| H-4 | ✅     | Unescaped user input rendered as `text/html` (stored XSS)          | `services/invoices.ts` `generateInvoiceHtml` |
+| H-5 | ✅     | Account deletion leaves Stripe billing active / no re-auth         | `routers/trpc/user.ts`                       |
 
 ## Medium
 
-| ID | Status | Finding | Location |
-|----|--------|---------|----------|
-| M-1 | ✅ | No effective Content-Security-Policy | `server/index.ts` |
-| M-2 | ✅ | CSV formula injection in invoice export | `services/invoices.ts` `invoicesToCsv` |
-| M-3 | ✅ | `nfse.reEmit` no idempotency / paid / already-issued guard | `routers/trpc/nfse.ts` |
-| M-4 | ✅ | CORS falls back to wildcard with credentials | `middlewares/corsMiddleware.ts` |
-| M-5 | ✅ | Weak server-side password policy | `lib/auth.ts` |
-| M-6 | ✅ | Invoice download via `window.open` after async mutation | `routes/(protected)/dashboard/invoices/index.tsx` |
-| M-7 | ✅ | Duplicate Stripe customers / subscription rows in checkout | `routers/trpc/billing.ts` |
+| ID  | Status | Finding                                                    | Location                                          |
+| --- | ------ | ---------------------------------------------------------- | ------------------------------------------------- |
+| M-1 | ✅     | No effective Content-Security-Policy                       | `server/index.ts`                                 |
+| M-2 | ✅     | CSV formula injection in invoice export                    | `services/invoices.ts` `invoicesToCsv`            |
+| M-3 | ✅     | `nfse.reEmit` no idempotency / paid / already-issued guard | `routers/trpc/nfse.ts`                            |
+| M-4 | ✅     | CORS falls back to wildcard with credentials               | `middlewares/corsMiddleware.ts`                   |
+| M-5 | ✅     | Weak server-side password policy                           | `lib/auth.ts`                                     |
+| M-6 | ✅     | Invoice download via `window.open` after async mutation    | `routes/(protected)/dashboard/invoices/index.tsx` |
+| M-7 | ✅     | Duplicate Stripe customers / subscription rows in checkout | `routers/trpc/billing.ts`                         |
 
 ## Low / A11y / Visual
 
-| ID | Status | Finding |
-|----|--------|---------|
-| L-1 | ✅ | `retry: 1` retries 4xx (auth) errors |
-| L-3 | ✅ | Admin `updateUserRole` can demote the last admin / self |
-| L-4 | ✅ | API-key row "copy" copied a useless `prefix...` value |
-| L-5 | ✅ | Delete-account confirm didn't show a pending state |
-| L-6 | ✅ | Sequential invoice numbering via `COUNT(*)` race (retry-on-conflict) |
-| A-1 | ✅ | Icon-only controls without accessible names |
-| A-2 | ✅ | Fake non-functional "sort" buttons in api-keys headers |
-| A-3 | ✅ | No skip-to-content link / focusable main landmark |
-| A-4 | ✅ | Pagination buttons missing `aria-current` / labels |
-| V-1 | 🟡 | Agency plan added to upgrade page; plan metadata still duplicated client/server |
+| ID  | Status | Finding                                                                         |
+| --- | ------ | ------------------------------------------------------------------------------- |
+| L-1 | ✅     | `retry: 1` retries 4xx (auth) errors                                            |
+| L-3 | ✅     | Admin `updateUserRole` can demote the last admin / self                         |
+| L-4 | ✅     | API-key row "copy" copied a useless `prefix...` value                           |
+| L-5 | ✅     | Delete-account confirm didn't show a pending state                              |
+| L-6 | ✅     | Sequential invoice numbering via `COUNT(*)` race (retry-on-conflict)            |
+| A-1 | ✅     | Icon-only controls without accessible names                                     |
+| A-2 | ✅     | Fake non-functional "sort" buttons in api-keys headers                          |
+| A-3 | ✅     | No skip-to-content link / focusable main landmark                               |
+| A-4 | ✅     | Pagination buttons missing `aria-current` / labels                              |
+| V-1 | 🟡     | Agency plan added to upgrade page; plan metadata still duplicated client/server |
 
 ## Still open (tracked, lower priority)
 
@@ -77,6 +77,7 @@ assistive-technology behaviour.
 Additionally fixed in this pass: **L-2** (admin route now shows a spinner instead
 of a blank flash) and **A-6** (Turnstile `onError` now surfaces a message and
 resets the token instead of silently leaving submit disabled).
+
 - **A-5** is also fixed: comparison-table booleans and email-verification icons
   now expose text alternatives to assistive technology.
 - **A-7** is also fixed: authentication failures now appear in persistent inline
@@ -120,12 +121,12 @@ Before deploying these changes:
 
 ## Verification performed
 
-| Check | Result | Notes |
-|----|----|----|
-| `git diff --check` | Passed | No whitespace errors in the current diff. |
-| `bun run check` | Passed with existing warnings | Formatting now passes. Biome still warns about two pre-existing non-null assertions in `drizzle.config.ts`. |
-| `bunx tsc -b` | Blocked by existing type mismatch | `services/billing.ts` pins Stripe API version `2026-05-27.dahlia`, while generated Stripe types require `2026-06-24.dahlia`. |
-| `bun run test` | Not completed in this environment | Vitest/esbuild repeatedly failed to create Node worker threads (`uv_thread_create` assertion) before tests could report results. Re-run where normal process/thread limits are available. |
+| Check              | Result                            | Notes                                                                                                                                                                                     |
+| ------------------ | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `git diff --check` | Passed                            | No whitespace errors in the current diff.                                                                                                                                                 |
+| `bun run check`    | Passed with existing warnings     | Formatting now passes. Biome still warns about two pre-existing non-null assertions in `drizzle.config.ts`.                                                                               |
+| `bunx tsc -b`      | Blocked by existing type mismatch | `services/billing.ts` pins Stripe API version `2026-05-27.dahlia`, while generated Stripe types require `2026-06-24.dahlia`.                                                              |
+| `bun run test`     | Not completed in this environment | Vitest/esbuild repeatedly failed to create Node worker threads (`uv_thread_create` assertion) before tests could report results. Re-run where normal process/thread limits are available. |
 
 The static blockers above are not changes made by this audit pass, but they
 should be resolved before treating the branch as release-ready.

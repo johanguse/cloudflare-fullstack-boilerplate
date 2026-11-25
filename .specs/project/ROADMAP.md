@@ -1,12 +1,15 @@
 # Cloudflare SaaS Boilerplate — Roadmap
 
 ## Phase 1: Foundation `phase-1-foundation`
+
 **Status:** ✅ COMPLETED | **Effort:** ~1 week
 
 ### Objective
+
 Scaffold the complete project structure with all tooling in place. By the end, `bun dev:all` works and serves a blank React page through the Worker.
 
 ### Deliverables
+
 - [ ] `wrangler.jsonc` with D1, KV, R2, Email Service, staging + local envs
 - [ ] `tsconfig.json` multi-target (client, worker, trigger)
 - [ ] `vite.config.ts` with `@cloudflare/vite-plugin` + TanStack Router plugin
@@ -24,12 +27,15 @@ Scaffold the complete project structure with all tooling in place. By the end, `
 ---
 
 ## Phase 2: Auth Pages & Dashboard Shell `phase-2-auth-dashboard`
+
 **Status:** ✅ COMPLETED | **Effort:** ~1 week
 
 ### Objective
+
 Complete authentication flow + the dashboard chrome. Users can register, log in, and land on a working dashboard with navigation.
 
 ### Deliverables
+
 - [ ] `/login` page (email + password + OAuth buttons)
 - [ ] `/register` page with validation
 - [ ] `/verify-email` — OTP verification page
@@ -50,12 +56,15 @@ Complete authentication flow + the dashboard chrome. Users can register, log in,
 ---
 
 ## Phase 3: Billing & Subscriptions `phase-3-billing`
+
 **Status:** ✅ COMPLETED | **Effort:** ~1 week
 
 ### Objective
+
 Stripe subscriptions + credits fully working. Users can upgrade, pay, and see their balance.
 
 ### Deliverables
+
 - [ ] Drizzle schema: `subscriptions`, `credit_transactions`
 - [ ] D1 migration for billing tables
 - [ ] Stripe service (`src/server/services/billing.ts`)
@@ -76,12 +85,15 @@ Stripe subscriptions + credits fully working. Users can upgrade, pay, and see th
 ---
 
 ## Phase 4: Invoice Management `phase-4-invoices`
+
 **Status:** ✅ COMPLETED | **Effort:** ~1 week
 
 ### Objective
+
 Invoices auto-created on payment, viewable in dashboard, downloadable as PDF, emailed to customer.
 
 ### Deliverables
+
 - [ ] Drizzle schema: `invoices`, `invoice_items`
 - [ ] D1 migration for invoice tables
 - [ ] Invoice creation service (called from Stripe webhook)
@@ -101,12 +113,15 @@ Invoices auto-created on payment, viewable in dashboard, downloadable as PDF, em
 ---
 
 ## Phase 5: NFSe Integration `phase-5-nfse`
+
 **Status:** ✅ COMPLETED | **Effort:** ~1 week
 
 ### Objective
+
 Automated NFSe emission for every paid invoice. Company settings UI. Status tracking. Re-emission support.
 
 ### Deliverables
+
 - [ ] Drizzle schema: `nfse_records`, `company_settings`
 - [ ] D1 migration for NFSe tables
 - [ ] Fiscal Nacional API client service
@@ -125,12 +140,15 @@ Automated NFSe emission for every paid invoice. Company settings UI. Status trac
 ---
 
 ## Phase 6: Email System `phase-6-email`
+
 **Status:** Not Started | **Effort:** ~3-4 days
 
 ### Objective
+
 All transactional emails working via Cloudflare Email Service. Email templates for all lifecycle events.
 
 ### Deliverables
+
 - [ ] Cloudflare Email Service binding in `wrangler.jsonc`
 - [ ] Email service abstraction (`src/server/services/email.ts`)
 - [ ] Email templates (JSX → HTML):
@@ -151,12 +169,15 @@ All transactional emails working via Cloudflare Email Service. Email templates f
 ---
 
 ## Phase 7: API Keys & Production Readiness `phase-7-production`
+
 **Status:** Not Started | **Effort:** ~1 week
 
 ### Objective
+
 Boilerplate is production-deployable with monitoring, tests, and complete documentation.
 
 ### Deliverables
+
 - [ ] `apiKeys` tRPC router:
   - `list`, `create`, `revoke`
   - Usage stats tracking
@@ -177,12 +198,15 @@ Boilerplate is production-deployable with monitoring, tests, and complete docume
 ---
 
 ## Phase 8: i18n (Internationalization) `phase-8-i18n`
+
 **Status:** Not Started | **Effort:** ~3-4 days | **Parallel with:** Phase 3+
 
 ### Objective
+
 All UI strings translatable. Ship with English (en-US) and Brazilian Portuguese (pt-BR) as first-class locales. Typed `t()` function so missing keys are caught at compile time.
 
 ### Deliverables
+
 - [ ] `i18next` + `react-i18next` + `i18next-browser-languagedetector` installed
 - [ ] `i18next.config.ts` with namespaces: common, auth, dashboard, billing, invoices, nfse, errors
 - [ ] `src/client/i18n/locales/en-US/` — JSON per namespace (source of truth)
@@ -197,12 +221,15 @@ All UI strings translatable. Ship with English (en-US) and Brazilian Portuguese 
 ---
 
 ## Phase 9: Staging Environment `phase-9-staging`
+
 **Status:** Not Started | **Effort:** ~2-3 days | **Overlaps with:** Phase 1 (config) + Phase 7 (deploy)
 
 ### Objective
+
 Full staging environment that mirrors production. Staging deploy works with a single command. Secrets managed via `upload-secrets.sh`. Dev scripts for WSL and Mac open all required services concurrently.
 
 ### Deliverables
+
 - [ ] `env.staging` + `env.local` blocks in `wrangler.jsonc`
 - [ ] Staging D1, KV (×2), R2 resources provisioned
 - [ ] `scripts/provision-staging.sh` — one-shot resource creation

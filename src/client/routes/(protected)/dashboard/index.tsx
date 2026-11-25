@@ -84,15 +84,15 @@ function DashboardPage() {
 								{t("dashboard.overview", "Account overview")}
 							</Badge>
 							{isRefreshing ? (
-								<span className="mb-3 ml-2 inline-flex items-center gap-1.5 text-muted-foreground text-xs">
+								<span className="mb-3 ml-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
 									<Loader2 className="size-3 animate-spin" />
 									{t("dashboard.refreshing", "Refreshing")}
 								</span>
 							) : null}
-							<h1 className="text-balance font-semibold text-2xl tracking-tight sm:text-3xl">
+							<h1 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
 								{t("dashboard.greeting", "Hello, {{name}}", { name: userName })}
 							</h1>
-							<p className="mt-2 text-pretty text-muted-foreground text-sm leading-6">
+							<p className="mt-2 text-sm leading-6 text-pretty text-muted-foreground">
 								{t(
 									"dashboard.subtitle",
 									"Monitor billing, invoices, and API access from one focused workspace.",
@@ -145,10 +145,10 @@ function DashboardPage() {
 							<>
 								<div className="flex items-center justify-between gap-3">
 									<div>
-										<p className="font-semibold text-2xl leading-none">
+										<p className="text-2xl leading-none font-semibold">
 											{plan}
 										</p>
-										<p className="mt-1 text-muted-foreground text-xs">
+										<p className="mt-1 text-xs text-muted-foreground">
 											{t("dashboard.subscriptionStatus", "{{status}} status", {
 												status: subscriptionStatus,
 											})}
@@ -210,20 +210,20 @@ function DashboardPage() {
 
 			<Link
 				to="/dashboard/referrals"
-				className="group flex flex-col items-start gap-3 rounded-xl border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 outline-none transition-colors hover:from-primary/15 focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:justify-between"
+				className="group flex flex-col items-start gap-3 rounded-xl border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5 transition-colors outline-none hover:from-primary/15 focus-visible:ring-2 focus-visible:ring-ring sm:flex-row sm:items-center sm:justify-between"
 			>
 				<div className="flex items-center gap-3">
 					<span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
 						<Gift className="size-5" />
 					</span>
 					<div>
-						<p className="font-medium text-sm">
+						<p className="text-sm font-medium">
 							{t(
 								"dashboard.referralCta.title",
 								"Give 50 credits, get 50 credits",
 							)}
 						</p>
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{t(
 								"dashboard.referralCta.description",
 								"Invite friends — you both earn credits when they subscribe.",
@@ -231,7 +231,7 @@ function DashboardPage() {
 						</p>
 					</div>
 				</div>
-				<span className="inline-flex items-center font-medium text-primary text-sm">
+				<span className="inline-flex items-center text-sm font-medium text-primary">
 					{t("dashboard.referralCta.action", "Share your link")}
 					<ArrowRight className="ml-1.5 size-4 transition-transform group-hover:translate-x-0.5" />
 				</span>
@@ -322,10 +322,10 @@ function DashboardPage() {
 						) : recentInvoices.length === 0 ? (
 							<div className="flex min-h-40 flex-col items-center justify-center rounded-md border border-dashed text-center">
 								<Receipt className="mb-3 size-8 text-muted-foreground/40" />
-								<p className="font-medium text-sm">
+								<p className="text-sm font-medium">
 									{t("dashboard.noInvoicesYet", "No invoices yet")}
 								</p>
-								<p className="mt-1 max-w-64 text-muted-foreground text-sm">
+								<p className="mt-1 max-w-64 text-sm text-muted-foreground">
 									{t(
 										"dashboard.noInvoicesDescription",
 										"Create your first invoice to start tracking billing activity.",
@@ -339,17 +339,17 @@ function DashboardPage() {
 										key={invoice.id}
 										to="/dashboard/invoices/$id"
 										params={{ id: invoice.id }}
-										className="grid gap-3 rounded-md py-3 outline-none transition-colors hover:bg-muted/40 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_120px_96px]"
+										className="grid gap-3 rounded-md py-3 transition-colors outline-none hover:bg-muted/40 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[minmax(0,1fr)_120px_96px]"
 									>
 										<div className="min-w-0 px-1">
-											<p className="truncate font-medium text-sm">
+											<p className="truncate text-sm font-medium">
 												{invoice.customerName}
 											</p>
-											<p className="mt-1 truncate text-muted-foreground text-xs">
+											<p className="mt-1 truncate text-xs text-muted-foreground">
 												{invoice.number}
 											</p>
 										</div>
-										<div className="px-1 text-muted-foreground text-sm tabular-nums">
+										<div className="px-1 text-sm text-muted-foreground tabular-nums">
 											{formatCurrency(invoice.amountTotal, invoice.currency)}
 										</div>
 										<div className="px-1 sm:text-right">
@@ -442,11 +442,11 @@ function StatCard({
 	return (
 		<Link
 			to={href}
-			className="group block rounded-xl outline-none transition-[scale] focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
+			className="group block rounded-xl transition-[scale] outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
 		>
 			<Card className="h-full transition-colors group-hover:bg-muted/40">
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-muted-foreground text-sm">
+					<CardTitle className="text-sm font-medium text-muted-foreground">
 						{title}
 					</CardTitle>
 					<Icon className="size-4 text-muted-foreground" />
@@ -459,8 +459,8 @@ function StatCard({
 						</>
 					) : (
 						<>
-							<div className="font-semibold text-2xl tabular-nums">{value}</div>
-							<p className="mt-1 text-muted-foreground text-xs">
+							<div className="text-2xl font-semibold tabular-nums">{value}</div>
+							<p className="mt-1 text-xs text-muted-foreground">
 								{description}
 							</p>
 						</>
@@ -485,14 +485,14 @@ function QuickAction({
 	return (
 		<Link
 			to={href}
-			className="flex min-h-14 items-center gap-3 rounded-lg border bg-background px-3 py-2 text-sm outline-none transition-[color,background-color,scale] hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
+			className="flex min-h-14 items-center gap-3 rounded-lg border bg-background px-3 py-2 text-sm transition-[color,background-color,scale] outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
 		>
 			<span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
 				<Icon className="size-4" />
 			</span>
 			<span className="min-w-0 flex-1">
 				<span className="block truncate font-medium">{label}</span>
-				<span className="block truncate text-muted-foreground text-xs">
+				<span className="block truncate text-xs text-muted-foreground">
 					{description}
 				</span>
 			</span>

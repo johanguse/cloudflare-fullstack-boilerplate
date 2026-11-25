@@ -155,7 +155,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-sm text-muted-foreground">
 						{t("invoiceDetail.nfse.noRecord", "No NFSe record found")}
 					</p>
 					<Button
@@ -197,7 +197,7 @@ function NfseStatusWidget({ invoiceId }: { invoiceId: string }) {
 						<span className="text-muted-foreground">
 							{t("invoiceDetail.nfse.number", "NFSe number: ")}
 						</span>
-						<span className="font-medium font-mono">{record.nfseNumber}</span>
+						<span className="font-mono font-medium">{record.nfseNumber}</span>
 					</div>
 				)}
 				{record.emittedAt && (
@@ -378,7 +378,7 @@ function InvoiceDetailPage() {
 					</Button>
 					<div>
 						<div className="flex items-center gap-2">
-							<h1 className="font-semibold text-xl tracking-tight">
+							<h1 className="text-xl font-semibold tracking-tight">
 								{t("invoiceDetail.invoiceNumber", {
 									number: invoice.number,
 									defaultValue: "Invoice #{{number}}",
@@ -388,7 +388,7 @@ function InvoiceDetailPage() {
 								{statusLabels[status]}
 							</Badge>
 						</div>
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{t("invoiceDetail.issued", {
 								date: fmtDate(invoice.issuedAt),
 								defaultValue: "Issued {{date}}",
@@ -447,19 +447,19 @@ function InvoiceDetailPage() {
 			{/* Customer */}
 			<Card>
 				<CardHeader>
-					<CardTitle className="font-medium text-muted-foreground text-sm">
+					<CardTitle className="text-sm font-medium text-muted-foreground">
 						{t("invoiceDetail.billTo", "Bill to")}
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p className="font-medium">{invoice.customerName ?? "—"}</p>
 					{invoice.customerEmail && (
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{invoice.customerEmail}
 						</p>
 					)}
 					{invoice.customerDocument && (
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{invoice.customerDocument}
 						</p>
 					)}
@@ -470,27 +470,27 @@ function InvoiceDetailPage() {
 			<div className="grid grid-cols-2 gap-4">
 				<Card>
 					<CardContent className="pt-4">
-						<p className="text-muted-foreground text-xs">
+						<p className="text-xs text-muted-foreground">
 							{t("invoiceDetail.issueDate", "Issue date")}
 						</p>
-						<p className="font-medium text-sm">{fmtDate(invoice.issuedAt)}</p>
+						<p className="text-sm font-medium">{fmtDate(invoice.issuedAt)}</p>
 					</CardContent>
 				</Card>
 				<Card>
 					<CardContent className="pt-4">
-						<p className="text-muted-foreground text-xs">
+						<p className="text-xs text-muted-foreground">
 							{t("invoiceDetail.dueDate", "Due date")}
 						</p>
-						<p className="font-medium text-sm">{fmtDate(invoice.dueDate)}</p>
+						<p className="text-sm font-medium">{fmtDate(invoice.dueDate)}</p>
 					</CardContent>
 				</Card>
 				{invoice.paidAt && (
 					<Card className="col-span-2 border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30">
 						<CardContent className="pt-4">
-							<p className="text-green-700 text-xs dark:text-green-400">
+							<p className="text-xs text-green-700 dark:text-green-400">
 								{t("invoiceDetail.paidOn", "Paid on")}
 							</p>
-							<p className="font-medium text-green-800 text-sm dark:text-green-300">
+							<p className="text-sm font-medium text-green-800 dark:text-green-300">
 								{fmtDate(invoice.paidAt)}
 							</p>
 						</CardContent>
@@ -508,7 +508,7 @@ function InvoiceDetailPage() {
 				<CardContent>
 					<div className="space-y-0">
 						{/* Header row */}
-						<div className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 pb-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+						<div className="grid grid-cols-[1fr_4rem_6rem_6rem] gap-2 pb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
 							<span>
 								{t("invoiceDetail.itemsHeader.description", "Description")}
 							</span>
@@ -524,7 +524,7 @@ function InvoiceDetailPage() {
 						</div>
 						<Separator className="mb-2" />
 						{invoice.items.length === 0 ? (
-							<p className="py-4 text-center text-muted-foreground text-sm">
+							<p className="py-4 text-center text-sm text-muted-foreground">
 								{t("invoiceDetail.noItems", "No line items")}
 							</p>
 						) : (
@@ -564,7 +564,7 @@ function InvoiceDetailPage() {
 							</div>
 						)}
 						<Separator />
-						<div className="flex justify-between pt-1 font-semibold text-base">
+						<div className="flex justify-between pt-1 text-base font-semibold">
 							<span>{t("invoiceDetail.total", "Total")}</span>
 							<span>{fmt(invoice.amountTotal, currency)}</span>
 						</div>
@@ -580,7 +580,7 @@ function InvoiceDetailPage() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{invoice.description}
 						</p>
 					</CardContent>

@@ -117,14 +117,14 @@ function ForgotPasswordPage() {
 							<div className="space-y-4">
 								<div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-center">
 									<Mail className="size-8 text-primary" />
-									<p className="text-foreground text-sm">
+									<p className="text-sm text-foreground">
 										{t(
 											"auth.forgotPassword.sentMessage",
 											"We sent a reset link to",
 										)}{" "}
 										<strong>{email}</strong>
 									</p>
-									<p className="text-muted-foreground text-xs">
+									<p className="text-xs text-muted-foreground">
 										{t(
 											"auth.forgotPassword.expiryNote",
 											"The link expires in 1 hour. Check your spam folder if you don't see it.",
@@ -187,7 +187,7 @@ function ForgotPasswordPage() {
 						)}
 						<Link
 							to="/login"
-							className="flex items-center justify-center gap-1 text-muted-foreground text-sm hover:text-foreground"
+							className="flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-foreground"
 						>
 							<ArrowLeft className="size-3.5" />
 							{t("auth.forgotPassword.back", "Back to sign in")}

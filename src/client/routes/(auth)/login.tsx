@@ -91,10 +91,10 @@ function LoginPage() {
 		<div className="flex min-h-screen items-center justify-center bg-background px-4">
 			<div className="w-full max-w-sm">
 				<div className="mb-8 text-center">
-					<h1 className="font-semibold text-2xl text-foreground tracking-tight">
+					<h1 className="text-2xl font-semibold tracking-tight text-foreground">
 						{t("auth.login.title", "Welcome back")}
 					</h1>
-					<p className="mt-1 text-muted-foreground text-sm">
+					<p className="mt-1 text-sm text-muted-foreground">
 						{t("auth.login.subtitle", "Sign in to your account")}
 					</p>
 				</div>
@@ -180,7 +180,7 @@ function LoginPage() {
 									</Label>
 									<Link
 										to="/forgot-password"
-										className="text-muted-foreground text-xs hover:text-foreground"
+										className="text-xs text-muted-foreground hover:text-foreground"
 									>
 										{t("common.forgotPassword", "Forgot password?")}
 									</Link>
@@ -221,7 +221,7 @@ function LoginPage() {
 					</CardContent>
 
 					<CardFooter className="justify-center pt-0">
-						<p className="text-muted-foreground text-sm">
+						<p className="text-sm text-muted-foreground">
 							{t("auth.login.noAccount", "Don't have an account?")}{" "}
 							<Link
 								to="/register"

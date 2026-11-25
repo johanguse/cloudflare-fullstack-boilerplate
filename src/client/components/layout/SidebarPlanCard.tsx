@@ -103,10 +103,10 @@ export function SidebarPlanCard() {
 						<Sparkles className="size-3.5 text-primary" />
 					</div>
 					<div className="min-w-0">
-						<p className="truncate font-medium text-sm">
+						<p className="truncate text-sm font-medium">
 							{t("sidebar.plan.freePlan", "Free Plan")}
 						</p>
-						<p className="truncate text-muted-foreground text-xs">
+						<p className="truncate text-xs text-muted-foreground">
 							{t("sidebar.plan.unlockMore", "Unlock more features")}
 						</p>
 					</div>
@@ -142,11 +142,11 @@ export function SidebarPlanCard() {
 					<div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15">
 						<CreditCard className="size-3 text-primary" />
 					</div>
-					<span className="font-medium text-sm">{planLabel}</span>
+					<span className="text-sm font-medium">{planLabel}</span>
 				</div>
 				<Badge
 					variant={cancelAtEnd ? "destructive" : "secondary"}
-					className="h-5 rounded-full px-2 font-semibold text-[10px] uppercase tracking-wider"
+					className="h-5 rounded-full px-2 text-[10px] font-semibold tracking-wider uppercase"
 				>
 					{cancelAtEnd ? t("sidebar.plan.canceling", "Canceling") : "Pro"}
 				</Badge>
@@ -166,7 +166,7 @@ export function SidebarPlanCard() {
 			</div>
 
 			{renewDate && (
-				<div className="flex items-center justify-between border-t pt-2 text-muted-foreground text-xs">
+				<div className="flex items-center justify-between border-t pt-2 text-xs text-muted-foreground">
 					<span className="flex items-center gap-1.5">
 						<Calendar className="size-3" />
 						{cancelAtEnd

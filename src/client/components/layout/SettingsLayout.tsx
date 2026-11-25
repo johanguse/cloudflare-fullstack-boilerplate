@@ -10,10 +10,10 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
 
 	return (
 		<div className="w-full">
-			<h1 className="font-semibold text-2xl tracking-tight">
+			<h1 className="text-2xl font-semibold tracking-tight">
 				{t("settings.title", "Settings")}
 			</h1>
-			<p className="mt-1 text-muted-foreground text-sm">
+			<p className="mt-1 text-sm text-muted-foreground">
 				{t(
 					"settings.subtitle",
 					"Manage your account settings and preferences.",
