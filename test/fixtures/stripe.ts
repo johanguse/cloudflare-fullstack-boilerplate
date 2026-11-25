@@ -1,5 +1,5 @@
 export const WEBHOOK_SECRET = "whsec_local_upgrade_fixture";
-export const STRIPE_API_VERSION = "2026-09-30.endive";
+export const STRIPE_API_VERSION = "2026-11-18.endive";
 
 export async function signStripePayload(
 	payload: string,
